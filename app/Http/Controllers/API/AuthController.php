@@ -39,36 +39,39 @@ class AuthController extends Controller
                 'message' => $validator->errors(),
             ];
             return response()->json($response,400);
+        }else
+        {
+            // Create new account
+            $account = Account::create([
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'avatar' => $request->avatar,
+                'enabled' => $request->enabled,
+                'role_id' => $request->role_id
+            ]);
+
+            Customer::create([
+                'ranking_point' => 0,
+                'account_id' => $account->id,
+                'ranking_id' => 1,
+            ]);
+
+            // Get a JWT
+            $token = Auth::login($account);
+
+            return response()->json([
+                'status_code' => 201,
+                'message' => 'User created successfully!',
+                'user' => $account,
+                'authorization' => [
+                    'token' => $token,
+                    'type' => 'bearer',
+                ]
+            ], 201);
         }
 
-        // Create new account
-        $account = Account::create([
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'avatar' => $request->avatar,
-            'enabled' => $request->enabled,
-            'role_id' => $request->role_id
-        ]);
-
-        Customer::create([
-            'ranking_point' => 0,
-            'account_id' => $account->id,
-            'ranking_id' => 1,
-        ]);
-
-        // Get a JWT
-        $token = Auth::login($account);
-
-        return response()->json([
-            'status_code' => 201,
-            'message' => 'User created successfully!',
-            'user' => $account,
-            'authorization' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
-        ], 201);
+        
     }
 
     public function login(Request $request){
