@@ -50,6 +50,7 @@ class CustomerController extends Controller
             }
         }
     }
+
     public function updateCutomerByAccountId(Request $request)
     {
         $user = auth()->user();
@@ -96,7 +97,6 @@ class CustomerController extends Controller
                 'status' => 404,
             ], 404);
         }
-
     }
     public function index()
     {

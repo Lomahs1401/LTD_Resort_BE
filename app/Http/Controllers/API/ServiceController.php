@@ -122,6 +122,15 @@ class ServiceController extends Controller
     public function getTop5LowestPrice()
     {
         $list_lowest_price = DB::table('services')->orderBy('price', 'asc')->take(5)->get();
+
+        $list_lowest_price = DB::table('services')
+            ->join('feedback', 'services.id', '=', 'feedback.service_id')
+            ->select('services.id', 'services.image', 'services.service_name', 'services.price', DB::raw('AVG(feedback.rating) as average_rating'))
+            ->groupBy('services.id', 'services.image', 'services.service_name', 'services.price')
+            ->orderBy('services.price', 'asc')
+            ->take(5)
+            ->get();
+
         
         return response()->json([
             'message' => 'Query successfully!',
@@ -130,11 +139,39 @@ class ServiceController extends Controller
         ]);
     }
 
+    public function getRandomServices($id) 
+    {
+        $list_random_services = DB::table('services')
+            ->join('feedback', 'services.id', '=', 'feedback.service_id')
+            ->select('services.id', 'services.image', 'services.service_name', 'services.price', DB::raw('AVG(feedback.rating) as average_rating'))
+            ->groupBy('services.id', 'services.image', 'services.service_name', 'services.price')
+            ->orderBy('services.price', 'asc')
+            ->whereNotIn('services.id', [$id])->inRandomOrder()
+            ->take(5)
+            ->get();
+
+        return response()->json([
+            'message' => 'Query successfully!',
+            'status' => 200,
+            'list_random_services' => $list_random_services
+        ]);
+    }
+
     public function paging(Request $request, $page_number, $num_of_page)
     {
         $data = [];
 
         $list_filter_services = $request->input('list_filter_services');
+
+        // Kiểm tra nếu 'list_filter_services' là null, gán thành một mảng trống
+        if ($list_filter_services === null) {
+            $list_filter_services = [];
+        }
+
+        $average_ratings = DB::table('feedback')
+            ->select('service_id', DB::raw('AVG(rating) as average_rating'))
+            ->groupBy('service_id')
+            ->get();
 
         if (count($list_filter_services) > 0) {
             if (count($list_filter_services) % $num_of_page == 0) {
@@ -156,6 +193,7 @@ class ServiceController extends Controller
                         "price" => $list_filter_services[$i]['price'],
                         "point_ranking" => $list_filter_services[$i]['point_ranking'],
                         "service_type_id" => $list_filter_services[$i]['service_type_id'],
+                        "rating" => $this->getAverageRating($list_filter_services[$i]['id'], $average_ratings),
                         "created_at" => $list_filter_services[$i]['created_at'],
                         "updated_at" => $list_filter_services[$i]['updated_at'],
                     ];
@@ -173,6 +211,7 @@ class ServiceController extends Controller
                         "price" => $list_filter_services[$i]['price'],
                         "point_ranking" => $list_filter_services[$i]['point_ranking'],
                         "service_type_id" => $list_filter_services[$i]['service_type_id'],
+                        "rating" => $this->getAverageRating($list_filter_services[$i]['id'], $average_ratings),
                         "created_at" => $list_filter_services[$i]['created_at'],
                         "updated_at" => $list_filter_services[$i]['updated_at'],
                     ];
@@ -201,6 +240,7 @@ class ServiceController extends Controller
                             "price" => $list_services[$i]->price,
                             "point_ranking" => $list_services[$i]->point_ranking,
                             "service_type_id" => $list_services[$i]->service_type_id,
+                            "rating" => $this->getAverageRating($list_services[$i]->id, $average_ratings),
                             "created_at" => $list_services[$i]->created_at,
                             "updated_at" => $list_services[$i]->updated_at,
                         ];
@@ -218,6 +258,7 @@ class ServiceController extends Controller
                             "price" => $list_services[$i]->price,
                             "point_ranking" => $list_services[$i]->point_ranking,
                             "service_type_id" => $list_services[$i]->service_type_id,
+                            "rating" => $this->getAverageRating($list_services[$i]->id, $average_ratings),
                             "created_at" => $list_services[$i]->created_at,
                             "updated_at" => $list_services[$i]->updated_at,
                         ];
@@ -228,7 +269,19 @@ class ServiceController extends Controller
 
         return response()->json([
             'status' => 200,
-            'list_services' => $data,
+            'list_services' => array_values($data), // Sử dụng array_values() để chuyển đổi dạng object thành mảng,
         ]);
     }
+
+    public function getAverageRating($serviceId, $averageRatings)
+    {
+        foreach ($averageRatings as $rating) {
+            if ($rating->service_id == $serviceId) {
+                return $rating->average_rating;
+            }
+        }
+
+        return null;
+    }
 }
+

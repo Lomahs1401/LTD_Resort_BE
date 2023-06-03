@@ -378,7 +378,14 @@ class RoomTypeController extends Controller
 
     public function getTop5LowestPrice()
     {
-        $list_lowest_price = DB::table('room_types')->orderBy('price', 'asc')->take(5)->get();
+        $list_lowest_price = DB::table('room_types')
+            ->join('feedback', 'room_types.id', '=', 'feedback.room_type_id')
+            ->select('room_types.id', 'room_types.image', 'room_types.room_type_name', 'room_types.price', DB::raw('AVG(feedback.rating) as average_rating'))
+            ->groupBy('room_types.id', 'room_types.image', 'room_types.room_type_name', 'room_types.price')
+            ->orderBy('room_types.price', 'asc')
+            ->take(5)
+            ->get();
+
 
         return response()->json([
             'message' => 'Query successfully!',
@@ -387,11 +394,39 @@ class RoomTypeController extends Controller
         ]);
     }
 
+    public function getRandomRoomTypes($id) 
+    {
+        $list_random_room_types = DB::table('room_types')
+            ->join('feedback', 'room_types.id', '=', 'feedback.room_type_id')
+            ->select('room_types.id', 'room_types.image', 'room_types.room_type_name', 'room_types.price', DB::raw('AVG(feedback.rating) as average_rating'))
+            ->groupBy('room_types.id', 'room_types.image', 'room_types.room_type_name', 'room_types.price')
+            ->orderBy('room_types.price', 'asc')
+            ->whereNotIn('room_types.id', [$id])->inRandomOrder()
+            ->take(5)
+            ->get();
+
+        return response()->json([
+            'message' => 'Query successfully!',
+            'status' => 200,
+            'list_random_room_types' => $list_random_room_types
+        ]);
+    }
+
     public function paging(Request $request, $page_number, $num_of_page)
     {
         $data = [];
 
         $list_filter_room_types = $request->input('list_filter_room_types');
+
+        // Kiểm tra nếu 'list_filter_room_types' là null, gán thành một mảng trống
+        if ($list_filter_room_types === null) {
+            $list_filter_room_types = [];
+        }
+
+        $average_ratings = DB::table('feedback')
+            ->select('room_type_id', DB::raw('AVG(rating) as average_rating'))
+            ->groupBy('room_type_id')
+            ->get();
 
         if (count($list_filter_room_types) > 0) {
             if (count($list_filter_room_types) % $num_of_page == 0) {
@@ -413,6 +448,7 @@ class RoomTypeController extends Controller
                         "image" => $list_filter_room_types[$i]['image'],
                         "price" => $list_filter_room_types[$i]['price'],
                         "point_ranking" => $list_filter_room_types[$i]['point_ranking'],
+                        "rating" => $this->getAverageRating($list_filter_room_types[$i]['id'], $average_ratings),
                         "created_at" => $list_filter_room_types[$i]['created_at'],
                         "updated_at" => $list_filter_room_types[$i]['updated_at'],
                     ];
@@ -430,6 +466,7 @@ class RoomTypeController extends Controller
                         "image" => $list_filter_room_types[$i]['image'],
                         "price" => $list_filter_room_types[$i]['price'],
                         "point_ranking" => $list_filter_room_types[$i]['point_ranking'],
+                        "rating" => $this->getAverageRating($list_filter_room_types[$i]['id'], $average_ratings),
                         "created_at" => $list_filter_room_types[$i]['created_at'],
                         "updated_at" => $list_filter_room_types[$i]['updated_at'],
                     ];
@@ -457,6 +494,7 @@ class RoomTypeController extends Controller
                             "image" => $list_room_types[$i]->image,
                             "price" => $list_room_types[$i]->price,
                             "point_ranking" => $list_room_types[$i]->point_ranking,
+                            "rating" => $this->getAverageRating($list_room_types[$i]->id, $average_ratings),
                             "created_at" => $list_room_types[$i]->created_at,
                             "updated_at" => $list_room_types[$i]->updated_at,
                         ];
@@ -474,6 +512,7 @@ class RoomTypeController extends Controller
                             "image" => $list_room_types[$i]->image,
                             "price" => $list_room_types[$i]->price,
                             "point_ranking" => $list_room_types[$i]->point_ranking,
+                            "rating" => $this->getAverageRating($list_room_types[$i]->id, $average_ratings),
                             "created_at" => $list_room_types[$i]->created_at,
                             "updated_at" => $list_room_types[$i]->updated_at,
                         ];
@@ -484,7 +523,18 @@ class RoomTypeController extends Controller
 
         return response()->json([
             'status' => 200,
-            'list_room_types' => $data,
+            'list_room_types' => array_values($data), // Sử dụng array_values() để chuyển đổi dạng object thành mảng,
         ]);
+    }
+
+    public function getAverageRating($roomTypeId, $averageRatings)
+    {
+        foreach ($averageRatings as $rating) {
+            if ($rating->room_type_id == $roomTypeId) {
+                return $rating->average_rating;
+            }
+        }
+
+        return null;
     }
 }
