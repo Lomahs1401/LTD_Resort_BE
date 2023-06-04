@@ -55,7 +55,7 @@ class AdminController extends Controller
                 if ($position) {
                     $department = Department::find($position->department_id);
     
-                    $data[] = [
+                    $data = [
                         "avatar"=>$user->avatar,
                         "username" => $user->username,
                         "email"=> $user->email,

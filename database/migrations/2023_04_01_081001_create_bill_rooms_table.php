@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('total_room');
             $table->integer('total_people');
             $table->string('payment_method');
-            $table->dateTime('pay_time');
+            $table->dateTime('pay_time')->nullable();
             $table->dateTime('checkin_time')->nullable();
             $table->dateTime('checkout_time')->nullable();
             $table->dateTime('cancel_time')->nullable();

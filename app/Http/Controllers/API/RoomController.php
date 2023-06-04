@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -44,4 +45,29 @@ class RoomController extends Controller
             'list_rooms' => $list_rooms,
         ]);
     }
+    public function getReservedRooms(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'time_start',
+            'time_end',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validate' => true,
+                'message' => 'You need to enter employee',
+            ]);
+        }
+        $timeStart = $request->time_start;
+        $timeEnd = $request->time_end;
+
+        $reservedRooms =DB::table('reservation_rooms')->where('time_start', '>=', $timeStart)
+            ->where('time_end', '<=', $timeEnd)
+            ->pluck('room_id')
+            ->toArray();
+
+        return response()->json(['reserved_rooms' => $reservedRooms]);
+}
+
 }

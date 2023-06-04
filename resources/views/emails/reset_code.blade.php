@@ -9,7 +9,7 @@
     <p>Hi {{ $user->name }},</p>
     <p>Please use the following code to reset your password:</p>
     <h3>{{ $user->reset_code }}</h3>
-    <p>This code will expire in 2 minutes.</p>
+    <p>This code will expire in 5 minutes.</p>
     <p>If you didn't request a password reset, please ignore this email.</p>
 </body>
 </html>

@@ -34,8 +34,10 @@ Route::group([
     
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/reset-password/request', [AccountController::class, 'requestResetCode']);
-    Route::post('/reset-password', [AccountController::class, 'resetPassword']);
+    Route::patch('/reset-password/request', [AccountController::class, 'requestResetCode']);
+    Route::patch('/reset-verify-code/{email}', [AccountController::class, 'resetVerifyCode']);
+    Route::patch('/reset-password/{email}/{code}', [AccountController::class, 'resetPassword']);
+
 
 });
 
@@ -49,6 +51,7 @@ Route::group([
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::post('/me', [AuthController::class, 'me']);
     Route::patch('/changePassword', [AccountController::class, 'changePassword']);
+    Route::get('/get_ranking_point/{id}', [CustomerController::class, 'getRankingPoint']);
    //BillRoomDetail
     Route::get('/show-bill-room-detail/{id}', [BillRoomController::class, 'findBillRoomDetail']);
     // Areas
@@ -65,6 +68,7 @@ Route::group([
     Route::get('/room', [RoomController::class, 'index']);
     Route::get('/room/room-type/{id}', [RoomController::class, 'getRoomsByRoomTypeId']);
     Route::get('/room/{id}', [RoomController::class, 'show']);
+    Route::get('/reserved-room', [RoomController::class, 'getReservedRooms']);
 
     // Room Types
     Route::get('/room-types', [RoomTypeController::class, 'index']);
@@ -82,6 +86,7 @@ Route::group([
     Route::post('/room-types/filter', [RoomTypeController::class, 'filterRoomType']);
     Route::post('/room-types/paginate/{page_number}/{num_of_page}', [RoomTypeController::class, 'paging']);
     Route::get('/room-types/{id}', [RoomTypeController::class, 'show']);
+
 
     // Services
     Route::get('/services', [ServiceController::class, 'index']);
@@ -122,6 +127,9 @@ Route::group([
     Route::patch('/update-customer', [CustomerController::class, 'updateCutomerByAccountId']);
     Route::get('/history-bill-customer', [CustomerController::class, 'findHistoryBillCustomerByID']);
     Route::get('/book-bill-customer', [CustomerController::class, 'findBookBillCustomerByID']);
+   
+// tạo bill service
+    Route::post('/store-bill-service', [BillServiceController::class, 'storeBillService']);
 
     Route::get('/ranking/{account_id}', [CustomerController::class, 'getRankingNameByAccountId']);
     Route::get('/search/{search}', [CustomerController::class, 'searchByParams']);
@@ -178,13 +186,17 @@ Route::group([
   Route::get('/show-bill-customer/{id}', [CustomerController::class, 'findBillByID']);
   Route::get('/get-total-amount/{id}', [CustomerController::class, 'getTotalAmount']);
 
-//   
-Route::post('/quit-employee/{id}', [EmployeeController::class, 'quitEmployeeByID']);
-  Route::get('/list', [AdminController::class, 'index']);
+  // employee
+  Route::get('/list-employee', [EmployeeController::class, 'index']);
+  Route::get('/find-employee/{id}',[EmployeeController::class, 'employeeFindID']);
+  Route::post('/store-employee', [EmployeeController::class, 'store']);
+  Route::patch('/quit-employee/{id}', [EmployeeController::class, 'quitEmployeeByID']);
+ 
+
   Route::get('/{id}',[AdminController::class, 'show']);
   Route::get('/search/{search}', [AdminController::class, 'searchByParams']);
   Route::get('/find/{id}',[AdminController::class, 'adminFindID']);
   Route::patch('/{id}',[AdminController::class, 'update']);
-  Route::post('/store', [EmployeeController::class, 'store']);
+ 
  
 });

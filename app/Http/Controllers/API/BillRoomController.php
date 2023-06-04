@@ -18,7 +18,7 @@ class BillRoomController extends Controller
             if ($bill_room ->isEmpty())  {
                 return response()->json([
                         'message' => 'Data not found!',
-                        'status' => 400,
+                        'status' => 404,
                 ]);
             } else {
                 $data=[];
@@ -60,7 +60,7 @@ class BillRoomController extends Controller
             if ($bill_room ->isEmpty())  {
                 return response()->json([
                         'message' => 'Data not found!',
-                        'status' => 400,
+                        'status' => 404,
                 ]);
             } else {
                 $data=[];
@@ -103,7 +103,7 @@ class BillRoomController extends Controller
             if ($bill_room ->isEmpty())  {
                 return response()->json([
                         'message' => 'Data not found!',
-                        'status' => 400,
+                        'status' => 404,
                 ]);
             } else {
                 $data=[];
@@ -142,7 +142,7 @@ public function findBillRoomDetail($id)
             if ($name ->isEmpty())  {
                 return response()->json([
                         'message' => 'Data not found!',
-                        'status' => 400,
+                        'status' => 404,
                 ]);
             } else {
                 $data=[];

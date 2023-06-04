@@ -64,7 +64,7 @@ class EmployeeController extends Controller
                 if ($position) {
                     $department = Department::find($position->department_id);
     
-                    $data[] = [
+                    $data = [
                         "avatar"=>$user->avatar,
                         "username" => $user->username,
                         "email"=> $user->email,
@@ -90,8 +90,8 @@ class EmployeeController extends Controller
                 } else {
                     return response()->json([
                         'message' => 'Data not found!',
-                        'status' => 404,
-                    ], 404);
+                        'status' => 401,
+                    ], 401);
                 }
             }
         }
@@ -134,8 +134,8 @@ class EmployeeController extends Controller
         }else{
             return response()->json([
                 'message' => 'Data not found!',
-                'status' => 404,
-            ], 404);
+                'status' => 401,
+            ], 401);
         }
 
     }
@@ -167,7 +167,7 @@ class EmployeeController extends Controller
             if ($position) {
                 $department = Department::find($position->department_id);
 
-                $data[] = [
+                $data = [
                     "id" => $employee->id,
                     "name" => $employee->full_name,
                     "gender" => $employee->gender,
@@ -260,7 +260,7 @@ class EmployeeController extends Controller
             'phone' => 'required',
             'account_bank' => 'required',
             'name_bank' => 'required',
-            'position_id' => 'required'
+            'position_name' =>  'required'
         ]);
 
         if ($validator->fails()) {
@@ -270,8 +270,10 @@ class EmployeeController extends Controller
             ];
             return response()->json($response, 400);
         }
-
-        $employee = Employee::create([
+        $position= DB::table('positions')->where('position_name', '=', $request->position_name)->first();;
+      
+        // $employee = Employee::create([
+        $data=[
             'full_name' => $request->full_name,
             'gender' => $request->gender,
             'birthday' => $request->birthday,
@@ -282,29 +284,34 @@ class EmployeeController extends Controller
             'name_bank' => $request->name_bank,
             'day_start' => Carbon::now($request->day_start),
             'status' => $request->status | 1,
-            'position_id' => $request->position_id
-        ]);
-
-        if ($employee) {
-            $position = Position::find($employee->position_id);
-            if ($position->permission = '1') {
-                $account = $employee->account()->create([
+            'position_id' => $position->id,
+        ];
+        // ]);
+            // $position = Position::find($data['position_id']);
+            if ($position->permission == '1') {
+                $accountData =[
                     'username' => $request->username,
                     'email' => $request->email,
-                    'password' => $request->password,
+                    'password' => Hash::make($request->password),                 
                     'enabled' => $request->enabled | '1',
                     'role_id' => $request->role_id | '2'
-                ]);
-                $employee = Employee::updated([
-                    $employee->account_id = $account->id
-                ]);
+                ];
+
+                $account =Account::create($accountData);
+                $token = Auth::guard('api')->login($account);
+                $data['account_id'] = $account->id;
+            }else{
+                $data['account_id'] = null;
             }
-        }
+            $employee = Employee::create($data);
+
 
         return response()->json([
             'status' => 200,
-            'message' => 'Employee Added Successfully',
-            'user' => $account,
+            'message' => 'Employee created Successfully',
+            'employee' => $employee,
+          
+
         ]);
     }
     public function quitEmployeeByID(Request $request, string $id)
@@ -326,34 +333,15 @@ class EmployeeController extends Controller
         $account_id = DB::table('employees')->where('id', '=', $id)->value('account_id');
 
         if ($account_id) {
-            // $account = DB::table('accounts')->where('id', '=', $em)
-            // $data[]= [
-            // "day_quit"=>$employee->day_quit,
-            // "status"=>$employee->status,
-            // "enabled"=>$account->enabled
-            // ];
-            // if($data){
-            // $data["status"] = $request-> status|'0';
-            // $data["enabled"] = $request->enabled|'0';
-            // // $data["day_quit"]->update();
-            // $data["status"]->update();
-            // $data["enabled"]->update();
-            // $employee->full_name = $request->full_name;
-            // $employee->gender = $request->gender;
-            // $employee->birthday = $request->birthday;
-            // $employee->CMND = $request->CMND;
-            // $employee->address = $request->address;
-            // $employee->phone = $request->phone;
-            // $employee->update();
 
             $employee = DB::table('employees')->where('id', '=', $id)->update([
                 'day_quit' => Carbon::now(),
                 'status' => 0,
             ]);
 
-            $account = DB::table('accounts')->where('id', '=', $account_id)->delete();
-            //     'enabled' => 0,
-            // ]);
+            $account = DB::table('accounts')->where('id', '=', $account_id)->update([
+                'enabled' => 0,
+            ]);
 
             if ($employee && $account) {
                 return response()->json([

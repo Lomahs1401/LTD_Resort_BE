@@ -393,6 +393,11 @@ class RoomTypeController extends Controller
 
         $list_filter_room_types = $request->input('list_filter_room_types');
 
+        // Kiểm tra nếu 'list_filter_room_types' là null, gán thành một mảng trống
+        if ($list_filter_room_types === null) {
+            $list_filter_room_types = [];
+        }
+
         if (count($list_filter_room_types) > 0) {
             if (count($list_filter_room_types) % $num_of_page == 0) {
                 $page = count($list_filter_room_types) / $num_of_page;

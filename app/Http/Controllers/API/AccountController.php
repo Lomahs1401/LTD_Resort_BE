@@ -16,44 +16,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AccountController extends Controller
 {
-    // public function index()
-    // {
-    //     $listAccount = Account::all();
-    //     return response()->json([
-    //         'message' => 'Query successfully!',
-    //         'status'=> 200,
-    //         'list_accounts' => $listAccount
-    //     ], 200);
-    // }
-
-    // public function show($id)
-    // {
-    //     $account = Account::find($id);
-    //     return response()->json([
-    //         'message' => 'Query successfully!',
-    //         'status'=> 200,
-    //         'account' => $account
-    //     ], 200);
-    // }
-
-    // public function searchByUsername($username) {
-    //     $accounts = Account::where('username', 'like', '%' . $username . '%')->get();
-    //     // $accounts = Account::where('')
-
-    //     if (count($accounts) == 0) {
-    //         return response()->json([
-    //             'message' => 'Data not found!',
-    //             'status'=> 404,
-    //             'accounts' => $accounts
-    //         ], 404);
-    //     } else {
-    //         return response()->json([
-    //             'message' => 'Query successfully!',
-    //             'status'=> 200,
-    //             'accounts' => $accounts
-    //         ], 200);
-    //     }
-    // }
+  
 
     public function changePassword(Request $request)
     {
@@ -129,7 +92,7 @@ class AccountController extends Controller
         // Tạo mã code và lưu vào cơ sở dữ liệu
         $code = Str::random(6);
         $user->reset_code = $code;
-        $user->reset_code_expires_at = Carbon::now()->addMinutes(10);
+        $user->reset_code_expires_at = Carbon::now()->addMinutes(5);
         $user->reset_code_attempts = 0;
         $user->save();
 
@@ -139,13 +102,13 @@ class AccountController extends Controller
         return response()->json(['message' => 'Reset code sent to your email']);
     }
 
-    public function resetPassword(Request $request)
+    public function resetVerifyCode(Request $request, $email)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            // 'email' => 'required|email',
             'code' => 'required',
-            'password' => 'required|min:6',
-            'confirm_password' => 'required|same:password',
+            // 'password' => 'required|min:6',
+            // 'confirm_password' => 'required|same:password',
         ]);
 
         if ($validator->fails()) {
@@ -158,7 +121,7 @@ class AccountController extends Controller
             );
         }
         // Tìm người dùng dựa trên mã code
-        $user = Account::where('email', $request->email)
+        $user = Account::where('email', $email)
             ->where('reset_code_expires_at', '>', Carbon::now())
             ->first();
     
@@ -180,6 +143,43 @@ class AccountController extends Controller
             return response()->json([
             'message' => 'Invalid reset code',
             'your remaining password attempts are' =>$attemptsLeft  ], 400);
+        }else{
+            return response()->json([
+                'message' => 'Verify Code True',
+                'status' => 200,
+                'account' => $user,
+            ], 200);
+        }
+
+      
+    }
+    
+    public function resetPassword(Request $request, $email, $code)
+    {
+        $validator = Validator::make($request->all(), [
+            // 'email' => 'required|email',
+            // 'code' => 'required',
+            'password' => 'required|min:6',
+            'confirm_password' => 'required|same:password',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'message' => 'Invalid data',
+                    'errors' => $validator->errors()
+                ],
+                400
+            );
+        }
+        // Tìm người dùng dựa trên mã code
+        $user = Account::where('email', $email)
+            ->where('reset_code', $code)
+            ->first();
+    
+
+        if (!$user) {
+            return response()->json(['message' => 'Invalid or expired reset code'], 400);
         }
 
         // Cập nhật mật khẩu mới và xóa mã code
