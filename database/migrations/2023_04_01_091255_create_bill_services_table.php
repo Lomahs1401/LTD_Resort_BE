@@ -17,7 +17,7 @@ return new class extends Migration
             $table->float('total_amount');
             $table->date('book_time');
             $table->string('payment_method');
-            $table->dateTime('pay_time');
+            $table->dateTime('pay_time')->nullable();
             $table->dateTime('checkin_time')->nullable();
             $table->dateTime('cancel_time')->nullable();
             $table->float('tax');
