@@ -31,14 +31,12 @@ Route::group([
     'middleware' => ['force.json.response', 'api'],
     'prefix' => 'auth'
 ], function ($router) {
-    
+
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
     Route::patch('/reset-password/request', [AccountController::class, 'requestResetCode']);
     Route::patch('/reset-verify-code/{email}', [AccountController::class, 'resetVerifyCode']);
     Route::patch('/reset-password/{email}/{code}', [AccountController::class, 'resetPassword']);
-
-
 });
 
 // Auth API
@@ -51,9 +49,13 @@ Route::group([
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::post('/me', [AuthController::class, 'me']);
     Route::patch('/changePassword', [AccountController::class, 'changePassword']);
-    Route::get('/get_ranking_point/{id}', [CustomerController::class, 'getRankingPoint']);
-   //BillRoomDetail
+  
+    // Account
+    Route::patch('/accounts/{id}', [AccountController::class, 'updateAvatar']);
+
+    //BillRoomDetail
     Route::get('/show-bill-room-detail/{id}', [BillRoomController::class, 'findBillRoomDetail']);
+
     // Areas
     Route::get('/areas', [AreaController::class, 'index']);
     Route::get('/areas/total', [AreaController::class, 'getTotalAreas']);
@@ -83,6 +85,7 @@ Route::group([
     Route::get('/room-types/list-lowest-price', [RoomTypeController::class, 'getTop5LowestPrice']);
     Route::get('/room-types/bedroom-names', [RoomTypeController::class, 'getBedroomTypeNames']);
     Route::get('/room-types/room-names', [RoomTypeController::class, 'getRoomTypeNames']);
+    Route::get('/room-types/random/{id}', [RoomTypeController::class, 'getRandomRoomTypes']);
     Route::post('/room-types/filter', [RoomTypeController::class, 'filterRoomType']);
     Route::post('/room-types/paginate/{page_number}/{num_of_page}', [RoomTypeController::class, 'paging']);
     Route::get('/room-types/{id}', [RoomTypeController::class, 'show']);
@@ -95,6 +98,7 @@ Route::group([
     Route::get('/services/lowest-price', [ServiceController::class, 'getLowestPrice']);
     Route::get('/services/highest-price', [ServiceController::class, 'getHighestPrice']);
     Route::get('/services/names', [ServiceController::class, 'getListServiceNames']);
+    Route::get('/services/random/{id}', [ServiceController::class, 'getRandomServices']);
     Route::post('/services/filter', [ServiceController::class, 'filterService']);
     Route::post('/services/paginate/{page_number}/{num_of_page}', [ServiceController::class, 'paging']);
     Route::get('/services/{id}', [ServiceController::class, 'show']);
@@ -120,22 +124,16 @@ Route::group([
     'middleware' => ['force.json.response', 'api', 'api.auth', 'auth.customer'],
     'prefix' => 'customer',
 ], function ($router) {
-    // Route::get('/list', [CustomerController::class, 'index']);
-    // Route::get('/{id}', [CustomerController::class, 'show']);
-//personal information
+    //personal information
     Route::get('/account-customer', [CustomerController::class, 'getCustomerByAccountId']);
-    Route::patch('/update-customer', [CustomerController::class, 'updateCutomerByAccountId']);
     Route::get('/history-bill-customer', [CustomerController::class, 'findHistoryBillCustomerByID']);
     Route::get('/book-bill-customer', [CustomerController::class, 'findBookBillCustomerByID']);
    
-// tạo bill service
+    // tạo bill service
     Route::post('/store-bill-service', [BillServiceController::class, 'storeBillService']);
-
     Route::get('/ranking/{account_id}', [CustomerController::class, 'getRankingNameByAccountId']);
     Route::get('/search/{search}', [CustomerController::class, 'searchByParams']);
-    
-    Route::patch('/{id}', [CustomerController::class, 'update']);
-    Route::patch('/account/{account_id}', [CustomerController::class, 'updateByAccountId']);
+    Route::patch('/update-customer', [CustomerController::class, 'updateCutomerByAccountId']);
 });
 
 // Employee API
@@ -143,31 +141,31 @@ Route::group([
     'middleware' => ['force.json.response', 'api', 'api.auth', 'auth.employee'],
     'prefix' => 'employee',
 ], function ($router) {
-// personal information
-  Route::get('/account-employee', [EmployeeController::class, 'getEmployeeByAccountId']);
-  Route::patch('/update-employee', [EmployeeController::class, 'updateEmployeeByAccountId']);
-// customer  
-  Route::get('/list-customer', [CustomerController::class, 'index']);
-  Route::get('/show-customer/{id}', [CustomerController::class, 'ShowCustomerByID']);
-  Route::get('/find-customer/find', [CustomerController::class, 'findCustomer']);
-  Route::get('/show-bill-customer/{id}', [CustomerController::class, 'findBillByID']);
-  Route::get('/get-total-amount/{id}', [CustomerController::class, 'getTotalAmount']);
-//bill room
-  Route::get('/list-bill-room', [BillRoomController::class, 'findBillRoom']);
-  Route::get('/list-history-room', [BillRoomController::class, 'findHistoryRoom']);
-  Route::get('/list-cancel-room', [BillRoomController::class, 'findCancelRoom']);
-//bill service
-  Route::get('/list-bill-service', [BillServiceController::class, 'findBillService']);
-  Route::get('/list-history-service', [BillServiceController::class, 'findHistoryService']);
-  Route::get('/list-cancel-service', [BillServiceController::class, 'findCancelService']);
+    // personal information
+    Route::get('/account-employee', [EmployeeController::class, 'getEmployeeByAccountId']);
+    Route::patch('/update-employee', [EmployeeController::class, 'updateEmployeeByAccountId']);
+    // customer  
+    Route::get('/list-customer', [CustomerController::class, 'index']);
+    Route::get('/show-customer/{id}', [CustomerController::class, 'ShowCustomerByID']);
+    Route::get('/find-customer/find', [CustomerController::class, 'findCustomer']);
+    Route::get('/show-bill-customer/{id}', [CustomerController::class, 'findBillByID']);
+    Route::get('/get-total-amount/{id}', [CustomerController::class, 'getTotalAmount']);
+    //bill room
+    Route::get('/list-bill-room', [BillRoomController::class, 'findBillRoom']);
+    Route::get('/list-history-room', [BillRoomController::class, 'findHistoryRoom']);
+    Route::get('/list-cancel-room', [BillRoomController::class, 'findCancelRoom']);
+    //bill service
+    Route::get('/list-bill-service', [BillServiceController::class, 'findBillService']);
+    Route::get('/list-history-service', [BillServiceController::class, 'findHistoryService']);
+    Route::get('/list-cancel-service', [BillServiceController::class, 'findCancelService']);
 
 
-  Route::get('/list', [EmployeeController::class, 'index']);
-  Route::get('/{id}', [EmployeeController::class, 'show']);
-  Route::get('/search/{search}', [EmployeeController::class, 'searchByParams']);
-  Route::get('/find/{id}',[EmployeeController::class, 'employeeFindID']);
-  
-  Route::patch('/{id}', [EmployeeController::class, 'update']);
+    Route::get('/list', [EmployeeController::class, 'index']);
+    Route::get('/{id}', [EmployeeController::class, 'show']);
+    Route::get('/search/{search}', [EmployeeController::class, 'searchByParams']);
+    Route::get('/find/{id}', [EmployeeController::class, 'employeeFindID']);
+
+    Route::patch('/{id}', [EmployeeController::class, 'update']);
 });
 
 // Admin API
@@ -177,6 +175,7 @@ Route::group([
     'prefix' => 'admin',
 ], function ($router) {
     // personal information
+
   Route::get('/account-admin', [AdminController::class, 'getAdminByAccountId']);
   Route::patch('/update-admin', [AdminController::class, 'updateAdminByAccountId']); 
   // Cutomer
@@ -186,17 +185,15 @@ Route::group([
   Route::get('/show-bill-customer/{id}', [CustomerController::class, 'findBillByID']);
   Route::get('/get-total-amount/{id}', [CustomerController::class, 'getTotalAmount']);
 
-  // employee
+  // Employee
   Route::get('/list-employee', [EmployeeController::class, 'index']);
   Route::get('/find-employee/{id}',[EmployeeController::class, 'employeeFindID']);
   Route::post('/store-employee', [EmployeeController::class, 'store']);
   Route::patch('/quit-employee/{id}', [EmployeeController::class, 'quitEmployeeByID']);
  
-
+  // Admin
   Route::get('/{id}',[AdminController::class, 'show']);
   Route::get('/search/{search}', [AdminController::class, 'searchByParams']);
   Route::get('/find/{id}',[AdminController::class, 'adminFindID']);
   Route::patch('/{id}',[AdminController::class, 'update']);
- 
- 
 });

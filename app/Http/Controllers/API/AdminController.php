@@ -202,8 +202,6 @@ class AdminController extends Controller
             'CMND',
             'address',
             'phone',
-
-
         ]);
         if ($validator->fails()) {
             return response()->json([

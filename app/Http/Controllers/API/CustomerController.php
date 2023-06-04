@@ -51,6 +51,7 @@ class CustomerController extends Controller
             }
         }
     }
+
     public function updateCutomerByAccountId(Request $request)
     {
         $user = auth()->user();

@@ -191,4 +191,30 @@ class AccountController extends Controller
 
         return response()->json(['message' => 'Password reset successful']);
     }
+
+    public function updateAvatar(Request $request, $id) {
+        // Validate the request data
+        $validatedData = $request->validate([
+            'avatar_url' => 'required|string|max:255',
+        ]);
+
+        $result = DB::table('accounts')->where('id', '=', $id)->update([
+            'avatar' => $validatedData['avatar_url'],
+        ]);
+
+        if ($result) {
+            return response()->json([
+                'message' => 'Update avatar successfully!',
+                'status' => 200,
+                'account' => $result,
+            ], 200);
+            
+        } else {
+            return response()->json([
+                'message' => 'Update avatar failed!',
+                'status' => 400,
+                'account' => $result,
+            ], 400);
+        }
+    }
 }
