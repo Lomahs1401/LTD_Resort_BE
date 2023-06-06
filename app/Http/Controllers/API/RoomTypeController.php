@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\room\Area;
+use App\Models\room\Floor;
 use App\Models\room\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -13,10 +15,25 @@ class RoomTypeController extends Controller
     public function index()
     {
         $list_room_types = RoomType::all();
+        $data = [];
+                foreach ($list_room_types as $item) {
+                    $number = DB::table('rooms')->where('room_type_id', '=', $item->id)->count();
+                    $data[] = [
+                        'id' => $item->id,
+                        'room_type_name' => $item->room_type_name,
+                        'room_size' => $item->room_size,
+                        'number_customers' => $item->number_customers,
+                        'number_rooms' => $number,
+                        'description' => $item->description,
+                        'image' => $item->image,
+                        'price' => $item->price,
+                        'point_ranking' => $item->point_ranking,       
+                    ];
+                }
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
-            'list_room_types' => $list_room_types,
+            'list_room_types' => $data,
         ], 200);
     }
 
@@ -265,12 +282,50 @@ class RoomTypeController extends Controller
 
     public function getListRoomsByRoomTypeId($id) {
         $list_rooms = DB::table('rooms')->where('room_type_id', '=', $id)->get();
+        $data = [];
+        foreach ($list_rooms as $item) {
+          
+                $area = $item->area_id;
+                $floor = $item->floor_id;
+        
+                // Kiểm tra xem đã có khu vực trong mảng $data chưa
+                if (!isset($data[$area])) {
+                    $data[$area] = [];
+                }
+        
+                // Kiểm tra xem đã có tầng trong mảng $data[$area] chưa
+                if (!isset($data[$area][$floor])) {
+                    $data[$area][$floor] = [];
+                }
+    
+                $data[$area][$floor][] = [
+                    'id_room' => $item->id,
+                    'room_name' => $item->room_name,
+                    'id_area' => $item->area_id,
+                    'id_floor' => $item->floor_id,
+                ];
+            }
+            $data = array_values($data);
+            return response()->json([
+                'data' => $data
+            ]);
+        // $list_area = DB::table('areas')->get();
+        // foreach ($list_area as $item) {
+        //     $area_id = $item->id;
+        //     $area_name = $item->area_name;
+        //     $list_rooms = DB::table('rooms')
+        //     ->where('room_type_id', '=', $id)
+        //     ->where('area_id', '=',$area_id)
+        //     ->get();
 
-        return response()->json([
-            'message' => 'Query successfully!',
-            'status' => 200,
-            'list_rooms' => $list_rooms,
-        ], 200);
+        //     $data[]=[
+        //         'area_name' => $area_name,
+        //         'list_rooms' => $list_rooms,
+        //     ];
+        // }
+        //     return response()->json([
+        //         'data' => $data
+        //     ]);
     }
 
     public function getLowestPrice()

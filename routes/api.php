@@ -14,6 +14,8 @@ use App\Http\Controllers\API\FloorController;
 use App\Http\Controllers\API\RoomController;
 use App\Http\Controllers\API\RoomTypeController;
 use App\Http\Controllers\API\ServiceController;
+use App\Http\Controllers\API\DepartmentController;
+use App\Http\Controllers\API\PositionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,13 +51,17 @@ Route::group([
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::post('/me', [AuthController::class, 'me']);
     Route::patch('/changePassword', [AccountController::class, 'changePassword']);
-  
-    // Account
-    Route::patch('/accounts/{id}', [AccountController::class, 'updateAvatar']);
+
+    // Cập nhập lại điểm và hạng khách hàng 
+    Route::get('/get_ranking_point/{id}', [CustomerController::class, 'getRankingPoint']);
 
     //BillRoomDetail
     Route::get('/show-bill-room-detail/{id}', [BillRoomController::class, 'findBillRoomDetail']);
 
+    //RoomType
+    Route::get('/room-types', [RoomTypeController::class, 'index']);
+    Route::post('/room-types/paginate/{page_number}/{num_of_page}', [RoomTypeController::class, 'paging']);
+  
     // Areas
     Route::get('/areas', [AreaController::class, 'index']);
     Route::get('/areas/total', [AreaController::class, 'getTotalAreas']);
@@ -70,10 +76,10 @@ Route::group([
     Route::get('/room', [RoomController::class, 'index']);
     Route::get('/room/room-type/{id}', [RoomController::class, 'getRoomsByRoomTypeId']);
     Route::get('/room/{id}', [RoomController::class, 'show']);
-    Route::get('/reserved-room', [RoomController::class, 'getReservedRooms']);
+    Route::post('/reserved-room/{id}', [RoomController::class, 'getReservedRooms']);
 
     // Room Types
-    Route::get('/room-types', [RoomTypeController::class, 'index']);
+    
     Route::get('/room-types/total/', [RoomTypeController::class, 'getTotalRoomTypes']);
     Route::get('/room-types/total-rooms/{id}', [RoomTypeController::class, 'getTotalNumerOfRoomByRoomTypeId']);
     Route::get('/room-types/list-rooms/{id}', [RoomTypeController::class, 'getListRoomsByRoomTypeId']);
@@ -87,7 +93,7 @@ Route::group([
     Route::get('/room-types/room-names', [RoomTypeController::class, 'getRoomTypeNames']);
     Route::get('/room-types/random/{id}', [RoomTypeController::class, 'getRandomRoomTypes']);
     Route::post('/room-types/filter', [RoomTypeController::class, 'filterRoomType']);
-    Route::post('/room-types/paginate/{page_number}/{num_of_page}', [RoomTypeController::class, 'paging']);
+   
     Route::get('/room-types/{id}', [RoomTypeController::class, 'show']);
 
 
@@ -186,14 +192,19 @@ Route::group([
   Route::get('/get-total-amount/{id}', [CustomerController::class, 'getTotalAmount']);
 
   // Employee
-  Route::get('/list-employee', [EmployeeController::class, 'index']);
+  Route::get('/list-employee/{i}', [EmployeeController::class, 'index']);
   Route::get('/find-employee/{id}',[EmployeeController::class, 'employeeFindID']);
+  Route::patch('/update-employee/{id}', [EmployeeController::class, 'updateEmployeeByAdmin']);
   Route::post('/store-employee', [EmployeeController::class, 'store']);
   Route::patch('/quit-employee/{id}', [EmployeeController::class, 'quitEmployeeByID']);
- 
+  //Department
+  Route::get('/list-department', [DepartmentController::class, 'index']);
+  Route::get('/list-by-department/{id}/{role}', [DepartmentController::class, 'showByDepartment']);
+  //Position
+  Route::get('/list-position/{id}/{role}', [PositionController::class, 'index']);
+  Route::get('/list-admin-by-position/{id}', [PositionController::class, 'showAdminByPosition']);
+  Route::get('/list-employee-by-position/{id}', [PositionController::class, 'showEmployeeByPosition']);
   // Admin
-  Route::get('/{id}',[AdminController::class, 'show']);
-  Route::get('/search/{search}', [AdminController::class, 'searchByParams']);
-  Route::get('/find/{id}',[AdminController::class, 'adminFindID']);
-  Route::patch('/{id}',[AdminController::class, 'update']);
+  Route::get('/find-admin/{id}',[AdminController::class, 'adminFindID']);
+ 
 });

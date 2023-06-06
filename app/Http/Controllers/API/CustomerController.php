@@ -437,12 +437,26 @@ class CustomerController extends Controller
             $service = DB::table('services')->where('id', '=', $item1->service_id)->first();
             $ranking_point += ($service->point_ranking*$item1->quantity);
         }
-        $customerModel = Customer::find($id)
-        return response()->json([
-            'message' => 'Query successfully!',
-            'status' => 200,
-            'ranking_point'=>$ranking_point,
-
-        ]);
+        $customer = Customer::find($id);
+      
+        $ranking = DB::table('rankings')->where('point_start', '<=', $ranking_point)
+        ->max('id');
+        $customer = Customer::find($id);
+        if($customer){         
+            $customer->ranking_point = $ranking_point;     
+            $customer->ranking_id = $ranking;        
+            $customer->update();
+            return response()->json([
+                'message' => 'Update successfully!',
+                'status' => 200,
+                'customer' => $customer,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Data not found!',
+                'status' => 404,
+            ], 404);
+        }
+      
     }
 }
