@@ -68,6 +68,6 @@ class RoomController extends Controller
             ->toArray();
 
         return response()->json(['reserved_rooms' => $reservedRooms]);
-}
+    }
 
 }

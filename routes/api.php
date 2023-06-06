@@ -49,9 +49,6 @@ Route::group([
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::post('/me', [AuthController::class, 'me']);
     Route::patch('/changePassword', [AccountController::class, 'changePassword']);
-  
-    // Account
-    Route::patch('/accounts/{id}', [AccountController::class, 'updateAvatar']);
 
     //BillRoomDetail
     Route::get('/show-bill-room-detail/{id}', [BillRoomController::class, 'findBillRoomDetail']);
