@@ -7,6 +7,9 @@ use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Validator;
+
+
 class DepartmentController extends Controller
 {
     public function index()
@@ -80,7 +83,43 @@ class DepartmentController extends Controller
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
-            'list_department' => $data,
+            'list_position' => $data,
         ], 200);
+    }
+    public function storeDepartment(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+        'department_name',
+        
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                'status_code' => 400,
+                'message' => $validator->errors(),
+            ];
+            return response()->json($response, 400);
+        }   
+        // $employee = Employee::create([
+        $department= Department::create([
+            'department_name' => $request->department_name,       
+
+        ]);
+        // ]);
+            // $position = Position::find($data['position_id']);
+            if (!$department) {
+                return response()->json([
+                    'message' => 'Data not found!',
+                    'status' => 400,
+                ], 400);
+            }else {
+          return response()->json([
+            'status' => 200,
+            'message' => 'Department created Successfully',
+            'employee' =>  $department,
+          
+
+        ]);
+    }
     }
 }

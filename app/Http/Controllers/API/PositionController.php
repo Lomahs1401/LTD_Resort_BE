@@ -7,7 +7,7 @@ use App\Models\Department;
 use App\Models\Position;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Validator;
 class PositionController extends Controller
 {
     public function index($id, $role)
@@ -21,7 +21,7 @@ class PositionController extends Controller
                 $data[] = [
                     'id' => $item->id,
                     'position_name' => $item->position_name,
-                    'total_admin' => $number_admin,
+                    'total' => $number_admin,
                 ];
             }
         }
@@ -34,7 +34,7 @@ class PositionController extends Controller
                 $data[] = [
                     'id' => $item->id,
                     'position_name' => $item->position_name,
-                    'total_employee' => $number_employee,
+                    'total' => $number_employee,
                 ];
             }
         }
@@ -42,7 +42,7 @@ class PositionController extends Controller
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
-            'list_department' => $data,
+            'list_position' => $data,
         ], 200);
     }
        public function showAdminByPosition($id)
@@ -79,5 +79,43 @@ class PositionController extends Controller
                 'listAdmin' => $listEmployee,
             ], 200);
         }
+    }
+    public function storePosition(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+        'position_name',
+        'permission',
+        'department_id'
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                'status_code' => 400,
+                'message' => $validator->errors(),
+            ];
+            return response()->json($response, 400);
+        }   
+        // $employee = Employee::create([
+        $position= Position::create([
+            'position_name' => $request->position_name,       
+            'permission'=> $request->permission, 
+            'department_id'=> $request->department_id, 
+        ]);
+        // ]);
+            // $position = Position::find($data['position_id']);
+            if (!$position) {
+                return response()->json([
+                    'message' => 'Data not found!',
+                    'status' => 400,
+                ], 400);
+            }else {
+          return response()->json([
+            'status' => 200,
+            'message' => 'Position created Successfully',
+            'employee' =>  $position,
+          
+
+        ]);
+    }
     }
 }

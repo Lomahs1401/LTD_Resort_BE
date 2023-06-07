@@ -52,15 +52,14 @@ Route::group([
     Route::post('/me', [AuthController::class, 'me']);
     Route::patch('/changePassword', [AccountController::class, 'changePassword']);
 
-    // Cập nhập lại điểm và hạng khách hàng 
-    Route::get('/get_ranking_point/{id}', [CustomerController::class, 'getRankingPoint']);
+   
 
-    //BillRoomDetail
+    //Chi tiết phòng của từng bill room
     Route::get('/show-bill-room-detail/{id}', [BillRoomController::class, 'findBillRoomDetail']);
 
     //RoomType
     Route::get('/room-types', [RoomTypeController::class, 'index']);
-    Route::post('/room-types/paginate/{page_number}/{num_of_page}', [RoomTypeController::class, 'paging']);
+    Route::get('/room-types/{id}', [RoomTypeController::class, 'show']);
   
     // Areas
     Route::get('/areas', [AreaController::class, 'index']);
@@ -73,28 +72,12 @@ Route::group([
     Route::get('/floors/{id}', [FloorController::class, 'show']);
 
     // Rooms
-    Route::get('/room', [RoomController::class, 'index']);
-    Route::get('/room/room-type/{id}', [RoomController::class, 'getRoomsByRoomTypeId']);
+    Route::get('/room', [RoomController::class, 'index']); 
     Route::get('/room/{id}', [RoomController::class, 'show']);
-    Route::post('/reserved-room/{id}', [RoomController::class, 'getReservedRooms']);
-
-    // Room Types
     
-    Route::get('/room-types/total/', [RoomTypeController::class, 'getTotalRoomTypes']);
-    Route::get('/room-types/total-rooms/{id}', [RoomTypeController::class, 'getTotalNumerOfRoomByRoomTypeId']);
-    Route::get('/room-types/list-rooms/{id}', [RoomTypeController::class, 'getListRoomsByRoomTypeId']);
-    Route::get('/room-types/lowest-price', [RoomTypeController::class, 'getLowestPrice']);
-    Route::get('/room-types/highest-price', [RoomTypeController::class, 'getHighestPrice']);
-    Route::get('/room-types/smallest-size', [RoomTypeController::class, 'getSmallestRoomSize']);
-    Route::get('/room-types/biggest-size', [RoomTypeController::class, 'getBiggestRoomSize']);
-    Route::get('/room-types/names', [RoomTypeController::class, 'getListRoomTypeName']);
-    Route::get('/room-types/list-lowest-price', [RoomTypeController::class, 'getTop5LowestPrice']);
-    Route::get('/room-types/bedroom-names', [RoomTypeController::class, 'getBedroomTypeNames']);
-    Route::get('/room-types/room-names', [RoomTypeController::class, 'getRoomTypeNames']);
-    Route::get('/room-types/random/{id}', [RoomTypeController::class, 'getRandomRoomTypes']);
-    Route::post('/room-types/filter', [RoomTypeController::class, 'filterRoomType']);
+
+    
    
-    Route::get('/room-types/{id}', [RoomTypeController::class, 'show']);
 
 
     // Services
@@ -132,14 +115,33 @@ Route::group([
 ], function ($router) {
     //personal information
     Route::get('/account-customer', [CustomerController::class, 'getCustomerByAccountId']);
+    Route::patch('/update-customer', [CustomerController::class, 'updateCutomerByAccountId']);
     Route::get('/history-bill-customer', [CustomerController::class, 'findHistoryBillCustomerByID']);
     Route::get('/book-bill-customer', [CustomerController::class, 'findBookBillCustomerByID']);
    
+    //Room type
+    Route::post('/room-types/paginate/{page_number}/{num_of_page}', [RoomTypeController::class, 'paging']);
+    Route::get('/room-types/total/', [RoomTypeController::class, 'getTotalRoomTypes']);
+    Route::get('/room-types/total-rooms/{id}', [RoomTypeController::class, 'getTotalNumerOfRoomByRoomTypeId']);  
+    Route::get('/room-types/lowest-price', [RoomTypeController::class, 'getLowestPrice']);
+    Route::get('/room-types/highest-price', [RoomTypeController::class, 'getHighestPrice']);
+    Route::get('/room-types/smallest-size', [RoomTypeController::class, 'getSmallestRoomSize']);
+    Route::get('/room-types/biggest-size', [RoomTypeController::class, 'getBiggestRoomSize']);
+    Route::get('/room-types/names', [RoomTypeController::class, 'getListRoomTypeName']);
+    Route::get('/room-types/list-lowest-price', [RoomTypeController::class, 'getTop5LowestPrice']);
+    Route::get('/room-types/bedroom-names', [RoomTypeController::class, 'getBedroomTypeNames']);
+    Route::get('/room-types/room-names', [RoomTypeController::class, 'getRoomTypeNames']);
+    Route::get('/room-types/random/{id}', [RoomTypeController::class, 'getRandomRoomTypes']);
+    Route::post('/room-types/filter', [RoomTypeController::class, 'filterRoomType']);  
+    //Room
+    Route::get('/room-types/list-rooms/{id}', [RoomTypeController::class, 'getListRoomsByRoomTypeId']);
+    Route::post('/reserved-room/{id}', [RoomController::class, 'getReservedRooms']);
     // tạo bill service
     Route::post('/store-bill-service', [BillServiceController::class, 'storeBillService']);
-    Route::get('/ranking/{account_id}', [CustomerController::class, 'getRankingNameByAccountId']);
-    Route::get('/search/{search}', [CustomerController::class, 'searchByParams']);
-    Route::patch('/update-customer', [CustomerController::class, 'updateCutomerByAccountId']);
+   
+    // Cập nhập lại điểm và hạng khách hàng khi thanh toán 
+    Route::get('/get_ranking_point/{id}', [CustomerController::class, 'getRankingPoint']);
+   
 });
 
 // Employee API
@@ -166,12 +168,9 @@ Route::group([
     Route::get('/list-cancel-service', [BillServiceController::class, 'findCancelService']);
 
 
-    Route::get('/list', [EmployeeController::class, 'index']);
-    Route::get('/{id}', [EmployeeController::class, 'show']);
-    Route::get('/search/{search}', [EmployeeController::class, 'searchByParams']);
-    Route::get('/find/{id}', [EmployeeController::class, 'employeeFindID']);
 
-    Route::patch('/{id}', [EmployeeController::class, 'update']);
+
+  
 });
 
 // Admin API
@@ -181,7 +180,6 @@ Route::group([
     'prefix' => 'admin',
 ], function ($router) {
     // personal information
-
   Route::get('/account-admin', [AdminController::class, 'getAdminByAccountId']);
   Route::patch('/update-admin', [AdminController::class, 'updateAdminByAccountId']); 
   // Cutomer
@@ -193,18 +191,30 @@ Route::group([
 
   // Employee
   Route::get('/list-employee/{i}', [EmployeeController::class, 'index']);
-  Route::get('/find-employee/{id}',[EmployeeController::class, 'employeeFindID']);
+  Route::get('/find-employee/{id}',[EmployeeController::class, 'employeeFindID']);// Dùng được trong Department
   Route::patch('/update-employee/{id}', [EmployeeController::class, 'updateEmployeeByAdmin']);
   Route::post('/store-employee', [EmployeeController::class, 'store']);
   Route::patch('/quit-employee/{id}', [EmployeeController::class, 'quitEmployeeByID']);
   //Department
   Route::get('/list-department', [DepartmentController::class, 'index']);
   Route::get('/list-by-department/{id}/{role}', [DepartmentController::class, 'showByDepartment']);
+  Route::post('/store-department', [DepartmentController::class, 'storeDepartment']);
   //Position
   Route::get('/list-position/{id}/{role}', [PositionController::class, 'index']);
   Route::get('/list-admin-by-position/{id}', [PositionController::class, 'showAdminByPosition']);
   Route::get('/list-employee-by-position/{id}', [PositionController::class, 'showEmployeeByPosition']);
+  Route::post('/store-position', [PositionController::class, 'storePosition']);
   // Admin
-  Route::get('/find-admin/{id}',[AdminController::class, 'adminFindID']);
- 
+  Route::get('/find-admin/{id}',[AdminController::class, 'adminFindID']);// Dùng được trong Department
+  //Room type
+  Route::patch('/update-room-type/{id}', [RoomTypeController::class, 'updateRoomType']);
+  Route::post('/store-room-type', [RoomTypeController::class, 'storeRoomType']);
+  //Room
+  Route::get('/room/room-type/{id}', [RoomController::class, 'getRoomsByRoomTypeId']);// khi ấn vào trường slg của từng loại room
+  Route::patch('/update-room/{id}', [RoomController::class, 'updateRoom']);
+  Route::post('/store-room', [RoomController::class, 'storeRoom']);
+  //Area
+  Route::post('/store-area', [AreaController::class, 'storeArea']);
+  //Floor
+  Route::post('/store-floor', [FloorController::class, 'storeFloor']);
 });

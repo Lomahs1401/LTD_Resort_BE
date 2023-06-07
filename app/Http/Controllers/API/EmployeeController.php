@@ -195,21 +195,6 @@ class EmployeeController extends Controller
     public function updateEmployeeByAdmin(Request $request, string $id)
     {
       
-        // $validator = Validator::make( $request->all(), [
-        //     'full_name' => 'required',
-        //     'gender' => 'required',
-        //     'birthday' => 'required',
-        //     'CMND' => 'required',
-        //     'department_name' => 'required',
-        //     'position_name' =>  'required'
-        // ]);
-
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'validate' => true,
-        //         'message' => 'You need to enter employee',
-        //     ]);
-        // }
 
         $employee = Employee::find($id);
         if( $employee){

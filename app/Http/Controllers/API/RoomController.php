@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\room\ReservationRoom;
+use App\Models\room\Room;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,11 +42,96 @@ class RoomController extends Controller
 
     public function getRoomsByRoomTypeId($id) {
         $list_rooms = DB::table('rooms')->where('room_type_id', '=', $id)->get();
-
+        $data = [];
+        foreach ($list_rooms as $item) {
+            $area = DB::table('areas')->where('id', '=', $item->area_id)->first();
+            $floor = DB::table('floors')->where('id', '=', $item->area_id)->first();
+              
+                $data[] = [
+                    'id_room' => $item->id,
+                    'room_name' => $item->room_name,
+                    'area_name' => $area->area_name,
+                    'floor_name' => $floor->floor_name,
+                ];
+            }
         return response()->json([
             'status' => 200,
-            'list_rooms' => $list_rooms,
+            'list_rooms' => $data,
         ]);
+    }
+    public function updateRoom(Request $request, $id)
+    {
+        $room = Room::find($id);
+        if ($room) {
+        
+            if ($request->room_name) {
+                $room->room_name = $request->room_name;
+            }
+            if ($request->room_type_id) {
+                $room->room_type_id = $request->room_type_id;
+            }
+            if ($request->area_id) {
+                $room->area_id = $request->area_id;
+            }
+            if ($request->floor_id) {
+                $room->floor_id = $request->floor_id;
+            }
+         
+            $room->update();
+            return response()->json([
+                'message' => 'Update successfully!',
+                'status' => 200,
+                'room_type' => $room,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Data not found!',
+                'status' => 404,
+            ], 404);
+        }
+    }
+    public function storeRoom(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+        'room_name',
+        'room_type_id',
+        'area_id',
+        'floor_id',
+        
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                'status_code' => 400,
+                'message' => $validator->errors(),
+            ];
+            return response()->json($response, 400);
+        }   
+        // $employee = Employee::create([
+        $room= Room::create([
+            'room_name' => $request->room_name,
+            'room_type_id' => $request->room_type_id,
+            'area_id' => $request->area_id,
+            'floor_id' => $request->floor_id,
+            'status' =>  '0',           
+
+        ]);
+        // ]);
+            // $position = Position::find($data['position_id']);
+            if (!$room) {
+                return response()->json([
+                    'message' => 'Data not found!',
+                    'status' => 400,
+                ], 400);
+            }else {
+          return response()->json([
+            'status' => 200,
+            'message' => 'Room created Successfully',
+            'employee' => $room,
+          
+
+        ]);
+    }
     }
     public function getReservedRooms(Request $request,$id)
     {
