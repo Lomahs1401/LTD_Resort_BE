@@ -197,7 +197,6 @@ class RoomController extends Controller
                         $data1[$area][$floor] = [];
                         $data1[$area][$floor] = $list_rooms;
                 }
-                $data1 = array_values($data1);
             }
         }
         return response()->json([

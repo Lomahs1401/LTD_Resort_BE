@@ -5,11 +5,13 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use Database\Seeders\room\AreaSeeder;
+use Database\Seeders\room\BillRoomSeeder;
 use Database\Seeders\room\EquipmentRoomTypeSeeder;
 use Database\Seeders\room\EquipmentSeeder;
 use Database\Seeders\room\ExtraServiceDetailSeeder;
 use Database\Seeders\room\ExtraServiceSeeder;
 use Database\Seeders\room\FloorSeeder;
+use Database\Seeders\room\ReservationRoomSeeder;
 use Database\Seeders\room\RoomSeeder;
 use Database\Seeders\room\RoomTypeSeeder;
 use Database\Seeders\service\ServiceSeeder;
@@ -55,5 +57,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RoomSeeder::class);
         $this->call(ExtraServiceDetailSeeder::class);
         $this->call(EquipmentRoomTypeSeeder::class);
+        $this->call(BillRoomSeeder::class);
+        $this->call(ReservationRoomSeeder::class);
     }
 }

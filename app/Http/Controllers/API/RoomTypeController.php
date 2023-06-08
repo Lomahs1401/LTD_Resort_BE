@@ -92,7 +92,7 @@ class RoomTypeController extends Controller
                     'id_floor' => $item->floor_id,
                 ];
             }
-            $data = array_values($data);
+          //  $data = array_values($data);
             return response()->json([
                 'data' => $data
             ]);
