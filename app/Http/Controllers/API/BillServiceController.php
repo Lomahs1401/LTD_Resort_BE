@@ -165,7 +165,7 @@ class BillServiceController extends Controller
                 'total_amount' => $request->total_amount | '0',
                 'book_time' => $request->book_time,
                 'payment_method' =>  'online',
-                'tax' => $request->tax | '0',
+                'tax' => '0.05',
                 'discount' => $ranking->discount,
                 'customer_id' => $customer->id,
                 'service_id' => $request->service_id,
@@ -177,7 +177,8 @@ class BillServiceController extends Controller
                 $service = Service::find($bill_service->service_id);
                 $quantity = $bill_service->quantity;
                 $discount = $bill_service->discount;
-                $total_amount = $service->price * $quantity * (1 -$discount);
+                $tax =$bill_service->tax;
+                $total_amount = $service->price * $quantity * (1 -$discount) * (1 + $tax);
                 $bill_service->total_amount = $total_amount;
                 $bill_service->save();
                 return response()->json([

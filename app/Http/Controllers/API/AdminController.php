@@ -13,15 +13,15 @@ use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
-    public function index()
-    {
-        $listAdmin = Admin::all();
-        return response()->json([
-            'message' => 'Query successfully!',
-            'status' => 200,
-            'list_accounts' => $listAdmin
-        ]);
-    }
+    // public function index()
+    // {
+    //     $listAdmin = Admin::all();
+    //     return response()->json([
+    //         'message' => 'Query successfully!',
+    //         'status' => 200,
+    //         'list_accounts' => $listAdmin
+    //     ]);
+    // }
     
     public function searchByParams($search)
     {
@@ -143,8 +143,9 @@ class AdminController extends Controller
             if ($position) {
                 $department = Department::find($position->department_id);
 
-                $data[] = [
+                $data = [
                     "id" => $admin->id,
+                    "image"=> $admin->image,
                     "name" => $admin->full_name,
                     "gender" => $admin->gender,
                     "birthday" => $admin->birthday,
@@ -172,63 +173,10 @@ class AdminController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        $admin = Admin::find($id);
-        if ($admin) {
-            return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'admin' => $admin,
-            ]);
-        } else {
-            return response()->json([
-                'status' => 404,
-                'message' => 'No ID Found',
-            ]);
-        }
-    }
+   
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'full_name',
-            'gender',
-            'birthday',
-            'CMND',
-            'address',
-            'phone',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'validate' => true,
-                'message' => 'You need to enter admin',
-            ]);
-        }
-        //
-        $admin = Admin::find($id);
-        if ($admin) {
-            $admin->full_name = $request->full_name;
-            $admin->gender = $request->gender;
-            $admin->birthday = $request->birthday;
-            $admin->CMND = $request->CMND;
-            $admin->address = $request->address;
-            $admin->phone = $request->phone;
-            $admin->update();
-            return response()->json([
-                'status' => 200,
-                'message' => 'Question Updated Successfully',
-                // 're' => $admin,
-            ]);
-        } else {
-            return response()->json([
-                'status' => 404,
-                'message' => 'No ID Found',
-            ]);
-        }
-    }
+ 
 }

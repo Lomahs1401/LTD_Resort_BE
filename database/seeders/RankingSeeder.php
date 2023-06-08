@@ -21,19 +21,19 @@ class RankingSeeder extends Seeder
             $point_start = 0;
             switch ($ranking_name) {
                 case 'Bronze':
-                    $point_start = 100;
+                    $point_start = 0;
                     break;
                 case 'Silver':
-                    $point_start = 500;
-                    break;
-                case 'Gold':
                     $point_start = 1000;
                     break;
-                case 'Platinum':
+                case 'Gold':
                     $point_start = 2500;
                     break;
-                case 'Diamond':
+                case 'Platinum':
                     $point_start = 5000;
+                    break;
+                case 'Diamond':
+                    $point_start = 10000;
                     break;
                 default:
                     # code...
@@ -42,10 +42,12 @@ class RankingSeeder extends Seeder
 
             $discount = 0;
             if ($point_start >= 1000) {
-                $discount = 0.1;
+                $discount = 0.05;
             } else if ($point_start >= 2500) {
-                $discount = 0.15;
+                $discount = 0.1;
             } else if ($point_start >= 5000) {
+                $discount = 0.15;
+            }else if ($point_start >= 10000) {
                 $discount = 0.2;
             }
 
