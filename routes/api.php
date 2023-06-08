@@ -11,6 +11,7 @@ use App\Http\Controllers\API\BillRoomController;
 use App\Http\Controllers\API\BillServiceController;
 use App\Http\Controllers\API\FeedbackController;
 use App\Http\Controllers\API\FloorController;
+use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\RoomController;
 use App\Http\Controllers\API\RoomTypeController;
 use App\Http\Controllers\API\ServiceController;
@@ -31,7 +32,6 @@ Route::group([
     'middleware' => ['force.json.response', 'api'],
     'prefix' => 'auth'
 ], function ($router) {
-
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
     Route::patch('/reset-password/request', [AccountController::class, 'requestResetCode']);
@@ -125,6 +125,11 @@ Route::group([
     Route::get('/account-customer', [CustomerController::class, 'getCustomerByAccountId']);
     Route::get('/history-bill-customer', [CustomerController::class, 'findHistoryBillCustomerByID']);
     Route::get('/book-bill-customer', [CustomerController::class, 'findBookBillCustomerByID']);
+
+    // Payment
+    Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment']);
+    Route::post('/save_payment_data', [BillRoomController::class, 'savePaymentData']);
+
    
     // tạo bill service
     Route::post('/store-bill-service', [BillServiceController::class, 'storeBillService']);
