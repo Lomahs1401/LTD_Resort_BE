@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('bill_rooms', function (Blueprint $table) {
             $table->id();
-            $table->float('total_amount');
+            $table->integer('total_amount');
             $table->integer('total_room');
             $table->integer('total_people');
             $table->string('payment_method');
