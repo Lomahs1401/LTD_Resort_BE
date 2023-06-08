@@ -52,6 +52,10 @@ Route::group([
     Route::post('/me', [AuthController::class, 'me']);
     Route::patch('/changePassword', [AccountController::class, 'changePassword']);
 
+    //Xoá bill khi quá thời hạn 
+    Route::delete('/delete-bill-room', [BillRoomController::class, 'deleteBillRoom']);
+    Route::delete('/delete-bill-service', [BillServiceController::class, 'deleteBillService']);
+
     //Chi tiết phòng của từng bill room
     Route::get('/show-bill-room-detail/{id}', [BillRoomController::class, 'findBillRoomDetail']);
   
@@ -135,9 +139,15 @@ Route::group([
 
     // tạo bill service
     Route::post('/store-bill-service', [BillServiceController::class, 'storeBillService']);
-   
+    // tạo bill room
+    Route::post('/store-bill-room/{time_start}/{time_end}', [BillRoomController::class, 'storeBillRoom']);
+     //Xoá bill khi quá thời hạn 
+     Route::delete('/delete-bill-room', [BillRoomController::class, 'deleteBillRoom']);
+     Route::delete('/delete-bill-service', [BillServiceController::class, 'deleteBillService']);
     // Cập nhập lại điểm và hạng khách hàng khi thanh toán 
-    Route::get('/get_ranking_point/{id}', [CustomerController::class, 'getRankingPoint']);
+    Route::get('/get-ranking-point/{id}', [CustomerController::class, 'getRankingPoint']);
+    // Thanh toán thành công 
+    Route::patch('/pay-bill', [CustomerController::class, 'getPayBillSuccess']);
 });
 
 // Employee API

@@ -8,7 +8,7 @@ use App\Models\service\BillService;
 use App\Models\service\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Carbon\Carbon;
 class BillServiceController extends Controller
 {
     public function findBillService()
@@ -185,9 +185,36 @@ class BillServiceController extends Controller
                     'status' => 200,
                     'message' => 'bill Added Successfully',
                     'customer'=> $customer,
-                    'bill-service' => $total_amount,
+                    'bill-service' => $bill_service,
                 ]);
             }
+        }
+    }
+    public function deleteBillService()
+    {               
+              // Lấy danh sách các bill_room cần xóa
+              $billServices = BillService::whereNull('pay_time')
+              ->where('created_at', '<=', Carbon::now()->subMinutes(30))
+              ->get();
+          foreach ($billServices as $billService) {   
+            // Xóa các dữ liệu liên quan (ReservationRooms, ...) trước khi xóa bill_room
+          
+            // Xóa bill_room
+            $billService->delete();
+        };
+        if ($billServices->isEmpty() ) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Bill not found',
+        
+            ]);
+           
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Delete bill service Successfully',
+        
+            ]);
         }
     }
 }

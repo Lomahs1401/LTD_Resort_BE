@@ -33,6 +33,7 @@ class BillRoom extends Model
         'cancel_time',
         'tax',
         'discount',
+        'bill_code',
         'customer_id',
         'employee_id',
     ];

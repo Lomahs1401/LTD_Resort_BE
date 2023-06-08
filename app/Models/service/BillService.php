@@ -31,6 +31,7 @@ class BillService extends Model
         'cancel_time',
         'tax',
         'discount',
+        'bill_code',
         'service_id',
         'customer_id',
         'employee_id',
