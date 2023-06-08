@@ -28,6 +28,7 @@ class CustomerController extends Controller
                     "avatar" => $user->avatar,
                     "username" => $user->username,
                     "email" => $user->email,
+                    "id" => $customer->id,
                     "name" => $customer->full_name,
                     "gender" => $customer->gender,
                     "birthday" => $customer->birthday,
@@ -457,6 +458,5 @@ class CustomerController extends Controller
                 'status' => 404,
             ], 404);
         }
-      
     }
 }

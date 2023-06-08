@@ -46,7 +46,7 @@ class AccountController extends Controller
         if ($data) {
             // Kiểm tra mật khẩu hiện tại của người dùng
             if (!Hash::check($currentPassword, $data->password)) {
-                return response()->json(['message' => 'Password failed!'], 401);
+                return response()->json(['message' => 'Current password not match!'], 401);
             }
             $data->password = Hash::make($newPassword);
             $data->save();
@@ -105,26 +105,23 @@ class AccountController extends Controller
     public function resetVerifyCode(Request $request, $email)
     {
         $validator = Validator::make($request->all(), [
-            // 'email' => 'required|email',
             'code' => 'required',
-            // 'password' => 'required|min:6',
-            // 'confirm_password' => 'required|same:password',
         ]);
 
         if ($validator->fails()) {
             return response()->json(
                 [
-                    'message' => 'Invalid data',
+                    'message' => 'Verify code is required',
                     'errors' => $validator->errors()
                 ],
                 400
             );
         }
+
         // Tìm người dùng dựa trên mã code
         $user = Account::where('email', $email)
             ->where('reset_code_expires_at', '>', Carbon::now())
             ->first();
-    
 
         if (!$user) {
             return response()->json(['message' => 'Invalid or expired reset code'], 400);
@@ -141,24 +138,21 @@ class AccountController extends Controller
             $user->save();
             $attemptsLeft = 5 - $user->reset_code_attempts;
             return response()->json([
-            'message' => 'Invalid reset code',
-            'your remaining password attempts are' =>$attemptsLeft  ], 400);
-        }else{
+                'message' => 'Invalid Reset Code',
+                'Your remaining password attempts are' => $attemptsLeft  
+            ], 400);
+        } else {
             return response()->json([
                 'message' => 'Verify Code True',
                 'status' => 200,
                 'account' => $user,
             ], 200);
         }
-
-      
     }
     
     public function resetPassword(Request $request, $email, $code)
     {
         $validator = Validator::make($request->all(), [
-            // 'email' => 'required|email',
-            // 'code' => 'required',
             'password' => 'required|min:6',
             'confirm_password' => 'required|same:password',
         ]);
@@ -190,31 +184,5 @@ class AccountController extends Controller
         $user->save();
 
         return response()->json(['message' => 'Password reset successful']);
-    }
-
-    public function updateAvatar(Request $request, $id) {
-        // Validate the request data
-        $validatedData = $request->validate([
-            'avatar_url' => 'required|string|max:255',
-        ]);
-
-        $result = DB::table('accounts')->where('id', '=', $id)->update([
-            'avatar' => $validatedData['avatar_url'],
-        ]);
-
-        if ($result) {
-            return response()->json([
-                'message' => 'Update avatar successfully!',
-                'status' => 200,
-                'account' => $result,
-            ], 200);
-            
-        } else {
-            return response()->json([
-                'message' => 'Update avatar failed!',
-                'status' => 400,
-                'account' => $result,
-            ], 400);
-        }
     }
 }

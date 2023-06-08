@@ -178,13 +178,18 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         $role_user = DB::table('roles')->where('id', '=', auth()->user()->role_id)->value('role_name');
+        $customer = Customer::where('account_id', auth()->user()->id)->first();
 
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'message' => 'Login successfully!',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => array_merge(auth()->user()->toArray(), ['role_name' => $role_user]),
+            'user' => array_merge(auth()->user()->toArray(), [
+                'role_name' => $role_user,
+                'customer_id' => $customer->id,
+                'full_name' => $customer->full_name
+            ]),
         ]);
     }
 }

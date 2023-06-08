@@ -201,10 +201,8 @@ class RoomController extends Controller
             }
         }
         return response()->json([
-        'reserved_rooms' => $reservedRooms,
-        'data'=>$data1
-        
-]);
-}
-
+          'reserved_rooms' => $reservedRooms,
+          'data'=>$data1
+        ]);
+    }
 }
