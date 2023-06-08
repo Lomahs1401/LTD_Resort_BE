@@ -180,31 +180,59 @@ class RoomController extends Controller
                 ->unique()
                 ->values()
                 ->all();
-                $data1 = [];
-                foreach ($data as $item1) {
-                $list_area = DB::table('areas')->get();
-                foreach ($list_area as $item2) {
-                    $area = $item2->id;
-                    $data1[$area] = [];
-                    $list_floor = DB::table('floors')->get();
-                    foreach ($list_floor as $item3) {
-                        $floor = $item3->id;
-                        $list_rooms = DB::table('rooms')
-                        ->where('id', '=', $item1->id)
-                        ->where('area_id', '=',$area)
-                        ->where('floor_id', '=',$floor)
-                        ->get();
-                        $data1[$area][$floor] = [];
-                        $data1[$area][$floor] = $list_rooms;
-                }
-                $data1 = array_values($data1);
+        //         $data1 = [];
+                
+        //         foreach ($data as $item1) {
+        //         $list_area = DB::table('areas')->get();
+        //         foreach ($list_area as $item2) {
+        //             $area = $item2->id;
+        //             $data1[$area] = [];
+        //             $list_floor = DB::table('floors')->get();
+        //             foreach ($list_floor as $item3) {
+        //                 $floor = $item3->id;
+        //                 $list_rooms = DB::table('rooms')
+        //                 ->where('id', '=', $item1->id)
+        //                 ->where('area_id', '=',$area)
+        //                 ->where('floor_id', '=',$floor)
+        //                 ->get();
+        //                 // $data1[$area][$floor] = [];
+        //                 $data1[$area][$floor] = $list_rooms;
+        //         }
+        //         $data1 = array_values($data1);
+        //     }
+        // }
+        foreach ($data as $item1) {
+        $areas = DB::table('areas')->get();
+       
+        foreach ($areas as $area)
+        {
+            $data1=[];
+            $floors =DB::table('floors')->get();
+            foreach ($floors as $floor)
+            {
+               
+                $list_rooms = DB::table('rooms')
+                ->where('id', '=', $item1->id)
+                ->where('area_id', '=', $area->id)
+                ->where('floor_id', '=', $floor->id)
+                ->get();
+                $data1[]=[
+                    "floor_name" => $floor->floor_name,
+                    "list-rooms" => $list_rooms,
+                ];
             }
-        }
+            $data2[] = [
+                "area_name" => $area->area_name,
+                "floor" => $data1
+            ];
+        
+    }
         return response()->json([
         'reserved_rooms' => $reservedRooms,
-        'data'=>$data1
+        'data'=>$data2
         
 ]);
 }
 
+}
 }

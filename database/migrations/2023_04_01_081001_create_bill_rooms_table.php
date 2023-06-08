@@ -23,6 +23,7 @@ return new class extends Migration
             $table->dateTime('cancel_time')->nullable();
             $table->float('tax');
             $table->float('discount');
+            $table->string('bill_code')->nullable();;
             $table->foreignId('customer_id')->constrained('customers');
             $table->foreignId('employee_id')->nullable()->constrained('employees');
             $table->timestamps();

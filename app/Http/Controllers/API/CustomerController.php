@@ -10,6 +10,10 @@ use App\Models\room\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Models\room\BillRoom;
+use App\Models\service\BillService;
+use App\Models\room\ReservationRoom;
+use Carbon\Carbon;
 
 class CustomerController extends Controller
 {
@@ -283,9 +287,10 @@ class CustomerController extends Controller
                         'pay_time' => $item->pay_time,
                         'tax' => $item->tax,
                         'discount' => $item->discount,
+                        'bill_code' => $item->bill_code,
                         'time_start' => $time->time_start,
                         'time_end' => $time->time_end,
-                        'code' => $item->id,
+                    
                     ];
                 }
                 $data1 = [];
@@ -300,9 +305,10 @@ class CustomerController extends Controller
                         'pay_time' => $item1->pay_time,
                         'tax' => $item1->tax,
                         'discount' => $item1->discount,
+                        'bill_code' => $item1->bill_code,
                         'service' => $service->service_name,
                         'service_type' => $service_type->service_type_name,
-                        'code' => $item1->id,
+                       
                     ];
                 }
                 return response()->json([
@@ -352,9 +358,10 @@ class CustomerController extends Controller
                         'pay_time' => $item->pay_time,
                         'tax' => $item->tax,
                         'discount' => $item->discount,
+                        'bill_code' => $item->bill_code,
                         'time_start' => $time->time_start,
                         'time_end' => $time->time_end,
-                        'code' => $item->id,
+                   
                     ];
                 }
                 $data1 = [];
@@ -369,9 +376,10 @@ class CustomerController extends Controller
                         'pay_time' => $item1->pay_time,
                         'tax' => $item1->tax,
                         'discount' => $item1->discount,
+                        'bill_code' => $item1->bill_code,
                         'service' => $service->service_name,
                         'service_type' => $service_type->service_type_name,
-                        'code' => $item1->id,
+                  
                     ];
                 }
                 return response()->json([
@@ -423,28 +431,28 @@ class CustomerController extends Controller
             ->whereNotNull('pay_time')->get();
         foreach ($bill_room as $item) {
             $reservation = DB::table('reservation_rooms')->where('bill_room_id', '=', $item->id)->get();
-                foreach ($reservation as $item1) {
-                    
+            foreach ($reservation as $item1) {
+
                 $room = DB::table('rooms')->where('id', '=', $item1->room_id)->get();
                 foreach ($room as $item2) {
-                // $room_type = DB::table('room_types')->where('id', '=', $item2->room_type_id)->get();
-                $room_type = RoomType::find($item2->room_type_id);
-                $ranking_point += $room_type->point_ranking;
+                    // $room_type = DB::table('room_types')->where('id', '=', $item2->room_type_id)->get();
+                    $room_type = RoomType::find($item2->room_type_id);
+                    $ranking_point += $room_type->point_ranking;
+                }
             }
-            }   
         }
         foreach ($bill_service as $item1) {
             $service = DB::table('services')->where('id', '=', $item1->service_id)->first();
-            $ranking_point += ($service->point_ranking*$item1->quantity);
+            $ranking_point += ($service->point_ranking * $item1->quantity);
         }
         $customer = Customer::find($id);
-      
+
         $ranking = DB::table('rankings')->where('point_start', '<=', $ranking_point)
-        ->max('id');
+            ->max('id');
         $customer = Customer::find($id);
-        if($customer){         
-            $customer->ranking_point = $ranking_point;     
-            $customer->ranking_id = $ranking;        
+        if ($customer) {
+            $customer->ranking_point = $ranking_point;
+            $customer->ranking_id = $ranking;
             $customer->update();
             return response()->json([
                 'message' => 'Update successfully!',
@@ -457,6 +465,60 @@ class CustomerController extends Controller
                 'status' => 404,
             ], 404);
         }
-      
+    }
+    public function getPayBillSuccess(Request $request)
+    {
+
+        $user = auth()->user();
+        // Kiểm tra token hợp lệ và người dùng đã đăng nhập
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        } else {
+            $customer_id = DB::table('customers')->where('account_id', '=', $user->id)->first();
+
+            if ($customer_id) {
+                $bill_room = DB::table('bill_rooms')->where('customer_id', '=', $customer_id->id)
+                    ->whereNull('pay_time')
+                    ->get();
+
+                foreach ($bill_room as $item) {
+                    $pay = BillRoom::find($item->id);
+                    $pay->pay_time = Carbon::now();
+                    $pay->bill_code = $request->bill_code;
+                    $pay->update();
+
+                    $status = DB::table('reservation_rooms')->where('id', '=', $item->id)->get();
+                    foreach ($status as $item1) {
+                        $reservation_room = ReservationRoom::find($item1->id);
+                        $reservation_room->status = '0';
+                        $reservation_room->update();
+                    }
+                }
+                
+                $bill_service = DB::table('bill_services')->where('customer_id', '=', $customer_id->id)
+                    ->whereNull('pay_time')
+                    ->get();
+                    
+                foreach ($bill_service as $item2) {
+                    $pay = BillService::find($item2->id);
+                    $pay->pay_time = Carbon::now();
+                    $pay->bill_code = $request->bill_code;
+                    $pay->update();
+                }
+                if ($bill_room->isEmpty() && $bill_service->isEmpty()) {
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'Bill not found',
+
+                    ]);
+                } else {
+                    return response()->json([
+                        'status' => 200,
+                        'message' => 'Pay bill Successfully',
+
+                    ]);
+                }
+            }
+        }
     }
 }

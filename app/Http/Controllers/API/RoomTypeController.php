@@ -68,36 +68,66 @@ class RoomTypeController extends Controller
     }
 
     public function getListRoomsByRoomTypeId($id) {
-        $list_rooms = DB::table('rooms')->where('room_type_id', '=', $id)->get();
         $data = [];
+        $areas = DB::table('areas')->get();
+        foreach ($areas as $area)
+        {
+            $data1=[];
+            $floors =DB::table('floors')->get();
+            foreach ($floors as $floor)
+            {
+                $list_rooms = DB::table('rooms')
+                ->where('room_type_id', '=', $id)
+                ->where('area_id', '=', $area->id)
+                ->where('floor_id', '=', $floor->id)
+                ->get();
+                $data1[]=[
+                    "floor_name" => $floor->floor_name,
+                    "list-rooms" => $list_rooms,
+                ];
+            }
+            $data[] = [
+                "area_name" => $area->area_name,
+                "floor" => $data1
+            ];
+        }
+        return response()->json([
+            'data' => $data
+        ]);
+        $list_rooms = DB::table('rooms')->where('room_type_id', '=', $id)->get();
+        
         foreach ($list_rooms as $item) {
-          
-                $area = $item->area_id;
-                $floor = $item->floor_id;
+              $area = $item->area_id;
+               $floor = $item->floor_id;
+                $area_id =DB::table('areas')->where('id', '=', $item->area_id)->get('area_name');
+                $floor_id =DB::table('floors')->where('id', '=', $item->floor_id)->get('floor_name');
+                
         
                 // Kiểm tra xem đã có khu vực trong mảng $data chưa
                 if (!isset($data[$area])) {
-                    $data[$area] = [];
+                    $data[$area] = $area_id;
                 }
         
                 // Kiểm tra xem đã có tầng trong mảng $data[$area] chưa
                 if (!isset($data[$area][$floor])) {
-                    $data[$area][$floor] = [];
+                    $data[$area][$floor] = $floor_id;
                 }
     
                 $data[$area][$floor][] = [
                     'id_room' => $item->id,
                     'room_name' => $item->room_name,
-                    'id_area' => $item->area_id,
-                    'id_floor' => $item->floor_id,
+                    'area_id' => $item->area_id,
+                    'floor_id' =>  $item->floor_id,
                 ];
             }
-            $data = array_values($data);
+
+            // $data = array_values($data);
             return response()->json([
                 'data' => $data
             ]);
   
-    }
+    
+        }
     public function updateRoomType(Request $request, $id)
     {
         $room_type = RoomType::find($id);
