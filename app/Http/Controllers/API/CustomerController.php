@@ -32,6 +32,7 @@ class CustomerController extends Controller
                     "avatar" => $user->avatar,
                     "username" => $user->username,
                     "email" => $user->email,
+                    "id" => $customer->id,
                     "name" => $customer->full_name,
                     "gender" => $customer->gender,
                     "birthday" => $customer->birthday,
@@ -290,7 +291,7 @@ class CustomerController extends Controller
                         'bill_code' => $item->bill_code,
                         'time_start' => $time->time_start,
                         'time_end' => $time->time_end,
-                    
+
                     ];
                 }
                 $data1 = [];
@@ -308,7 +309,7 @@ class CustomerController extends Controller
                         'bill_code' => $item1->bill_code,
                         'service' => $service->service_name,
                         'service_type' => $service_type->service_type_name,
-                       
+
                     ];
                 }
                 return response()->json([
@@ -361,7 +362,7 @@ class CustomerController extends Controller
                         'bill_code' => $item->bill_code,
                         'time_start' => $time->time_start,
                         'time_end' => $time->time_end,
-                   
+
                     ];
                 }
                 $data1 = [];
@@ -379,7 +380,7 @@ class CustomerController extends Controller
                         'bill_code' => $item1->bill_code,
                         'service' => $service->service_name,
                         'service_type' => $service_type->service_type_name,
-                  
+
                     ];
                 }
                 return response()->json([
@@ -494,11 +495,11 @@ class CustomerController extends Controller
                         $reservation_room->update();
                     }
                 }
-                
+
                 $bill_service = DB::table('bill_services')->where('customer_id', '=', $customer_id->id)
                     ->whereNull('pay_time')
                     ->get();
-                    
+
                 foreach ($bill_service as $item2) {
                     $pay = BillService::find($item2->id);
                     $pay->pay_time = Carbon::now();

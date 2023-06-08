@@ -11,19 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bill_rooms', function (Blueprint $table) {
+        Schema::create('bill_services', function (Blueprint $table) {
             $table->id();
-            $table->integer('total_amount');
-            $table->integer('total_room');
-            $table->integer('total_people');
+            $table->integer('quantity');
+            $table->float('total_amount');
+            $table->date('book_time');
             $table->string('payment_method');
-            $table->dateTime('pay_time')->nullable();
+            $table->dateTime('pay_time');
             $table->dateTime('checkin_time')->nullable();
-            $table->dateTime('checkout_time')->nullable();
             $table->dateTime('cancel_time')->nullable();
             $table->float('tax');
             $table->float('discount');
-            $table->string('bill_code')->nullable();;
+            $table->foreignId('service_id')->constrained('services');
             $table->foreignId('customer_id')->constrained('customers');
             $table->foreignId('employee_id')->nullable()->constrained('employees');
             $table->timestamps();
@@ -35,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bill_rooms');
+        Schema::dropIfExists('bill_services');
     }
 };

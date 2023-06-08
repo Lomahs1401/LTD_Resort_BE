@@ -173,11 +173,12 @@ class FeedbackController extends Controller
                 ->where('room_type_id', '=', $id)
                 ->join('customers', 'customers.id', '=', 'feedback.customer_id')
                 ->join('accounts', 'accounts.id', '=', 'customers.account_id')
+                ->join('rankings', 'rankings.id', '=', 'customers.ranking_id')
                 ->select([
                     'feedback.id', 'date_request', 'date_response', 'title', 'rating', 'comment', 'feedback_status',
                     'feedback.customer_id', 'customers.account_id', 'customers.full_name', 'accounts.email',
                     'customers.gender', 'customers.birthday', 'customers.CMND', 'customers.address', 'customers.phone',
-                    'customers.ranking_point', 'accounts.username', 'accounts.avatar'
+                    'customers.ranking_point', 'rankings.ranking_name', 'accounts.username', 'accounts.avatar'
                 ])
                 ->get();
         } else if ($type == 'service') {
@@ -185,11 +186,12 @@ class FeedbackController extends Controller
                 ->where('service_id', '=', $id)
                 ->join('customers', 'customers.id', '=', 'feedback.customer_id')
                 ->join('accounts', 'accounts.id', '=', 'customers.account_id')
+                ->join('rankings', 'rankings.id', '=', 'customers.ranking_id')
                 ->select([
                     'feedback.id', 'date_request', 'date_response', 'title', 'rating', 'comment', 'feedback_status',
                     'feedback.customer_id', 'customers.account_id', 'customers.full_name', 'accounts.email',
                     'customers.gender', 'customers.birthday', 'customers.CMND', 'customers.address', 'customers.phone',
-                    'customers.ranking_point', 'accounts.username', 'accounts.avatar'
+                    'customers.ranking_point', 'rankings.ranking_name', 'accounts.username', 'accounts.avatar'
                 ])
                 ->get();
         }
@@ -226,6 +228,7 @@ class FeedbackController extends Controller
                         "address" => $list_feedbacks[$i]->address,
                         "phone" => $list_feedbacks[$i]->phone,
                         "ranking_point" => $list_feedbacks[$i]->ranking_point,
+                        "ranking_name" => $list_feedbacks[$i]->ranking_name,
                         "username" => $list_feedbacks[$i]->username,
                         "avatar" => $list_feedbacks[$i]->avatar,
                     ];
@@ -252,6 +255,7 @@ class FeedbackController extends Controller
                         "address" => $list_feedbacks[$i]->address,
                         "phone" => $list_feedbacks[$i]->phone,
                         "ranking_point" => $list_feedbacks[$i]->ranking_point,
+                        "ranking_name" => $list_feedbacks[$i]->ranking_name,
                         "username" => $list_feedbacks[$i]->username,
                         "avatar" => $list_feedbacks[$i]->avatar,
                     ];

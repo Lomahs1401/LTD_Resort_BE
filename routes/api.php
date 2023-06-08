@@ -11,6 +11,7 @@ use App\Http\Controllers\API\BillRoomController;
 use App\Http\Controllers\API\BillServiceController;
 use App\Http\Controllers\API\FeedbackController;
 use App\Http\Controllers\API\FloorController;
+use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\RoomController;
 use App\Http\Controllers\API\RoomTypeController;
 use App\Http\Controllers\API\ServiceController;
@@ -33,7 +34,6 @@ Route::group([
     'middleware' => ['force.json.response', 'api'],
     'prefix' => 'auth'
 ], function ($router) {
-
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
     Route::patch('/reset-password/request', [AccountController::class, 'requestResetCode']);
@@ -120,6 +120,11 @@ Route::group([
     Route::patch('/update-customer', [CustomerController::class, 'updateCutomerByAccountId']);
     Route::get('/history-bill-customer', [CustomerController::class, 'findHistoryBillCustomerByID']);
     Route::get('/book-bill-customer', [CustomerController::class, 'findBookBillCustomerByID']);
+
+    // Payment
+    Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment']);
+    Route::post('/save_payment_data', [BillRoomController::class, 'savePaymentData']);
+
    
     //Room type
     Route::post('/room-types/paginate/{page_number}/{num_of_page}', [RoomTypeController::class, 'paging']);
@@ -148,7 +153,7 @@ Route::group([
     // Cập nhập lại điểm và hạng khách hàng khi thanh toán 
     Route::get('/get-ranking-point/{id}', [CustomerController::class, 'getRankingPoint']);
     // Thanh toán thành công 
-    Route::patch('/pay-room', [CustomerController::class, 'getPayBillSuccess']);
+    Route::patch('/pay-bill', [CustomerController::class, 'getPayBillSuccess']);
 });
 
 // Employee API
