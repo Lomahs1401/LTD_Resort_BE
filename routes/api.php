@@ -17,6 +17,7 @@ use App\Http\Controllers\API\RoomTypeController;
 use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\DepartmentController;
 use App\Http\Controllers\API\PositionController;
+use App\Http\Controllers\API\StatisticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -218,4 +219,10 @@ Route::group([
   Route::post('/store-area', [AreaController::class, 'storeArea']);
   //Floor
   Route::post('/store-floor', [FloorController::class, 'storeFloor']);
+  //Statistic
+  Route::get('/total-row1',[StatisticsController::class, 'total']);
+  Route::get('/totalBill-row2/{currentYear}',[StatisticsController::class, 'totalBill']);
+  Route::get('/totalBillMonth-row2',[StatisticsController::class, 'totalBillMonth']);
+  Route::get('/totalFeedback-row3/{currentYear}',[StatisticsController::class, 'totalFeedback']);
+  Route::get('/totalEmployeeMonth-row3',[StatisticsController::class, 'totalEmployeeMonth']);
 });
