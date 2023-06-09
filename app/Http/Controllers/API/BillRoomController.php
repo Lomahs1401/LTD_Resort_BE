@@ -269,7 +269,7 @@ class BillRoomController extends Controller
     {
         // Lấy danh sách các bill_room cần xóa
         $billRooms = BillRoom::whereNull('pay_time')
-            ->where('created_at', '<=', Carbon::now()->subMinutes(30))
+            ->where('created_at', '<=', Carbon::now()->subMinutes(15))
             ->get();
         foreach ($billRooms as $billRoom) {
             // Xóa các dữ liệu liên quan (ReservationRooms, ...) trước khi xóa bill_room

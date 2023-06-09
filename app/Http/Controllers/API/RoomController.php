@@ -183,29 +183,6 @@ class RoomController extends Controller
             ->unique()
             ->values()
             ->all();
-        // foreach ($data as $item1) {
-        //     $areas = DB::table('areas')->get();
-        //     foreach ($areas as $area) {
-        //         $data1 = [];
-        //         $floors = DB::table('floors')->get();
-        //         foreach ($floors as $floor) {
-
-        //             $list_rooms = DB::table('rooms')
-        //                 ->where('id', '=', $item1->id)
-        //                 ->where('area_id', '=', $area->id)
-        //                 ->where('floor_id', '=', $floor->id)
-        //                 ->get();
-        //             $data1[] = [
-        //                 "floor_name" => $floor->floor_name,
-        //                 "list_rooms" => $list_rooms,
-        //             ];
-        //         }
-        //         $data2[] = [
-        //             "area_name" => $area->area_name,
-        //             "floor" => $data1
-        //         ];
-        //     }
-        // }
 
         $data3 = [];
         $areas = DB::table('areas')->get();
@@ -235,12 +212,7 @@ class RoomController extends Controller
             ];
         }
         return response()->json([
-
-            // 'reserved_rooms' => $reservedRooms,
             'data' => $data3
-
         ]);
-        // }
-
     }
 }
