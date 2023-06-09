@@ -53,16 +53,12 @@ Route::group([
     Route::post('/me', [AuthController::class, 'me']);
     Route::patch('/changePassword', [AccountController::class, 'changePassword']);
 
-   
     //Xoá bill khi quá thời hạn 
     Route::delete('/delete-bill-room', [BillRoomController::class, 'deleteBillRoom']);
     Route::delete('/delete-bill-service', [BillServiceController::class, 'deleteBillService']);
+
     //Chi tiết phòng của từng bill room
     Route::get('/show-bill-room-detail/{id}', [BillRoomController::class, 'findBillRoomDetail']);
-
-    //RoomType
-    Route::get('/room-types', [RoomTypeController::class, 'index']);
-    Route::get('/room-types/{id}', [RoomTypeController::class, 'show']);
   
     // Areas
     Route::get('/areas', [AreaController::class, 'index']);
@@ -77,18 +73,6 @@ Route::group([
     // Rooms
     Route::get('/room', [RoomController::class, 'index']); 
     Route::get('/room/{id}', [RoomController::class, 'show']);
-
-    // Services
-    Route::get('/services', [ServiceController::class, 'index']);
-    Route::get('/services/total/', [ServiceController::class, 'getTotalServices']);
-    Route::get('/services/list-lowest-price', [ServiceController::class, 'getTop5LowestPrice']);
-    Route::get('/services/lowest-price', [ServiceController::class, 'getLowestPrice']);
-    Route::get('/services/highest-price', [ServiceController::class, 'getHighestPrice']);
-    Route::get('/services/names', [ServiceController::class, 'getListServiceNames']);
-    Route::get('/services/random/{id}', [ServiceController::class, 'getRandomServices']);
-    Route::post('/services/filter', [ServiceController::class, 'filterService']);
-    Route::post('/services/paginate/{page_number}/{num_of_page}', [ServiceController::class, 'paging']);
-    Route::get('/services/{id}', [ServiceController::class, 'show']);
 
     // Feedbacks
     Route::get('/feedbacks', [FeedbackController::class, 'index']);
@@ -120,9 +104,9 @@ Route::group([
     // Payment
     Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment']);
     Route::post('/save_payment_data', [BillRoomController::class, 'savePaymentData']);
-
    
     //Room type
+    Route::get('/room-types', [RoomTypeController::class, 'index']);
     Route::post('/room-types/paginate/{page_number}/{num_of_page}', [RoomTypeController::class, 'paging']);
     Route::get('/room-types/total/', [RoomTypeController::class, 'getTotalRoomTypes']);
     Route::get('/room-types/total-rooms/{id}', [RoomTypeController::class, 'getTotalNumerOfRoomByRoomTypeId']);  
@@ -135,10 +119,25 @@ Route::group([
     Route::get('/room-types/bedroom-names', [RoomTypeController::class, 'getBedroomTypeNames']);
     Route::get('/room-types/room-names', [RoomTypeController::class, 'getRoomTypeNames']);
     Route::get('/room-types/random/{id}', [RoomTypeController::class, 'getRandomRoomTypes']);
-    Route::post('/room-types/filter', [RoomTypeController::class, 'filterRoomType']);  
+    Route::post('/room-types/filter', [RoomTypeController::class, 'filterRoomType']); 
+    Route::get('/room-types/{id}', [RoomTypeController::class, 'show']);
+
+    // Services
+    Route::get('/services', [ServiceController::class, 'index']);
+    Route::get('/services/total/', [ServiceController::class, 'getTotalServices']);
+    Route::get('/services/list-lowest-price', [ServiceController::class, 'getTop5LowestPrice']);
+    Route::get('/services/lowest-price', [ServiceController::class, 'getLowestPrice']);
+    Route::get('/services/highest-price', [ServiceController::class, 'getHighestPrice']);
+    Route::get('/services/names', [ServiceController::class, 'getListServiceNames']);
+    Route::get('/services/random/{id}', [ServiceController::class, 'getRandomServices']);
+    Route::post('/services/filter', [ServiceController::class, 'filterService']);
+    Route::post('/services/paginate/{page_number}/{num_of_page}', [ServiceController::class, 'paging']);
+    Route::get('/services/{id}', [ServiceController::class, 'show']);
+
     //Room
     Route::get('/room-types/list-rooms/{id}', [RoomTypeController::class, 'getListRoomsByRoomTypeId']);
     Route::post('/reserved-room/{id}', [RoomController::class, 'getReservedRooms']);
+
     // tạo bill service
     Route::post('/store-bill-service', [BillServiceController::class, 'storeBillService']);
     // tạo bill room
@@ -174,11 +173,6 @@ Route::group([
     Route::get('/list-bill-service', [BillServiceController::class, 'findBillService']);
     Route::get('/list-history-service', [BillServiceController::class, 'findHistoryService']);
     Route::get('/list-cancel-service', [BillServiceController::class, 'findCancelService']);
-
-
-
-
-  
 });
 
 // Admin API

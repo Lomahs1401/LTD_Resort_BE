@@ -120,14 +120,12 @@ class RoomTypeController extends Controller
                     'floor_id' =>  $item->floor_id,
                 ];
             }
-
             // $data = array_values($data);
             return response()->json([
                 'data' => $data
             ]);
-  
-    
         }
+  
     public function updateRoomType(Request $request, $id)
     {
         $room_type = RoomType::find($id);
