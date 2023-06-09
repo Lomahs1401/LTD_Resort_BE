@@ -4,20 +4,240 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\service\Service;
+use App\Models\service\ServiceType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Validator;
 class ServiceController extends Controller
 {
-    public function index() {
+    public function indexService() {
         $list_services = Service::all();
+        $data = [];
+                foreach ($list_services as $item) {
+                    $number = DB::table('service_types')->where('id', '=', $item->service_type_id)->get();
+                    $data[] = [
+                        'id' => $item->id,
+                        'service_name' => $item->service_name,
+                        'description' => $item->description,
+                        'image' => $item->image,
+                        'status' => $item->status,
+                        'price' => $item->price,
+                        'point_ranking' => $item->point_ranking,
+                        'service_type_name' => $number->service_type_name,
+                         
+                    ];
+                }
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
-            'list_services' => $list_services,
+            'list_room_types' => $data,
         ], 200);
     }
 
+    public function showService($id) {
+        $item = Service::find($id);
+        if ($item) {
+            $number = DB::table('service_types')->where('id', '=', $item->service_type_id)->get();
+            $data[] = [
+                'id' => $item->id,
+                'service_name' => $item->service_name,
+                'description' => $item->description,
+                'image' => $item->image,
+                'status' => $item->status,
+                'price' => $item->price,
+                'point_ranking' => $item->point_ranking,
+                'service_type_name' => $number->service_type_name,
+                 
+            ];
+          
+            return response()->json([
+                'message' => 'Query successfully!',
+                'status' => 200,
+                'service' => $item,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Data not found!',
+                'status' => 404,
+                'service' => $item,
+            ], 404);
+        }
+    }
+    public function indexServiceType()
+    {
+        $list_room_types = ServiceType::all();
+
+        $data = [];
+                foreach ($list_room_types as $item) {
+                    $number = DB::table('services')->where('service_type_id', '=', $item->id)
+                    ->where('status', '=', 'AVAILABLE')->count();
+                    $data[] = [
+                        'id' => $item->id,
+                        'service_type_name' => $item->service_type_name,
+                        'number_services' => $number,
+                             
+                    ];
+                }
+        return response()->json([
+            'message' => 'Query successfully!',
+            'status' => 200,
+            'list_room_types' => $data,
+        ], 200);
+    }
+    public function showServiceByServiceType($id) {
+        $number = DB::table('services')->where('service_type_id', '=', $id)
+        ->where('status', '=', 'AVAILABLE')->get();
+        $data = [];
+                foreach ($number as $item) {
+                    $number = DB::table('service_types')->where('id', '=', $item->service_type_id)->get();
+                    $data[] = [
+                        'id' => $item->id,
+                        'service_name' => $item->service_name,
+                        'description' => $item->description,
+                        'image' => $item->image,
+                        'status' => $item->status,
+                        'price' => $item->price,
+                        'point_ranking' => $item->point_ranking,
+                        'service_type_name' => $number->service_type_name,
+                         
+                    ];
+                }
+        return response()->json([
+            'message' => 'Query successfully!',
+            'status' => 200,
+            'list_room_types' => $data,
+        ], 200);
+    }
+    public function updateService(Request $request, $id)
+    {
+        $service= Service::find($id);
+        if ($service) {
+        
+            if ($request->service_name) {
+                $service->service_name = $request->service_name;
+            }
+            if ($request->description) {
+                $service->description = $request->description;
+            }
+            if ($request->price) {
+                $service->price = $request->price;
+            }
+            if ($request->image) {
+                $service->image = $request->image;
+            }
+            if ($request->point_ranking) {
+                $service->point_ranking = $request->point_ranking;
+            }
+            $service->update();
+            return response()->json([
+                'message' => 'Update successfully!',
+                'status' => 200,
+                'room_type' => $service,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Data not found!',
+                'status' => 404,
+            ], 404);
+        }
+    }
+    public function storeService(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+        'service_name',
+        'description',
+        'image',
+        'price',
+        'point_ranking',
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                'status_code' => 400,
+                'message' => $validator->errors(),
+            ];
+            return response()->json($response, 400);
+        }   
+        // $employee = Employee::create([
+        $service= Service::create([
+            'service_name' => $request->service_name,
+            'description' => $request->description,
+            'status' => 'AVAILABLE',           
+            'image' =>  $request->image,
+            'price' => $request->price,
+            'point_ranking' =>$request->point_ranking,
+            'service_type_id' => $request->service_type_id,
+
+        ]);
+        // ]);
+            // $position = Position::find($data['position_id']);
+            if (!$service) {
+                return response()->json([
+                    'message' => 'Data not found!',
+                    'status' => 400,
+                ], 400);
+            }else {
+          return response()->json([
+            'status' => 200,
+            'message' => 'Room Type created Successfully',
+            'employee' => $service,
+          
+
+        ]);
+    }
+    }
+    public function storeServiceType(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+        'service_type_name',
+      
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                'status_code' => 400,
+                'message' => $validator->errors(),
+            ];
+            return response()->json($response, 400);
+        }   
+        // $employee = Employee::create([
+        $service= ServiceType::create([
+            'service_type_name' => $request->service_name,
+
+        ]);
+        // ]);
+            // $position = Position::find($data['position_id']);
+            if (!$service) {
+                return response()->json([
+                    'message' => 'Data not found!',
+                    'status' => 400,
+                ], 400);
+            }else {
+          return response()->json([
+            'status' => 200,
+            'message' => 'Room Type created Successfully',
+            'employee' => $service,
+        ]);
+    }
+    }
+    public function cancelService( $id)
+    {
+        $service= Service::find($id);
+        if ($service) { 
+                $service->status = 'UNAVAILABLE';
+                $service->update();
+            return response()->json([
+                'message' => 'Cancel successfully!',
+                'status' => 200,
+                'room_type' => $service,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Data not found!',
+                'status' => 404,
+            ], 404);
+        }
+    } 
     public function show($id) {
         $service = Service::find($id);
         if ($service) {
@@ -34,7 +254,6 @@ class ServiceController extends Controller
             ], 404);
         }
     }
-
     public function filterService(Request $request) {
         $price = $request->price;
         $services = $request->input('services');

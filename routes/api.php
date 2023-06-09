@@ -9,6 +9,7 @@ use App\Http\Controllers\API\AdminController;
 use App\Http\Controllers\API\AreaController;
 use App\Http\Controllers\API\BillRoomController;
 use App\Http\Controllers\API\BillServiceController;
+use App\Http\Controllers\API\BillExtraServiceController;
 use App\Http\Controllers\API\FeedbackController;
 use App\Http\Controllers\API\FloorController;
 use App\Http\Controllers\API\PaymentController;
@@ -59,6 +60,7 @@ Route::group([
 
     //Chi tiết phòng của từng bill room
     Route::get('/show-bill-room-detail/{id}', [BillRoomController::class, 'findBillRoomDetail']);
+    Route::get('/show-bill-extra-service-details/{id}', [BillExtraServiceController::class, 'findBillExtraDetail']);
   
     // Areas
     Route::get('/areas', [AreaController::class, 'index']);
@@ -103,7 +105,6 @@ Route::group([
 
     // Payment
     Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment']);
-    Route::post('/save_payment_data', [BillRoomController::class, 'savePaymentData']);
    
     //Room type
     Route::get('/room-types', [RoomTypeController::class, 'index']);
@@ -219,6 +220,15 @@ Route::group([
   Route::post('/store-area', [AreaController::class, 'storeArea']);
   //Floor
   Route::post('/store-floor', [FloorController::class, 'storeFloor']);
+  //Service
+  Route::get('/list-service', [ServiceController::class, 'indexService']);
+  Route::get('/show-service/{id}', [ServiceController::class, 'showService']);
+  Route::get('/list-service-type', [ServiceController::class, 'indexServiceType']);
+  Route::get('/list-service-by-type/{id}', [ServiceController::class, 'showServiceByServiceType']);
+  Route::patch('/update-service/{id}', [ServiceController::class, 'updateService']);
+  Route::post('/store-service', [ServiceController::class, 'storeService']);
+  Route::post('/store-service-type', [ServiceController::class, 'storeServiceType']);
+  Route::patch('/cannel-service/{id}', [ServiceController::class, 'cancelService']);
   //Statistic
   Route::get('/total-row1',[StatisticsController::class, 'total']);
   Route::get('/totalBill-row2/{currentYear}',[StatisticsController::class, 'totalBill']);

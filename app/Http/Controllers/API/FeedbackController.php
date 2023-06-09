@@ -8,15 +8,50 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class FeedbackController extends Controller
-{
-    public function index()
+{   
+    public function indexFeedbackEmployee()
     {
-        $list_feedbacks = DB::table('feedback')->get();
-
+        $list_feedback_room = DB::table('feedback')
+        ->where('feedback_status', '=', 'Not feedbacked yet')
+        ->where('feedback_type','=','ROOM')->get();
+        $list_feedback_service = DB::table('feedback')
+        ->where('feedback_status', '=', 'Not feedbacked yet')
+        ->where('feedback_type','=','SERVICE')->get();
+        $data = [];
+        $data1 =[];
+        foreach ($list_feedback_room as $item) {
+            $customer = DB::table('customers')->where('id', '=', $item->customer_id)->get();
+            $room_type = DB::table('room_types')->where('id', '=', $item->room_type_id)->get();
+            $data [] = [
+                'id' => $item->id,
+                'customer_name' => $customer->full_name,
+                'room_type_name' => $room_type->room_type_name,
+                'rating' => $item->rating,
+                'title' => $item->title,
+                'comment' => $item->comment,
+                'date_request' => $item->date_request,
+                'image' => $item->image,    
+            ];
+        }
+        foreach ($list_feedback_service as $item1) {
+            $customer = DB::table('customers')->where('id', '=', $item1->customer_id)->get();
+            $service = DB::table('services')->where('id', '=', $item1->service_id)->get();
+            $data1 [] = [
+                'id' => $item->id,
+                'customer_name' => $customer->full_name,
+                'room_type_name' => $service->service_name,
+                'rating' => $item1->rating,
+                'title' => $item1->title,
+                'comment' => $item1->comment,
+                'date_request' => $item1->date_request,
+                'image' => $item1->image,    
+            ];
+        }
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
-            'list_feedbacks' => $list_feedbacks,
+            'list_feedback_room' => $data,
+            'list_feedback_room' => $data1,
         ], 200);
     }
 
