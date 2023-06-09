@@ -9,6 +9,7 @@ use App\Http\Controllers\API\AdminController;
 use App\Http\Controllers\API\AreaController;
 use App\Http\Controllers\API\BillRoomController;
 use App\Http\Controllers\API\BillServiceController;
+use App\Http\Controllers\API\BillExtraServiceController;
 use App\Http\Controllers\API\FeedbackController;
 use App\Http\Controllers\API\FloorController;
 use App\Http\Controllers\API\PaymentController;
@@ -59,6 +60,7 @@ Route::group([
 
     //Chi tiết phòng của từng bill room
     Route::get('/show-bill-room-detail/{id}', [BillRoomController::class, 'findBillRoomDetail']);
+    Route::get('/show-bill-extra-service-details/{id}', [BillExtraServiceController::class, 'findBillExtraDetail']);
   
     // Areas
     Route::get('/areas', [AreaController::class, 'index']);
