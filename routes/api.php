@@ -103,7 +103,6 @@ Route::group([
 
     // Payment
     Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment']);
-    Route::post('/save_payment_data', [BillRoomController::class, 'savePaymentData']);
    
     //Room type
     Route::get('/room-types', [RoomTypeController::class, 'index']);
@@ -219,6 +218,15 @@ Route::group([
   Route::post('/store-area', [AreaController::class, 'storeArea']);
   //Floor
   Route::post('/store-floor', [FloorController::class, 'storeFloor']);
+  //Service
+  Route::get('/list-service', [ServiceController::class, 'indexService']);
+  Route::get('/show-service/{id}', [ServiceController::class, 'showService']);
+  Route::get('/list-service-type', [ServiceController::class, 'indexServiceType']);
+  Route::get('/list-service-by-type/{id}', [ServiceController::class, 'showServiceByServiceType']);
+  Route::patch('/update-service/{id}', [ServiceController::class, 'updateService']);
+  Route::post('/store-service', [ServiceController::class, 'storeService']);
+  Route::post('/store-service-type', [ServiceController::class, 'storeServiceType']);
+  Route::patch('/cannel-service/{id}', [ServiceController::class, 'cancelService']);
   //Statistic
   Route::get('/total-row1',[StatisticsController::class, 'total']);
   Route::get('/totalBill-row2/{currentYear}',[StatisticsController::class, 'totalBill']);
