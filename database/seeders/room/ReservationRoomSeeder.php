@@ -26,7 +26,7 @@ class ReservationRoomSeeder extends Seeder
             $checkout_time = clone $checkin_time;
             $checkout_time->add(new DateInterval('P2D'));
 
-            $numReservations = fake()->randomElement([2, 3]);
+            $numReservations = fake()->randomElement([3, 4]);
 
             for ($i = 0; $i < $numReservations; $i++) {
                 ReservationRoom::factory()->create([

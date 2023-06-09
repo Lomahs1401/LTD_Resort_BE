@@ -132,8 +132,6 @@ class RoomController extends Controller
                 'status' => 200,
                 'message' => 'Room created Successfully',
                 'employee' => $room,
-
-
             ]);
         }
     }
@@ -177,6 +175,7 @@ class RoomController extends Controller
                 $data[] = $number;
             }
         }
+
         $data = collect($data)
             ->reject(function ($item) {
                 return empty($item);
@@ -184,60 +183,63 @@ class RoomController extends Controller
             ->unique()
             ->values()
             ->all();
+        // foreach ($data as $item1) {
+        //     $areas = DB::table('areas')->get();
+        //     foreach ($areas as $area) {
         //         $data1 = [];
+        //         $floors = DB::table('floors')->get();
+        //         foreach ($floors as $floor) {
 
-        //         foreach ($data as $item1) {
-        //         $list_area = DB::table('areas')->get();
-        //         foreach ($list_area as $item2) {
-        //             $area = $item2->id;
-        //             $data1[$area] = [];
-        //             $list_floor = DB::table('floors')->get();
-        //             foreach ($list_floor as $item3) {
-        //                 $floor = $item3->id;
-        //                 $list_rooms = DB::table('rooms')
+        //             $list_rooms = DB::table('rooms')
         //                 ->where('id', '=', $item1->id)
-        //                 ->where('area_id', '=',$area)
-        //                 ->where('floor_id', '=',$floor)
+        //                 ->where('area_id', '=', $area->id)
+        //                 ->where('floor_id', '=', $floor->id)
         //                 ->get();
-        //                 // $data1[$area][$floor] = [];
-        //                 $data1[$area][$floor] = $list_rooms;
+        //             $data1[] = [
+        //                 "floor_name" => $floor->floor_name,
+        //                 "list_rooms" => $list_rooms,
+        //             ];
         //         }
-        //         $data1 = array_values($data1);
+        //         $data2[] = [
+        //             "area_name" => $area->area_name,
+        //             "floor" => $data1
+        //         ];
         //     }
         // }
-        foreach ($data as $item1) {
-            $areas = DB::table('areas')->get();
 
-            foreach ($areas as $area) {
+        $data3 = [];
+        $areas = DB::table('areas')->get();
+        foreach ($areas as $area) {
+            $floors = DB::table('floors')->get();
+            $data2 = [];
+            foreach ($floors as $floor) {
                 $data1 = [];
-                $floors = DB::table('floors')->get();
-                foreach ($floors as $floor) {
-
-                    $list_rooms = DB::table('rooms')
+                foreach ($data as $item1) {
+                    $room = DB::table('rooms')
                         ->where('id', '=', $item1->id)
                         ->where('area_id', '=', $area->id)
                         ->where('floor_id', '=', $floor->id)
                         ->get();
-                    $data1[] = [
-                        "floor_name" => $floor->floor_name,
-                        "list-rooms" => $list_rooms,
-                    ];
+                    if (count($room) != 0) {
+                        $data1 = $room;
+                    }
                 }
                 $data2[] = [
-                    "area_name" => $area->area_name,
-                    "floor" => $data1
+                    "floor_name" => $floor->floor_name,
+                    "list_rooms" => $data1,
                 ];
             }
-            return response()->json([
-
-                'reserved_rooms' => $reservedRooms,
-                'data' => $data2
-
-            ]);
+            $data3[] = [
+                "area_name" => $area->area_name,
+                "list_floors" => $data2
+            ];
         }
-        //       'reserved_rooms' => $reservedRooms,
-        //       'data'=>$data1
-        //     ]);
+        return response()->json([
+
+            // 'reserved_rooms' => $reservedRooms,
+            'data' => $data3
+
+        ]);
         // }
 
     }

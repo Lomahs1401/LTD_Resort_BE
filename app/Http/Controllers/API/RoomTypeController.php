@@ -83,7 +83,7 @@ class RoomTypeController extends Controller
                 ->get();
                 $data1[]=[
                     "floor_name" => $floor->floor_name,
-                    "list-rooms" => $list_rooms,
+                    "list_rooms" => $list_rooms,
                 ];
             }
             $data[] = [
@@ -94,36 +94,36 @@ class RoomTypeController extends Controller
         return response()->json([
             'data' => $data
         ]);
-        $list_rooms = DB::table('rooms')->where('room_type_id', '=', $id)->get();
+        // $list_rooms = DB::table('rooms')->where('room_type_id', '=', $id)->get();
         
-        foreach ($list_rooms as $item) {
-              $area = $item->area_id;
-               $floor = $item->floor_id;
-                $area_id =DB::table('areas')->where('id', '=', $item->area_id)->get('area_name');
-                $floor_id =DB::table('floors')->where('id', '=', $item->floor_id)->get('floor_name');
+        // foreach ($list_rooms as $item) {
+        //       $area = $item->area_id;
+        //        $floor = $item->floor_id;
+        //         $area_id =DB::table('areas')->where('id', '=', $item->area_id)->get('area_name');
+        //         $floor_id =DB::table('floors')->where('id', '=', $item->floor_id)->get('floor_name');
                 
         
-                // Kiểm tra xem đã có khu vực trong mảng $data chưa
-                if (!isset($data[$area])) {
-                    $data[$area] = $area_id;
-                }
+        //         // Kiểm tra xem đã có khu vực trong mảng $data chưa
+        //         if (!isset($data[$area])) {
+        //             $data[$area] = $area_id;
+        //         }
         
-                // Kiểm tra xem đã có tầng trong mảng $data[$area] chưa
-                if (!isset($data[$area][$floor])) {
-                    $data[$area][$floor] = $floor_id;
-                }
+        //         // Kiểm tra xem đã có tầng trong mảng $data[$area] chưa
+        //         if (!isset($data[$area][$floor])) {
+        //             $data[$area][$floor] = $floor_id;
+        //         }
     
-                $data[$area][$floor][] = [
-                    'id_room' => $item->id,
-                    'room_name' => $item->room_name,
-                    'area_id' => $item->area_id,
-                    'floor_id' =>  $item->floor_id,
-                ];
-            }
+        //         $data[$area][$floor][] = [
+        //             'id_room' => $item->id,
+        //             'room_name' => $item->room_name,
+        //             'area_id' => $item->area_id,
+        //             'floor_id' =>  $item->floor_id,
+        //         ];
+            // }
             // $data = array_values($data);
-            return response()->json([
-                'data' => $data
-            ]);
+            // return response()->json([
+            //     'data' => $data
+            // ]);
         }
   
     public function updateRoomType(Request $request, $id)

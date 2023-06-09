@@ -200,13 +200,11 @@ class BillRoomController extends Controller
                 'total_amount' => '0',
                 'total_room' =>  '0',
                 'total_people' => '0',
-                'payment_method' =>  'online',
+                'payment_method' =>  'Online',
                 // 'pay_time'=>'0',
                 'tax' => '0.05',
                 'discount' => $ranking->discount,
                 'customer_id' => $customer->id,
-
-
             ]);
 
             if ($bill_room) {
@@ -237,23 +235,6 @@ class BillRoomController extends Controller
                     'bill-room' => $bill_room,
                 ]);
             }
-
-            // public function savePaymentData(Request $request)
-            // {
-            //     $user = auth()->user();
-            //     // Kiểm tra token hợp lệ và người dùng đã đăng nhập
-            //     if (!$user) {
-            //         return response()->json(['message' => 'Unauthorized'], 401);
-            //     }
-
-            //     // Lấy dữ liệu gửi từ React
-            //     $totalAmount = $request->input('totalAmount');
-            //     $totalRoom = $request->input('totalRoom');
-            //     $totalPeople = $request->input('totalPeople');
-            //     $paymentMethod = $request->input('paymentMethod');
-            //     $tax = $request->input('tax');
-            //     $discount = $request->input('discount');
-            //     $customerId = $request->input('customerId');
         }
     }
     private function calculateBillRoomFields(BillRoom $bill_room)
@@ -311,19 +292,3 @@ class BillRoomController extends Controller
         }
     }
 }
-//         // Lưu dữ liệu vào bảng bill_room
-//         $billRoom = new BillRoom();
-//         $billRoom->total_amount = $totalAmount;
-//         $billRoom->total_room = $totalRoom;
-//         $billRoom->total_people = $totalPeople;
-//         $billRoom->payment_method = $paymentMethod;
-//         $billRoom->tax = $tax;
-//         $billRoom->discount = $discount;
-//         $billRoom->customer_id = $customerId;
-//         $billRoom->pay_time = Carbon::parse($request->input('payTime'))->toDateTimeString();
-//         $billRoom->checkin_time = Carbon::createFromFormat('d/m/Y', $request->input('checkinDate'))->format('Y-m-d');
-//         $billRoom->checkout_time = Carbon::createFromFormat('d/m/Y', $request->input('checkoutDate'))->format('Y-m-d');
-//         $billRoom->save();
-//         return response()->json(['message' => 'success']);
-//     }
-// }
