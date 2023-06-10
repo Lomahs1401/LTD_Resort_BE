@@ -42,7 +42,7 @@ class BillServiceController extends Controller
                     'discount' => $item1->discount,
                     'service' => $service->service_name,
                     'service_type' => $service_type->service_type_name,
-                    'code' => $item1->id,
+                    'id' => $item1->id,
                 ];
             }
 
@@ -83,7 +83,7 @@ class BillServiceController extends Controller
                     'discount' => $item1->discount,
                     'service' => $service->service_name,
                     'service_type' => $service_type->service_type_name,
-                    'code' => $item1->id,
+                    'id' => $item1->id,
                 ];
             }
 
@@ -124,7 +124,7 @@ class BillServiceController extends Controller
                     'discount' => $item1->discount,
                     'service' => $service->service_name,
                     'service_type' => $service_type->service_type_name,
-                    'code' => $item1->id,
+                    'id' => $item1->id,
                 ];
             }
 
@@ -235,7 +235,7 @@ class BillServiceController extends Controller
             $bill_service = DB::table('bill_services')
             ->where('customer_id', '=', $customer->id)
             ->whereNull('pay_time')
-            ->where('id', '=', '$id')
+            ->where('id', '=', $id)
             ->delete();
             return response()->json([
                 'status' => 200,

@@ -153,6 +153,8 @@ Route::group([
      //Xoá bill khi quá thời hạn 
     Route::delete('/delete-bill-room', [BillRoomController::class, 'deleteBillRoom']);
     Route::delete('/delete-bill-service', [BillServiceController::class, 'deleteBillServiceOverdue']);
+    //Xoá bill chưa thanh toán 
+    Route::delete('/delete-bill-service-not-pay', [BillServiceController::class, 'deleteBillServiceNotPay']);
     // Cập nhập lại điểm và hạng khách hàng khi thanh toán 
     Route::get('/get-ranking-point/{id}', [CustomerController::class, 'getRankingPoint']);
     // Thanh toán thành công 
@@ -214,6 +216,7 @@ Route::group([
   Route::get('/find-employee/{id}',[EmployeeController::class, 'employeeFindID']);// Dùng được trong Department
   Route::patch('/update-employee/{id}', [EmployeeController::class, 'updateEmployeeByAdmin']);
   Route::post('/store-employee', [EmployeeController::class, 'store']);
+  Route::post('/store-account-employee/{id}', [EmployeeController::class, 'storeAccountbyEmployee']);
   Route::patch('/quit-employee/{id}', [EmployeeController::class, 'quitEmployeeByID']);
   //Department
   Route::get('/list-department', [DepartmentController::class, 'index']);
