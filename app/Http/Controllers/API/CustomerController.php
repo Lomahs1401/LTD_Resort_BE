@@ -474,59 +474,147 @@ class CustomerController extends Controller
             ], 404);
         }
     }
-    public function getPayBillSuccess(Request $request)
+    public function getPayBillSuccess(Request $request, $time_start, $time_end)
     {
-
         $user = auth()->user();
         // Kiểm tra token hợp lệ và người dùng đã đăng nhập
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
         } else {
-            $customer_id = DB::table('customers')->where('account_id', '=', $user->id)->first();
+            $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
 
-            if ($customer_id) {
-                $bill_room = DB::table('bill_rooms')->where('customer_id', '=', $customer_id->id)
-                    ->whereNull('pay_time')
-                    ->get();
-
-                foreach ($bill_room as $item) {
-                    $pay = BillRoom::find($item->id);
-                    $pay->pay_time = Carbon::now();
-                    $pay->bill_code = $request->bill_code;
-                    $pay->update();
-
-                    $status = DB::table('reservation_rooms')->where('id', '=', $item->id)->get();
-                    foreach ($status as $item1) {
-                        $reservation_room = ReservationRoom::find($item1->id);
-                        $reservation_room->status = '0';
-                        $reservation_room->update();
-                    }
-                }
-
-                $bill_service = DB::table('bill_services')->where('customer_id', '=', $customer_id->id)
-                    ->whereNull('pay_time')
-                    ->get();
-
-                foreach ($bill_service as $item2) {
-                    $pay = BillService::find($item2->id);
-                    $pay->pay_time = Carbon::now();
-                    $pay->bill_code = $request->bill_code;
-                    $pay->update();
-                }
-                if ($bill_room->isEmpty() && $bill_service->isEmpty()) {
-                    return response()->json([
-                        'status' => 404,
-                        'message' => 'Bill not found',
-
-                    ]);
-                } else {
-                    return response()->json([
-                        'status' => 200,
-                        'message' => 'Pay bill Successfully',
-
-                    ]);
+        if ($customer) {
+            $total_amount = 0;
+            $total_people = 0;
+            $total_room = DB::table('reservation_rooms') 
+            ->where('customer_id', '=', $customer->id)
+            ->where('status', '=', '0')
+            ->where('time_start', '=', $time_start)
+            ->where('time_end', '=', $time_end)->count();
+        $reservation_rooms = DB::table('reservation_rooms')
+        ->where('customer_id', '=', $customer->id)
+        ->where('status', '=', '0')
+        ->where('time_start', '=', $time_start)
+        ->where('time_end', '=', $time_end)->get();
+        $price = 0;
+            foreach ($reservation_rooms as $item1) {
+               
+                $room = DB::table('rooms')->where('id', '=', $item1->room_id)->get();
+                foreach ($room as $item2) {
+                    $room_type = RoomType::find($item2->room_type_id);
+                    $total_people += $room_type->number_customers;
+                    $price += $room_type->price;
                 }
             }
+            $ranking = DB::table('rankings')->where('id', '=', $customer->ranking_id)->first();
+            $startDate = Carbon::parse($time_start);
+            $endDate = Carbon::parse($time_end);
+            $numberOfDays = $startDate->diffInDays($endDate);
+            $total_amount += $numberOfDays * $price* (1 - $ranking->discount) * (1 + 0.05);
+          
+            $bill_room = BillRoom::create([
+                'total_amount' => $total_amount,
+                'total_room' =>  $total_room,
+                'total_people' => $total_people,
+                'payment_method' =>  'online',
+                'pay_time'=> Carbon::now(),
+                'tax' => '0.05',
+                'bill_code' => $request->bill_code,
+                'discount' => $ranking->discount,
+                'customer_id' => $customer->id,
+
+
+            ]);
+        
+           
+            $bill_service = DB::table('bill_services')->where('customer_id', '=', $customer->id)
+            ->whereNull('pay_time')
+            ->get();
+
+        foreach ($bill_service as $item2) {
+            $pay = BillService::find($item2->id);
+            $pay->pay_time = Carbon::now();
+            $pay->bill_code = $request->bill_code;
+            $pay->update();
+        }  if (!$bill_room && $bill_service->isEmpty()) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Bill not found',
+
+            ]);
+        } else {
+            foreach ($reservation_rooms as $item2) {
+                $reservation_room = ReservationRoom::find($item2->id);
+                $reservation_room->status = '1';
+                $reservation_room->bill_room_id = $bill_room->id;
+                $reservation_room->update();
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'Pay bill Successfully',
+                'reservation_room' => $reservation_room,
+                'bill-room' => $bill_room,
+                'bill-service'=> $bill_service,
+            ]);
+        }
+
+            
         }
     }
+    }
+    // public function getPayBillSuccess(Request $request)
+    // {
+
+    //     $user = auth()->user();
+    //     // Kiểm tra token hợp lệ và người dùng đã đăng nhập
+    //     if (!$user) {
+    //         return response()->json(['message' => 'Unauthorized'], 401);
+    //     } else {
+    //         $customer_id = DB::table('customers')->where('account_id', '=', $user->id)->first();
+
+    //         if ($customer_id) {
+    //             $bill_room = DB::table('bill_rooms')->where('customer_id', '=', $customer_id->id)
+    //                 ->whereNull('pay_time')
+    //                 ->get();
+
+    //             foreach ($bill_room as $item) {
+    //                 $pay = BillRoom::find($item->id);
+    //                 $pay->pay_time = Carbon::now();
+    //                 $pay->bill_code = $request->bill_code;
+    //                 $pay->update();
+
+    //                 $status = DB::table('reservation_rooms')->where('id', '=', $item->id)->get();
+    //                 foreach ($status as $item1) {
+    //                     $reservation_room = ReservationRoom::find($item1->id);
+    //                     $reservation_room->status = '0';
+    //                     $reservation_room->update();
+    //                 }
+    //             }
+
+    //             $bill_service = DB::table('bill_services')->where('customer_id', '=', $customer_id->id)
+    //                 ->whereNull('pay_time')
+    //                 ->get();
+
+    //             foreach ($bill_service as $item2) {
+    //                 $pay = BillService::find($item2->id);
+    //                 $pay->pay_time = Carbon::now();
+    //                 $pay->bill_code = $request->bill_code;
+    //                 $pay->update();
+    //             }
+    //             if ($bill_room->isEmpty() && $bill_service->isEmpty()) {
+    //                 return response()->json([
+    //                     'status' => 404,
+    //                     'message' => 'Bill not found',
+
+    //                 ]);
+    //             } else {
+    //                 return response()->json([
+    //                     'status' => 200,
+    //                     'message' => 'Pay bill Successfully',
+
+    //                 ]);
+    //             }
+    //         }
+    //     }
+    // }
 }

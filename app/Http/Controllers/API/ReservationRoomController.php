@@ -257,6 +257,9 @@ public function ShowBillNotPayByCustomer($time_start,$time_end)
                 $total_people += $item->quantity;
                 $total_amount += $item->total_amount;
                 $service = DB::table('services')->where('id', '=', $item->service_id)->first();
+                $feedback = DB::table('feedback')->where('service_id', '=', $item->service_id)->sum('rating');
+                $total_feedback=DB::table('feedback')->where('service_id', '=', $item->service_id)->count();
+                $average_rating_room_type = $total_feedback > 0 ? $feedback / $total_feedback : 0;
                 $service_type = DB::table('service_types')->where('id', '=', $service->service_type_id)->first();
                 $data[] = [
                     'id_bill'=>$item->id,
@@ -276,6 +279,8 @@ public function ShowBillNotPayByCustomer($time_start,$time_end)
                     'point_ranking' => $service->point_ranking,
                     'service_type_id' => $service_type->id,
                     'service_type' => $service_type->service_type_name,
+                    'total_feedback'=>$total_feedback,
+                    'average_rating_room_type'=>$average_rating_room_type
                    
                 ];
             }

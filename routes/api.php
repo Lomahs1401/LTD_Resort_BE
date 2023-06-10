@@ -149,14 +149,14 @@ Route::group([
     // tạo bill service
     Route::post('/store-bill-service', [BillServiceController::class, 'storeBillService']);
     // tạo bill room
-    Route::post('/store-bill-room/{time_start}/{time_end}', [BillRoomController::class, 'storeBillRoom']);
+    // Route::post('/store-bill-room/{time_start}/{time_end}', [BillRoomController::class, 'storeBillRoom']);
      //Xoá bill khi quá thời hạn 
     Route::delete('/delete-bill-room', [BillRoomController::class, 'deleteBillRoom']);
-    Route::delete('/delete-bill-service', [BillServiceController::class, 'deleteBillService']);
+    Route::delete('/delete-bill-service', [BillServiceController::class, 'deleteBillServiceOverdue']);
     // Cập nhập lại điểm và hạng khách hàng khi thanh toán 
     Route::get('/get-ranking-point/{id}', [CustomerController::class, 'getRankingPoint']);
     // Thanh toán thành công 
-    Route::patch('/pay-bill', [CustomerController::class, 'getPayBillSuccess']);
+    Route::patch('/pay-bill/{time_start}/{time_end}', [CustomerController::class, 'getPayBillSuccess']);
     //Resevation_room
     Route::post('/store-resevation_room', [ReservationRoomController::class, 'store']);
     Route::delete('/delete-resevation_room/{id}/{time_start}/{time_end}', [ReservationRoomController::class, 'delete']);
