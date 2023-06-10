@@ -13,22 +13,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+
 class FeedbackController extends Controller
-{   
+{
     public function indexNotFeedback()
     {
         $list_feedback_room = DB::table('feedback')
-        ->where('feedback_status', '=', 'Not feedbacked yet')
-        ->where('feedback_type','=','ROOM')->get();
+            ->where('feedback_status', '=', 'Not feedbacked yet')
+            ->where('feedback_type', '=', 'ROOM')->get();
         $list_feedback_service = DB::table('feedback')
-        ->where('feedback_status', '=', 'Not feedbacked yet')
-        ->where('feedback_type','=','SERVICE')->get();
+            ->where('feedback_status', '=', 'Not feedbacked yet')
+            ->where('feedback_type', '=', 'SERVICE')->get();
         $data = [];
-        $data1 =[];
+        $data1 = [];
         foreach ($list_feedback_room as $item) {
             $customer = Customer::find($item->customer_id);
             $room_type = RoomType::find($item->room_type_id);
-            $data [] = [
+            $data[] = [
                 'id' => $item->id,
                 'customer_name' => $customer->full_name,
                 'room_type_name' => $room_type->room_type_name,
@@ -36,13 +37,13 @@ class FeedbackController extends Controller
                 'title' => $item->title,
                 'comment' => $item->comment,
                 'date_request' => $item->date_request,
-                'image' => $item->image,    
+                'image' => $item->image,
             ];
         }
         foreach ($list_feedback_service as $item1) {
             $customer = Customer::find($item1->customer_id);
             $service = Service::find($item1->service_id);
-            $data1 [] = [
+            $data1[] = [
                 'id' => $item->id,
                 'customer_name' => $customer->full_name,
                 'service_name' => $service->service_name,
@@ -50,7 +51,7 @@ class FeedbackController extends Controller
                 'title' => $item1->title,
                 'comment' => $item1->comment,
                 'date_request' => $item1->date_request,
-                'image' => $item1->image,    
+                'image' => $item1->image,
             ];
         }
         return response()->json([
@@ -60,7 +61,7 @@ class FeedbackController extends Controller
             'list_feedback_room' => $data1,
         ], 200);
     }
-   
+
     public function show($id)
     {
         $feedback = DB::table('feedback')->find($id);
@@ -69,22 +70,22 @@ class FeedbackController extends Controller
             $service = DB::table('services')->where('id', '=', $feedback->service_id)->get();
             $room_type = DB::table('room_types')->where('id', '=', $feedback->room_type_id)->get();
             $employee = DB::table('employees')->where('id', '=', $feedback->employee_id)->get();
-            $position =  DB::table('positions')->where('id', '=',$employee->position_id)->get();
-            $department =  DB::table('departments')->where('id', '=',$position->department_id)->get();
+            $position =  DB::table('positions')->where('id', '=', $employee->position_id)->get();
+            $department =  DB::table('departments')->where('id', '=', $position->department_id)->get();
             $data  = [
                 'id' => $feedback->id,
                 'customer_name' => $customer->full_name,
-                'service_name' => $service->service_name,//hiển thị trong feedback service //1
-                'room_type_name' => $room_type->room_type_name,//hiển thị feedback trong room  //1
-                'employee_name' => $employee->full_name,//hiển thị trong Admin //3
-                'position' => $position->position_name,//hiển thị trong Admin //3
-                'department' => $department->department_name,//hiển thị trong Admin  //3             
+                'service_name' => $service->service_name, //hiển thị trong feedback service //1
+                'room_type_name' => $room_type->room_type_name, //hiển thị feedback trong room  //1
+                'employee_name' => $employee->full_name, //hiển thị trong Admin //3
+                'position' => $position->position_name, //hiển thị trong Admin //3
+                'department' => $department->department_name, //hiển thị trong Admin  //3             
                 'rating' => $feedback->rating,
                 'title' => $feedback->title,
                 'comment' => $feedback->comment,
                 'date_request' => $feedback->date_request,
-                'date_response' => $feedback->date_response,// hiển thị trong danh sách feeback //2
-                'image' => $feedback->image,    
+                'date_response' => $feedback->date_response, // hiển thị trong danh sách feeback //2
+                'image' => $feedback->image,
             ];
             return response()->json([
                 'message' => 'Query successfully!',
@@ -101,20 +102,20 @@ class FeedbackController extends Controller
     public function indexFeedbackAdmin()
     {
         $list_feedback_room = DB::table('feedback')
-        ->where('feedback_status', '=', 'Feedbacked')
-        ->where('feedback_type','=','ROOM')->get();
+            ->where('feedback_status', '=', 'Feedbacked')
+            ->where('feedback_type', '=', 'ROOM')->get();
         $list_feedback_service = DB::table('feedback')
-        ->where('feedback_status', '=', 'Feedbacked')
-        ->where('feedback_type','=','SERVICE')->get();
+            ->where('feedback_status', '=', 'Feedbacked')
+            ->where('feedback_type', '=', 'SERVICE')->get();
         $data = [];
-        $data1 =[];
+        $data1 = [];
         foreach ($list_feedback_room as $item) {
             $customer = Customer::find($item->customer_id);
             $room_type = RoomType::find($item->room_type_id);
-            $employee =Employee::find($item->employee_id);
+            $employee = Employee::find($item->employee_id);
             $position =  Position::find($employee->position_id);
-          
-            $data [] = [
+
+            $data[] = [
                 'id' => $item->id,
                 'customer_name' => $customer->full_name,
                 'room_type_name' => $room_type->room_type_name,
@@ -125,15 +126,15 @@ class FeedbackController extends Controller
                 'date_response' => $item->date_response,
                 'employee_name' => $employee->full_name,
                 'position' => $position->position_name,
-                'image' => $item->image,    
+                'image' => $item->image,
             ];
         }
         foreach ($list_feedback_service as $item1) {
             $customer = Customer::find($item1->customer_id);
             $service = Service::find($item1->service_id);
-            $employee =Employee::find($item1->employee_id);
+            $employee = Employee::find($item1->employee_id);
             $position =  Position::find($employee->position_id);
-            $data1 [] = [
+            $data1[] = [
                 'id' => $item->id,
                 'customer_name' => $customer->full_name,
                 'service_name' => $service->service_name,
@@ -144,7 +145,7 @@ class FeedbackController extends Controller
                 'date_response' => $item1->date_response,
                 'employee_name' => $employee->full_name,
                 'position' => $position->position_name,
-                'image' => $item1->image,    
+                'image' => $item1->image,
             ];
         }
         return response()->json([
@@ -154,30 +155,30 @@ class FeedbackController extends Controller
             'list_feedback_room' => $data1,
         ], 200);
     }
-        public function indexFeedbackEmployee()
-            {
-                $user = auth()->user();
-                // Kiểm tra token hợp lệ và người dùng đã đăng nhập
-                if (!$user) {
-                    return response()->json(['message' => 'Unauthorized'], 401);
-                } else {
-                $employee = DB::table('employees')->where('account_id', '=', $user->id)->first();
-                
-                if ($employee) {
+    public function indexFeedbackEmployee()
+    {
+        $user = auth()->user();
+        // Kiểm tra token hợp lệ và người dùng đã đăng nhập
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        } else {
+            $employee = DB::table('employees')->where('account_id', '=', $user->id)->first();
+
+            if ($employee) {
                 $list_feedback_room = DB::table('feedback')
-                ->where('feedback_status', '=', 'Feedbacked')
-                ->where('feedback_type','=','ROOM')
-                ->where('employee_id','=',$employee->id)->get();
+                    ->where('feedback_status', '=', 'Feedbacked')
+                    ->where('feedback_type', '=', 'ROOM')
+                    ->where('employee_id', '=', $employee->id)->get();
                 $list_feedback_service = DB::table('feedback')
-                ->where('feedback_status', '=', 'Feedbacked')
-                ->where('feedback_type','=','SERVICE')
-                ->where('employee_id','=',$employee->id)->get();
+                    ->where('feedback_status', '=', 'Feedbacked')
+                    ->where('feedback_type', '=', 'SERVICE')
+                    ->where('employee_id', '=', $employee->id)->get();
                 $data = [];
-                $data1 =[];
+                $data1 = [];
                 foreach ($list_feedback_room as $item) {
                     $customer = Customer::find($item->customer_id);
                     $room_type = RoomType::find($item->room_type_id);
-                    $data [] = [
+                    $data[] = [
                         'id' => $item->id,
                         'customer_name' => $customer->full_name,
                         'room_type_name' => $room_type->room_type_name,
@@ -186,13 +187,13 @@ class FeedbackController extends Controller
                         'comment' => $item->comment,
                         'date_request' => $item->date_request,
                         'date_response' => $item->date_response,
-                        'image' => $item->image,    
+                        'image' => $item->image,
                     ];
                 }
                 foreach ($list_feedback_service as $item1) {
                     $customer = Customer::find($item1->customer_id);
                     $service = Service::find($item1->service_id);
-                    $data1 [] = [
+                    $data1[] = [
                         'id' => $item->id,
                         'customer_name' => $customer->full_name,
                         'service_name' => $service->service_name,
@@ -201,7 +202,7 @@ class FeedbackController extends Controller
                         'comment' => $item1->comment,
                         'date_request' => $item1->date_request,
                         'date_response' => $item1->date_response,
-                        'image' => $item1->image,    
+                        'image' => $item1->image,
                     ];
                 }
                 return response()->json([
@@ -219,48 +220,46 @@ class FeedbackController extends Controller
         // Kiểm tra token hợp lệ và người dùng đã đăng nhập
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
-            } else {
-                $employee = DB::table('employees')->where('account_id', '=', $user->id)->first();           
+        } else {
+            $employee = DB::table('employees')->where('account_id', '=', $user->id)->first();
             if ($employee) {
                 $employee_id = DB::table('feedback')->where('id', '=', $id)->value('employee_id');
-                if(!$employee_id){
-                $feedback = DB::table('feedback')->where('id', '=', $id)->update([
-                    'date_response' => Carbon::now(),
-                    'feedback_status' =>  'Feedbacked',
-                    'employee_id' =>  $employee->id,
-                ]);
-                if ($feedback) {
-                    return response()->json([
-                        'message' => 'Updated Successfully',
-                        'status' => 200,
-                        'feedback' => $feedback,
-                    
+                if (!$employee_id) {
+                    $feedback = DB::table('feedback')->where('id', '=', $id)->update([
+                        'date_response' => Carbon::now(),
+                        'feedback_status' =>  'Feedbacked',
+                        'employee_id' =>  $employee->id,
                     ]);
-                } else {
-                    return response()->json([
-                        'message' => 'Updated Failed!',
-                        'status' => 400,
-                        'employee' => $employee,
-                    
-                    ]);
+                    if ($feedback) {
+                        return response()->json([
+                            'message' => 'Updated Successfully',
+                            'status' => 200,
+                            'feedback' => $feedback,
+
+                        ]);
+                    } else {
+                        return response()->json([
+                            'message' => 'Updated Failed!',
+                            'status' => 400,
+                            'employee' => $employee,
+
+                        ]);
+                    }
                 }
             }
         }
     }
-}
-public function deleteFeedback($id)
+    public function deleteFeedback($id)
     {
-    
-            // Xóa các dữ liệu liên quan (ReservationRooms, ...) trước khi xóa bill_room
-            $feedback = DB::table('feedback')->where('id', '=', $id)->delete();
-            return response()->json([
-                'status' => 200,
-                'message' => 'successfully',
-                
-            ]);
-      
+        // Xóa các dữ liệu liên quan (ReservationRooms, ...) trước khi xóa bill_room
+        $feedback = DB::table('feedback')->where('id', '=', $id)->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'successfully',
+
+        ]);
     }
-    public function storeFeedbackServiceByCustomer(Request $request,$id)
+    public function storeFeedbackServiceByCustomer(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'rating' => 'required',
@@ -282,38 +281,38 @@ public function deleteFeedback($id)
         } else {
             $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
 
-        if ($customer) {
-            $feedback = Feedback::create([
-              
-                'customer_id' => $customer->id,
-                'service_id' => $id,
-                'feedback_status'=>'Not feedbacked yet',
-                'feedback_type'=> 'SERVICE',
-                'rating' => $request->rating,
-                'title' => $request->title,
-                'comment' => $request->comment,
-                'date_request' => Carbon::now(),
-                'image' => $request->image, 
+            if ($customer) {
+                $feedback = Feedback::create([
+
+                    'customer_id' => $customer->id,
+                    'service_id' => $id,
+                    'feedback_status' => 'Not feedbacked yet',
+                    'feedback_type' => 'SERVICE',
+                    'rating' => $request->rating,
+                    'title' => $request->title,
+                    'comment' => $request->comment,
+                    'date_request' => Carbon::now(),
+                    'image' => $request->image,
 
 
-            ]);
+                ]);
 
-            if ($feedback) {
-            return response()->json([
-                'status' => 200,
-                'message' => 'Feedback created Successfully',
-                'feedback' => $feedback,
-            ]);
-        }else {
-            return response()->json([
-                'message' => 'Data not found!',
-                'status' => 404,
-            ], 404);
+                if ($feedback) {
+                    return response()->json([
+                        'status' => 200,
+                        'message' => 'Feedback created Successfully',
+                        'feedback' => $feedback,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Data not found!',
+                        'status' => 404,
+                    ], 404);
+                }
+            }
         }
     }
-}
-    }
-    public function storeFeedbackRoomByCustomer(Request $request,$id)
+    public function storeFeedbackRoomByCustomer(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'rating' => 'required',
@@ -335,34 +334,33 @@ public function deleteFeedback($id)
         } else {
             $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
 
-        if ($customer) {
-            $feedback = Feedback::create([
-            
-                'customer_id' => $customer->id,
-                'room_type_id' => $id,
-                'feedback_status'=>'Not feedbacked yet',
-                'feedback_type'=> 'ROOM',
-                'rating' => $request->rating,
-                'title' => $request->title,
-                'comment' => $request->comment,
-                'date_request' => Carbon::now(),
-                'image' => $request->image, 
-            ]);
+            if ($customer) {
+                $feedback = Feedback::create([
+                    'customer_id' => $customer->id,
+                    'room_type_id' => $id,
+                    'feedback_status' => 'Not feedbacked yet',
+                    'feedback_type' => 'ROOM',
+                    'rating' => $request->rating,
+                    'title' => $request->title,
+                    'comment' => $request->comment,
+                    'date_request' => Carbon::now(),
+                    'image' => fake()->imageUrl(),
+                ]);
 
-            if ($feedback) {
-            return response()->json([
-                'status' => 200,
-                'message' => 'Feedback created Successfully',
-                'feedback' => $feedback,
-            ]);
-        }else {
-            return response()->json([
-                'message' => 'Data not found!',
-                'status' => 404,
-            ], 404);
+                if ($feedback) {
+                    return response()->json([
+                        'status' => 200,
+                        'message' => 'Feedback created Successfully',
+                        'feedback' => $feedback,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Data not found!',
+                        'status' => 404,
+                    ], 404);
+                }
+            }
         }
-    }
-    }
     }
     public function getAllFeedbackRooms()
     {
@@ -384,7 +382,8 @@ public function deleteFeedback($id)
         ], 200);
     }
 
-    public function getTotalFeedbacksByRoomTypeId($id) {
+    public function getTotalFeedbacksByRoomTypeId($id)
+    {
         $total_feedback_rooms = DB::table('feedback')->where('room_type_id', '=', $id)->get();
         return response()->json([
             'message' => 'Query successfully!',
@@ -393,7 +392,8 @@ public function deleteFeedback($id)
         ], 200);
     }
 
-    public function getTotalFeedbacksByServiceId($id) {
+    public function getTotalFeedbacksByServiceId($id)
+    {
         $total_feedback_services = DB::table('feedback')->where('service_id', '=', $id)->get();
         return response()->json([
             'message' => 'Query successfully!',
@@ -402,7 +402,8 @@ public function deleteFeedback($id)
         ], 200);
     }
 
-    public function getAverageRatingByRoomTypeId($id) {
+    public function getAverageRatingByRoomTypeId($id)
+    {
         $total_rating_room_type = DB::table('feedback')->where('room_type_id', '=', $id)->sum('rating');
         $rating_count = DB::table('feedback')->where('room_type_id', '=', $id)->count();
         $average_rating_room_type = $rating_count > 0 ? $total_rating_room_type / $rating_count : 0;
@@ -414,7 +415,8 @@ public function deleteFeedback($id)
         ], 200);
     }
 
-    public function getAverageRatingByServiceId($id) {
+    public function getAverageRatingByServiceId($id)
+    {
         $total_rating_service = DB::table('feedback')->where('service_id', '=', $id)->sum('rating');
         $rating_count = DB::table('feedback')->where('service_id', '=', $id)->count();
         $average_rating_service = $rating_count > 0 ? $total_rating_service / $rating_count : 0;
@@ -426,7 +428,8 @@ public function deleteFeedback($id)
         ], 200);
     }
 
-    public function getTotalVerifiedFeedbackByRoomTypeId($id) {
+    public function getTotalVerifiedFeedbackByRoomTypeId($id)
+    {
         $total_verified_feedback_room_types = DB::table('feedback')
             ->where('room_type_id', '=', $id)
             ->where('feedback_status', '=', 'Feedbacked')
@@ -439,7 +442,8 @@ public function deleteFeedback($id)
         ], 200);
     }
 
-    public function getTotalVerifiedFeedbackByServiceId($id) {
+    public function getTotalVerifiedFeedbackByServiceId($id)
+    {
         $total_verified_feedback_services = DB::table('feedback')
             ->where('service_id', '=', $id)
             ->where('feedback_status', '=', 'Feedbacked')

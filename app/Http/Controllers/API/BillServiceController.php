@@ -147,7 +147,6 @@ class BillServiceController extends Controller
             'quantity' => 'required',
             'book_time' => 'required',
             'service_id' => 'required',
-
         ]);
 
         if ($validator->fails()) {

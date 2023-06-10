@@ -21,8 +21,8 @@ return new class extends Migration
             $table->dateTime('checkin_time')->nullable();
             $table->dateTime('cancel_time')->nullable();
             $table->float('tax');
-            $table->float('discount')->nullable();;
-            $table->string('bill_code');
+            $table->float('discount');
+            $table->string('bill_code')->nullable();
             $table->foreignId('service_id')->constrained('services');
             $table->foreignId('customer_id')->constrained('customers');
             $table->foreignId('employee_id')->nullable()->constrained('employees');

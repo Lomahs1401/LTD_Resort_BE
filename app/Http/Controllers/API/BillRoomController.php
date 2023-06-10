@@ -156,7 +156,7 @@ class BillRoomController extends Controller
                 $area = DB::table('areas')->where('id', '=', $room->area_id)->first();
                 $floor = DB::table('floors')->where('id', '=', $room->floor_id)->first();
                 $data[] = [
-
+                    'id' => $room->id,
                     'room_name' => $room->room_name,
                     'room_type' => $room_type->room_type_name,
                     'area' => $area->area_name,
