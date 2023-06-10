@@ -71,13 +71,17 @@ Route::group([
     Route::get('/floors', [FloorController::class, 'index']);
     Route::get('/floors/total', [FloorController::class, 'getTotalFloors']);
     Route::get('/floors/{id}', [FloorController::class, 'show']);
-
+    //Room-Type
+    Route::get('/room-types', [RoomTypeController::class, 'index']);
     // Rooms
     Route::get('/room', [RoomController::class, 'index']); 
     Route::get('/room/{id}', [RoomController::class, 'show']);
 
     // Feedbacks
-    Route::get('/feedbacks', [FeedbackController::class, 'index']);
+    Route::get('/list-not-feedbacks', [FeedbackController::class, 'indexNotFeedback']);
+    Route::get('/feedback/{id}', [FeedbackController::class, 'show']);
+    Route::delete('/detele-feedback/{id}', [FeedbackController::class, 'deleteFeedback']);
+
     Route::get('/feedbacks/{id}/{type}/paginate/{page_number}/{num_of_page}', [FeedbackController::class, 'paging']); // id = room_type_id or service_id
     Route::get('/feedbacks/room', [FeedbackController::class, 'getAllFeedbackRooms']);
     Route::get('/feedbacks/service', [FeedbackController::class, 'getAllFeedbackServices']);
@@ -89,7 +93,7 @@ Route::group([
     Route::get('/feedbacks/service/total/{service_id}', [FeedbackController::class, 'getTotalFeedbacksByServiceId']);
     Route::get('/feedbacks/room-type/total-verified/{room_type_id}', [FeedbackController::class, 'getTotalVerifiedFeedbackByRoomTypeId']);
     Route::get('/feedbacks/service/total-verified/{service_id}', [FeedbackController::class, 'getTotalVerifiedFeedbackByServiceId']);
-    Route::get('/feedbacks/{id}', [FeedbackController::class, 'show']);
+
 });
 
 // Customer API
@@ -107,7 +111,7 @@ Route::group([
     Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment']);
    
     //Room type
-    Route::get('/room-types', [RoomTypeController::class, 'index']);
+   
     Route::post('/room-types/paginate/{page_number}/{num_of_page}', [RoomTypeController::class, 'paging']);
     Route::get('/room-types/total/', [RoomTypeController::class, 'getTotalRoomTypes']);
     Route::get('/room-types/total-rooms/{id}', [RoomTypeController::class, 'getTotalNumerOfRoomByRoomTypeId']);  
@@ -138,7 +142,9 @@ Route::group([
     //Room
     Route::get('/room-types/list-rooms/{id}', [RoomTypeController::class, 'getListRoomsByRoomTypeId']);
     Route::post('/reserved-room/{id}', [RoomController::class, 'getReservedRooms']);
-
+    //Taọ Feedback
+    Route::post('/store-feedback-service/{id}', [FeedbackController::class, 'storeFeedbackServiceByCustomer']);
+    Route::post('/store-feedback-room/{id}', [FeedbackController::class, 'storeFeedbackRoomByCustomer']);
     // tạo bill service
     Route::post('/store-bill-service', [BillServiceController::class, 'storeBillService']);
     // tạo bill room
@@ -174,6 +180,9 @@ Route::group([
     Route::get('/list-bill-service', [BillServiceController::class, 'findBillService']);
     Route::get('/list-history-service', [BillServiceController::class, 'findHistoryService']);
     Route::get('/list-cancel-service', [BillServiceController::class, 'findCancelService']);
+    //Feedback
+    Route::get('/list-feedbacks-employee', [FeedbackController::class, 'indexFeedbackEmployee']);
+    Route::patch('/feedbacks-employee/{id}', [FeedbackController::class, 'getFeedbackByEmployee']);
 });
 
 // Admin API
@@ -235,4 +244,6 @@ Route::group([
   Route::get('/totalBillMonth-row2',[StatisticsController::class, 'totalBillMonth']);
   Route::get('/totalFeedback-row3/{currentYear}',[StatisticsController::class, 'totalFeedback']);
   Route::get('/totalEmployeeMonth-row3',[StatisticsController::class, 'totalEmployeeMonth']);
+  //Feedback
+  Route::get('/list-feedbacks-admin', [FeedbackController::class, 'indexFeedbackAdmin']);
 });

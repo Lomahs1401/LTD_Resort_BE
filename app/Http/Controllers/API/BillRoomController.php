@@ -45,7 +45,7 @@ class BillRoomController extends Controller
                     'discount' => $item->discount,
                     'time_start' => $time->time_start,
                     'time_end' => $time->time_end,
-                    'code' => $item->id,
+                    'id' => $item->id,
                 ];
             }
 
@@ -87,7 +87,7 @@ class BillRoomController extends Controller
                     'discount' => $item->discount,
                     'time_start' => $time->time_start,
                     'time_end' => $time->time_end,
-                    'code' => $item->id,
+                    'id' => $item->id,
                 ];
             }
 
@@ -129,7 +129,7 @@ class BillRoomController extends Controller
                     'discount' => $item->discount,
                     'time_start' => $time->time_start,
                     'time_end' => $time->time_end,
-                    'code' => $item->id,
+                    'id' => $item->id,
                 ];
             }
 
@@ -156,13 +156,14 @@ class BillRoomController extends Controller
                 $area = DB::table('areas')->where('id', '=', $room->area_id)->first();
                 $floor = DB::table('floors')->where('id', '=', $room->floor_id)->first();
                 $data[] = [
+
                     'room_name' => $room->room_name,
                     'room_type' => $room_type->room_type_name,
                     'area' => $area->area_name,
                     'floor' => $floor->floor_name,
                     'price' => $room_type->price,
                     'point_ranking' => $room_type->point_ranking,
-
+                    'room_type_id' => $room_type->id,
                 ];
             }
 
