@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('bill_rooms', function (Blueprint $table) {
             $table->id();
-            $table->integer('total_amount');
+            $table->double('total_amount', 10, 2);
             $table->integer('total_room');
             $table->integer('total_people');
             $table->string('payment_method');
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->dateTime('cancel_time')->nullable();
             $table->float('tax');
             $table->float('discount');
-            $table->string('bill_code')->nullable();;
+            $table->string('bill_code')->nullable();
             $table->foreignId('customer_id')->constrained('customers');
             $table->foreignId('employee_id')->nullable()->constrained('employees');
             $table->timestamps();

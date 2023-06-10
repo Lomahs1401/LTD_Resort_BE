@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('bill_services', function (Blueprint $table) {
             $table->id();
             $table->integer('quantity');
-            $table->float('total_amount');
+            $table->double('total_amount', 10, 2);
             $table->date('book_time');
             $table->string('payment_method');
             $table->dateTime('pay_time')->nullable();

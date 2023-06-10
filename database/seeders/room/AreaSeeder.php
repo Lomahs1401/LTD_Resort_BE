@@ -13,7 +13,7 @@ class AreaSeeder extends Seeder
      */
     public function run(): void
     {
-        $areas_zone = ['A', 'B', 'C', 'D', 'E'];
+        $areas_zone = ['A', 'B', 'C'];
 
         define('NUMBER_OF_AREAS', count($areas_zone));
         

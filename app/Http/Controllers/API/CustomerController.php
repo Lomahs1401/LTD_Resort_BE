@@ -286,6 +286,7 @@ class CustomerController extends Controller
                     $data[] = [
                         'id' => $item->id,
                         'total_amount' => $item->total_amount,
+                        'total_room' => $item->total_room,
                         'total_people' => $item->total_people,
                         'payment_method' => $item->payment_method,
                         'pay_time' => $item->pay_time,
@@ -294,7 +295,6 @@ class CustomerController extends Controller
                         'bill_code' => $item->bill_code,
                         'time_start' => $time->time_start,
                         'time_end' => $time->time_end,
-
                     ];
                 }
                 $data1 = [];
@@ -476,7 +476,6 @@ class CustomerController extends Controller
     }
     public function getPayBillSuccess(Request $request)
     {
-
         $user = auth()->user();
         // Kiểm tra token hợp lệ và người dùng đã đăng nhập
         if (!$user) {

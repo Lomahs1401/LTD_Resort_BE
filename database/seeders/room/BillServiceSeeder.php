@@ -2,17 +2,17 @@
 
 namespace Database\Seeders\room;
 
-use App\Models\room\BillRoom;
+use App\Models\service\BillService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class BillRoomSeeder extends Seeder
+class BillServiceSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        BillRoom::factory(30)->create();
+        BillService::factory(30)->create();
     }
 }
