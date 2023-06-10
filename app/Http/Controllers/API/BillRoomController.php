@@ -156,7 +156,7 @@ class BillRoomController extends Controller
                 $area = DB::table('areas')->where('id', '=', $room->area_id)->first();
                 $floor = DB::table('floors')->where('id', '=', $room->floor_id)->first();
                 $data[] = [
-                    'room_id' => $room->id,
+                    'id' => $room->id,
                     'room_name' => $room->room_name,
                     'room_type' => $room_type->room_type_name,
                     'area' => $area->area_name,
@@ -182,6 +182,7 @@ class BillRoomController extends Controller
 //             return response()->json(['message' => 'Unauthorized'], 401);
 //         } else {
 //             $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
+
 
 //         if ($customer) {
 //             $total_amount = 0;
@@ -235,10 +236,6 @@ class BillRoomController extends Controller
 //                 ]);
 //             }
 
-            
-//         }
-//     }
-// }
    
     public function deleteBillRoom()
     {
@@ -267,4 +264,3 @@ class BillRoomController extends Controller
         }
     }
 }
-
