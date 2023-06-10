@@ -55,8 +55,8 @@ Route::group([
     Route::patch('/changePassword', [AccountController::class, 'changePassword']);
 
     //Xoá bill khi quá thời hạn 
-    Route::delete('/delete-bill-room', [BillRoomController::class, 'deleteBillRoom']);
-    Route::delete('/delete-bill-service', [BillServiceController::class, 'deleteBillService']);
+    Route::detele('/delete-bill-room', [BillRoomController::class, 'deleteBillRoom']);
+    Route::detele('/delete-bill-service', [BillServiceController::class, 'deleteBillService']);
 
     //Chi tiết phòng của từng bill room
     Route::get('/show-bill-room-detail/{id}', [BillRoomController::class, 'findBillRoomDetail']);
