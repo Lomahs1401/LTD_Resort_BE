@@ -33,31 +33,13 @@ class Customer extends Model
         'ranking_id'
     ];
     
-    /**
-     * Define an inverse one-to-one or many relationship.
-     *
-     * @param  string  $related
-     * @param  string|null  $foreignKey
-     * @param  string|null  $ownerKey
-     * @param  string|null  $relation
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     * 
-     * Get the account that owns the admin.
-     */
-    // public function account()
-    // {
-    //     /**
-    //      * $related là model muốn liên kết.
-    //      * 
-    //      * $foreignKey là column của bảng hiện tại sẽ dùng để liên kết. 
-    //      * Mặc định $foreignKey sẽ là tên của phương thức cộng với primary key của $relatedModel.
-    //      * 
-    //      * $localKey là column của bảng $relatedModel sẽ dùng để liên kết. 
-    //      * Mặc định $ownerKey là khóa chính của $relatedModel.
-    //      * 
-    //      * $foreignKey là khóa ngoại của bảng hiện tại
-    //      */
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'id');
+    }
 
-    //     return $this->belongsTo(Account::class);
-    // }
+    public function billroom()
+    {
+        return $this->hasMany(Customer::class);
+    }
 }

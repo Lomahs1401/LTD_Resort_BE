@@ -5,7 +5,6 @@ namespace App\Models\user;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -13,7 +12,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Account extends Authenticatable implements JWTSubject
 {
-    use HasFactory, HasApiTokens, Notifiable, SoftDeletes;
+    use HasFactory, HasApiTokens, Notifiable;
 
     /**
      * The table associated with the model.
@@ -33,7 +32,10 @@ class Account extends Authenticatable implements JWTSubject
         'password', 
         'avatar', 
         'enabled',
-        'role_id'
+        'role_id',
+        'reset_code',
+        'reset_code_expires_at',
+        'reset_code_attempts'
     ];
 
     /**
@@ -43,6 +45,9 @@ class Account extends Authenticatable implements JWTSubject
      */
     protected $hidden = [
         'password',
+        'reset_code',
+        'reset_code_expires_at',
+        'reset_code_attempts'
     ];
 
     // Rest omitted for brevity
@@ -67,36 +72,9 @@ class Account extends Authenticatable implements JWTSubject
         return [];
     }
 
-    // /**
-    //  * Define an inverse one-to-one or many relationship.
-    //  *
-    //  * @param  string  $related
-    //  * @param  string|null  $foreignKey
-    //  * @param  string|null  $ownerKey
-    //  * @param  string|null  $relation
-    //  * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-    //  * 
-    //  * Get the admin associated with the account.
-    //  */
-    // public function admin()
-    // {
-    //     /**
-    //      * $related là model muốn liên kết.
-    //      * 
-    //      * $foreignKey là column của bảng hiện tại sẽ dùng để liên kết. 
-    //      * Mặc định $foreignKey sẽ là tên của phương thức cộng với primary key của $relatedModel.
-    //      * 
-    //      * $localKey là column của bảng $relatedModel sẽ dùng để liên kết. 
-    //      * Mặc định $ownerKey là khóa chính của $relatedModel.
-    //      * 
-    //      * $foreignKey là khóa ngoại của bảng hiện tại
-    //      */
-
-    //     return $this->belongsTo(Account::class, 'account_id', 'account_id');
-    // }
     public function customer()
     {
-    return $this->hasOne(Customer::class);
+    return $this->hasOne(Customer::class, 'account_id');
     }
     public function employee()
     {

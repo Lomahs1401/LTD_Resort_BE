@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->date('time_start');
             $table->date('time_end');
-            $table->string('status');
+            $table->boolean('status');
             $table->foreignId('room_id')->constrained('rooms');
             $table->foreignId('bill_room_id')->constrained('bill_rooms');
+            $table->foreignId('customer_id')->constrained('customers');
             $table->timestamps();
         });
     }

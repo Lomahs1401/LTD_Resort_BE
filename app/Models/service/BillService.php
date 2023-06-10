@@ -22,12 +22,17 @@ class BillService extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'quantity',
         'total_amount',
+        'book_time',
         'payment_method',
         'pay_time',
+        'checkin_time',
         'cancel_time',
         'tax',
         'discount',
+        'bill_code',
+        'service_id',
         'customer_id',
         'employee_id',
     ];

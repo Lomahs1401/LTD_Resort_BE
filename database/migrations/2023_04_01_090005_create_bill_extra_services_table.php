@@ -18,7 +18,7 @@ return new class extends Migration
             $table->float('tax');
             $table->float('discount');
             $table->foreignId('customer_id')->constrained('customers');
-            $table->foreignId('employee_id')->constrained('employees');
+            $table->foreignId('employee_id')->nullable()->constrained('employees');
             $table->timestamps();
         });
     }

@@ -28,7 +28,6 @@ return new class extends Migration
             $table->foreignId('account_id')->nullable()->constrained('accounts');
             $table->foreignId('position_id')->constrained('positions');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

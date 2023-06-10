@@ -78,8 +78,11 @@ class AccountSeeder extends Seeder
                 'email' => fake()->safeEmail(),
                 'password' => Hash::make('123'),
                 'avatar' => $list_avatars[$i],
-                'enabled' => fake()->boolean(95),
+                'enabled' => fake()->boolean(100),
                 'role_id' => fake()->randomElement([1, 2, 3]),
+                'reset_code'=> null,
+                'reset_code_expires_at'=>null,
+                'reset_code_attempts'=>null
             ]);
         }
     }

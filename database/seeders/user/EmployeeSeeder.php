@@ -17,16 +17,20 @@ class EmployeeSeeder extends Seeder
     public function run(): void
     {
         $account_model = new Account();
-        $employee_accounts = $account_model->newQuery()->join('roles', 'accounts.role_id', '=', 'roles.id')->where('role_name', '=', 'ROLE_CUSTOMER')->get(['accounts.id']);
+        $employee_accounts = $account_model->newQuery()->join('roles', 'accounts.role_id', '=', 'roles.id')->where('role_name', '=', 'ROLE_EMPLOYEE')->get(['accounts.id']);
 
         $position_model = new Position();
-        $list_positions = $position_model->newQuery()->get('id');
+        $list_positions = $position_model->newQuery()
+            ->where('permission',  1)
+            ->get('id');
 
-        for ($i = 0; $i < count($employee_accounts); $i++) {
-            Employee::factory()->create([
-                'account_id' => $employee_accounts[$i]->id,
-                'position_id' => fake()->randomElement($list_positions),
-            ]);
-        }
+       
+            for ($i = 0; $i < count($employee_accounts); $i++) {
+                Employee::factory()->create([
+                    'account_id' => $employee_accounts[$i]->id,
+                    'position_id' => fake()->randomElement($list_positions),
+                ]);
+            }
+        
     }
 }

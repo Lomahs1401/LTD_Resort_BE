@@ -19,8 +19,10 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->boolean('enabled');
             $table->foreignId('role_id')->constrained('roles');
+            $table->string('reset_code')->nullable();
+            $table->timestamp('reset_code_expires_at')->nullable();
+            $table->string('reset_code_attempts')->nullable();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

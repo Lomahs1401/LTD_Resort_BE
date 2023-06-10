@@ -19,7 +19,8 @@ class AdminSeeder extends Seeder
         $admin_accounts = $account_model->newQuery()->join('roles', 'accounts.role_id', '=', 'roles.id')->where('role_name', '=', 'ROLE_ADMIN')->get(['accounts.id']);
         
         $position_model = new Position();
-        $list_positions = $position_model->newQuery()->get('id');
+        $list_positions = $position_model->newQuery()
+        ->where('permission', '=', 2)->get('id');
         
         for ($i = 0; $i < count($admin_accounts); $i++) {
             Admin::factory()->create([

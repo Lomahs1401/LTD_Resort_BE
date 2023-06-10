@@ -26,7 +26,7 @@ class AdminFactory extends Factory
             'address' => fake()->boolean() ? fake('vi_VN')->city() : fake('vi_VN')->province(),
             'phone' => fake('vi_VN')->regexify('(0|3|5|7|8|9){1}([0-9]{8})'),
             'image' => fake()->imageUrl(),
-            'status' => fake()->boolean(80),
+            'status' => fake()->boolean(100),
         ];
     }
 }

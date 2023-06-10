@@ -28,8 +28,6 @@ class Service extends Model
         'status',
         'price',
         'point_ranking',
-        'status',
-        'feedback_id',
         'service_type_id',
     ];
 }

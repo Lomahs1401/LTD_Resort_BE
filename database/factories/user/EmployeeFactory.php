@@ -29,9 +29,9 @@ class EmployeeFactory extends Factory
             'account_bank' => fake()->numerify('##########'),
             'name_bank' => fake()->randomElement($nameBanks),
             'day_start' => fake()->dateTimeInInterval('-50 years', '+40 years', 'Asia/Ho_Chi_Minh'),
-            'day_quit' => fake()->dateTimeInInterval('-4 years', '-1 years', 'Asia/Ho_Chi_Minh'),
+            'day_quit' => null,
             'image' => fake()->imageUrl(),
-            'status' => fake()->boolean(),
+            'status' => fake()->boolean(1000),
         ];
     }
 }
