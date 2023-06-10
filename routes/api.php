@@ -18,6 +18,7 @@ use App\Http\Controllers\API\RoomTypeController;
 use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\DepartmentController;
 use App\Http\Controllers\API\PositionController;
+use App\Http\Controllers\API\ReservationRoomController;
 use App\Http\Controllers\API\StatisticsController;
 
 /*
@@ -150,12 +151,19 @@ Route::group([
     // tạo bill room
     Route::post('/store-bill-room/{time_start}/{time_end}', [BillRoomController::class, 'storeBillRoom']);
      //Xoá bill khi quá thời hạn 
-     Route::delete('/delete-bill-room', [BillRoomController::class, 'deleteBillRoom']);
-     Route::delete('/delete-bill-service', [BillServiceController::class, 'deleteBillService']);
+    Route::delete('/delete-bill-room', [BillRoomController::class, 'deleteBillRoom']);
+    Route::delete('/delete-bill-service', [BillServiceController::class, 'deleteBillService']);
     // Cập nhập lại điểm và hạng khách hàng khi thanh toán 
     Route::get('/get-ranking-point/{id}', [CustomerController::class, 'getRankingPoint']);
     // Thanh toán thành công 
     Route::patch('/pay-bill', [CustomerController::class, 'getPayBillSuccess']);
+    //Resevation_room
+    Route::post('/store-resevation_room', [ReservationRoomController::class, 'store']);
+    Route::delete('/delete-resevation_room/{id}/{time_start}/{time_end}', [ReservationRoomController::class, 'delete']);
+    Route::delete('/delete-resevation_room_30_minnutes', [ReservationRoomController::class, 'delete30minutes']);
+    Route::get('/check-count/{time_start}/{time_end}', [ReservationRoomController::class, 'checkCount']);
+    Route::get('/check-customers-have-paid/{time_start}/{time_end}', [ReservationRoomController::class, 'CheckIfOtherCustomersHavePaid']);
+    Route::get('/show-bill-not-pay-by-customer/{time_start}/{time_end}', [ReservationRoomController::class, 'ShowBillNotPayByCustomer']);
 });
 
 // Employee API

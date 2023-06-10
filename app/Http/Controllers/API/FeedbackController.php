@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 use App\Models\Feedback;
 use App\Models\Position;
 use App\Models\room\RoomType;
@@ -43,7 +44,7 @@ class FeedbackController extends Controller
             $customer = Customer::find($item1->customer_id);
             $service = Service::find($item1->service_id);
             $data1 [] = [
-                'id' => $item->id,
+                'id' => $item1->id,
                 'customer_name' => $customer->full_name,
                 'service_name' => $service->service_name,
                 'rating' => $item1->rating,
@@ -57,7 +58,7 @@ class FeedbackController extends Controller
             'message' => 'Query successfully!',
             'status' => 200,
             'list_feedback_room' => $data,
-            'list_feedback_room' => $data1,
+            'list_feedback_service' => $data1,
         ], 200);
     }
    
@@ -65,20 +66,26 @@ class FeedbackController extends Controller
     {
         $feedback = DB::table('feedback')->find($id);
         if ($feedback) {
-            $customer = DB::table('customers')->where('id', '=', $feedback->customer_id)->get();
-            $service = DB::table('services')->where('id', '=', $feedback->service_id)->get();
-            $room_type = DB::table('room_types')->where('id', '=', $feedback->room_type_id)->get();
-            $employee = DB::table('employees')->where('id', '=', $feedback->employee_id)->get();
-            $position =  DB::table('positions')->where('id', '=',$employee->position_id)->get();
-            $department =  DB::table('departments')->where('id', '=',$position->department_id)->get();
+            $customer = Customer::find($feedback->customer_id);
+            $service = Service::find($feedback->service_id);
+            $room_type = RoomType::find($feedback->room_type_id);
+            $employee = Employee::find($feedback->employee_id);
+            $position = null;
+            if ($employee && isset($employee->position_id)) {
+                $position = Position::find($employee->position_id);
+            }
+            $department = null;
+            if ($position && isset($position->department_id)) {
+                $department = Department::find($position->department_id);
+            }
             $data  = [
                 'id' => $feedback->id,
                 'customer_name' => $customer->full_name,
-                'service_name' => $service->service_name,//hiển thị trong feedback service //1
-                'room_type_name' => $room_type->room_type_name,//hiển thị feedback trong room  //1
-                'employee_name' => $employee->full_name,//hiển thị trong Admin //3
-                'position' => $position->position_name,//hiển thị trong Admin //3
-                'department' => $department->department_name,//hiển thị trong Admin  //3             
+                'service_name' => $service ? $service->service_name : null,//hiển thị trong feedback service //1
+                'room_type_name' => $room_type ? $room_type->room_type_name : null,//hiển thị feedback trong room  //1
+                'employee_name' => $employee ? $employee->full_name : null,//hiển thị trong Admin //3
+                'position' => $position ? $position->position_name : null,//hiển thị trong Admin //3
+                'department' => $department ? $department->department_name : null,//hiển thị trong Admin  //3                
                 'rating' => $feedback->rating,
                 'title' => $feedback->title,
                 'comment' => $feedback->comment,
@@ -89,7 +96,7 @@ class FeedbackController extends Controller
             return response()->json([
                 'message' => 'Query successfully!',
                 'status' => 200,
-                'feedback' => $data,
+                'feedback' =>$data,
             ], 200);
         } else {
             return response()->json([
@@ -134,7 +141,7 @@ class FeedbackController extends Controller
             $employee =Employee::find($item1->employee_id);
             $position =  Position::find($employee->position_id);
             $data1 [] = [
-                'id' => $item->id,
+                'id' => $item1->id,
                 'customer_name' => $customer->full_name,
                 'service_name' => $service->service_name,
                 'rating' => $item1->rating,
@@ -151,7 +158,7 @@ class FeedbackController extends Controller
             'message' => 'Query successfully!',
             'status' => 200,
             'list_feedback_room' => $data,
-            'list_feedback_room' => $data1,
+            'list_feedback_service' => $data1,
         ], 200);
     }
         public function indexFeedbackEmployee()
@@ -193,7 +200,7 @@ class FeedbackController extends Controller
                     $customer = Customer::find($item1->customer_id);
                     $service = Service::find($item1->service_id);
                     $data1 [] = [
-                        'id' => $item->id,
+                        'id' => $item1->id,
                         'customer_name' => $customer->full_name,
                         'service_name' => $service->service_name,
                         'rating' => $item1->rating,
@@ -208,7 +215,7 @@ class FeedbackController extends Controller
                     'message' => 'Query successfully!',
                     'status' => 200,
                     'list_feedback_room' => $data,
-                    'list_feedback_room' => $data1,
+                    'list_feedback_service' => $data1,
                 ], 200);
             }
         }

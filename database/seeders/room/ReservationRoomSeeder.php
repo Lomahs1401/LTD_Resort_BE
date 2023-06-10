@@ -34,7 +34,9 @@ class ReservationRoomSeeder extends Seeder
                     'time_end' => $checkout_time,
                     'status' => 1,
                     'room_id' => fake()->randomElement($rooms),
+                    'customer_id'=>$bill_room->customer_id,
                     'bill_room_id' => $bill_room->id,
+
                 ]);
             }
         }

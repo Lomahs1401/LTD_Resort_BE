@@ -26,6 +26,7 @@ class ReservationRoom extends Model
         'time_end',
         'status',
         'room_id',
+        'customer_id',
         'bill_room_id',
     ];
 }
