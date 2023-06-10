@@ -234,8 +234,21 @@ public function ShowBillNotPayByCustomer($time_start,$time_end)
                 $data1[] = $room;
                }
             }
+            $feedback1 = DB::table('feedback')->where('room_type_id', '=', $item->room_type_id)->sum('rating');
+            $total_feedback1=DB::table('feedback')->where('room_type_id', '=', $item->room_type_id)->count();
+            $average_rating_room_type = $total_feedback1 > 0 ? $feedback1 / $total_feedback1 : 0;
             $data[]=[
-                'room_type'=>$item,
+                'id'=>$item->id,
+                'room_type_name'=>$item->room_type_name,
+                'room_size'=>$item->room_size,
+                'number_customers'=>$item->number_customers,
+                'description'=>$item->description,
+                'image'=>$item->image,
+                'price'=>$item->price,
+                'point_ranking'=>$item->point_ranking,
+                'description'=>$item->description,
+                'total_feedback'=>$total_feedback1,
+                'average_rating_room_type'=>$average_rating_room_type,
                 'room'=> $data1,
             ];
             }
@@ -259,7 +272,7 @@ public function ShowBillNotPayByCustomer($time_start,$time_end)
                 $service = DB::table('services')->where('id', '=', $item->service_id)->first();
                 $feedback = DB::table('feedback')->where('service_id', '=', $item->service_id)->sum('rating');
                 $total_feedback=DB::table('feedback')->where('service_id', '=', $item->service_id)->count();
-                $average_rating_room_type = $total_feedback > 0 ? $feedback / $total_feedback : 0;
+                $average_rating_service = $total_feedback > 0 ? $feedback / $total_feedback : 0;
                 $service_type = DB::table('service_types')->where('id', '=', $service->service_type_id)->first();
                 $data[] = [
                     'id_bill'=>$item->id,
@@ -280,7 +293,7 @@ public function ShowBillNotPayByCustomer($time_start,$time_end)
                     'service_type_id' => $service_type->id,
                     'service_type' => $service_type->service_type_name,
                     'total_feedback'=>$total_feedback,
-                    'average_rating_room_type'=>$average_rating_room_type
+                    'average_rating_service'=>$average_rating_service
                    
                 ];
             }

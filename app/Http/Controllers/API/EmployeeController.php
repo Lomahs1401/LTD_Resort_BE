@@ -8,6 +8,7 @@ use App\Models\Position;
 use Illuminate\Http\Request;
 use App\Models\user\Employee;
 use App\Models\user\Account;
+use App\Models\user\Customer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
@@ -284,7 +285,7 @@ class EmployeeController extends Controller
         $position= DB::table('positions')->where('position_name', '=', $request->position_name)->first();
       
         // $employee = Employee::create([
-        $data=[
+        $employee=Employee::create([
             'full_name' => $request->full_name,
             'gender' => $request->gender,
             'birthday' => $request->birthday,
@@ -296,30 +297,61 @@ class EmployeeController extends Controller
             'day_start' => Carbon::now($request->day_start),
             'status' => $request->status | 1,
             'position_id' => $position->id,
-        ];
+        ]);
+        if($employee){
+        return response()->json([
+            'status' => 200,
+            'message' => 'Employee created Successfully',
+            'employee' => $employee,
+          
+
+        ]);
+        }
+    }
+    public function storeAccountbyEmployee(Request $request,$id)
+    {
+        // $validator = Validator::make($request->all(), [
+        //     'full_name' => 'required',
+        //     'gender' => 'required',
+        //     'birthday' => 'required',
+        //     'CMND' => 'required',
+        //     'address' => 'required',
+        //     'phone' => 'required',
+        //     'account_bank' => 'required',
+        //     'name_bank' => 'required',
+        //     'department_name' => 'required',
+        //     'position_name' =>  'required'
         // ]);
-            // $position = Position::find($data['position_id']);
+
+        // if ($validator->fails()) {
+        //     $response = [
+        //         'status_code' => 400,
+        //         'message' => $validator->errors(),
+        //     ];
+        //     return response()->json($response, 400);
+        // }
+        $employee = Employee::find($id);
+        
+        $position= DB::table('positions')->where('id', '=', $employee->position_id)->first();
+      
             if ($position->permission == '1') {
-                $accountData =[
+                $accountData =Account::create([
                     'username' => $request->username,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),                 
                     'enabled' => $request->enabled | '1',
                     'role_id' => $request->role_id | '2'
-                ];
-
-                $account =Account::create($accountData);
-                $token = Auth::guard('api')->login($account);
-                $data['account_id'] = $account->id;
-            }else{
-                $data['account_id'] = null;
+                ]);
+                $token = Auth::guard('api')->login($accountData);
+                $employee->account_id = $accountData->id;
+                $employee->update();
             }
-            $employee = Employee::create($data);
-
+         
 
         return response()->json([
             'status' => 200,
             'message' => 'Employee created Successfully',
+            'account' => $position,
             'employee' => $employee,
           
 
