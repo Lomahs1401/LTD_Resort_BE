@@ -163,7 +163,7 @@ class BillRoomController extends Controller
                     'floor' => $floor->floor_name,
                     'price' => $room_type->price,
                     'point_ranking' => $room_type->point_ranking,
-                    'room_type_id' => $room_type->id,
+                    'room_type_id' => $room->room_type_id,
                 ];
             }
 
@@ -258,7 +258,7 @@ class BillRoomController extends Controller
         $startDate = Carbon::parse($reservation_time->time_start);
         $endDate = Carbon::parse($reservation_time->time_end);
         $numberOfDays = $startDate->diffInDays($endDate);
-        $total_amount = $numberOfDays * $price * (1 - $bill_room->discount) * (1 + $bill_room->tax);;
+        $total_amount = $numberOfDays * $price * (1 - $bill_room->discount) * (1 + $bill_room->tax);
 
         $bill_room->total_amount = $total_amount;
         $bill_room->total_room = $total_room;
