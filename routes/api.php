@@ -55,8 +55,8 @@ Route::group([
     Route::patch('/changePassword', [AccountController::class, 'changePassword']);
 
     //Xoá bill khi quá thời hạn 
-    Route::detele('/delete-bill-room', [BillRoomController::class, 'deleteBillRoom']);
-    Route::detele('/delete-bill-service', [BillServiceController::class, 'deleteBillService']);
+    Route::delete('/delete-bill-room', [BillRoomController::class, 'deleteBillRoom']);
+    Route::delete('/delete-bill-service', [BillServiceController::class, 'deleteBillService']);
 
     //Chi tiết phòng của từng bill room
     Route::get('/show-bill-room-detail/{id}', [BillRoomController::class, 'findBillRoomDetail']);
@@ -80,7 +80,7 @@ Route::group([
     // Feedbacks
     Route::get('/list-not-feedbacks', [FeedbackController::class, 'indexNotFeedback']);
     Route::get('/feedback/{id}', [FeedbackController::class, 'show']);
-    Route::detele('/detele-feedback/{id}', [FeedbackController::class, 'deleteFeedback']);
+    Route::delete('/detele-feedback/{id}', [FeedbackController::class, 'deleteFeedback']);
 
     Route::get('/feedbacks/{id}/{type}/paginate/{page_number}/{num_of_page}', [FeedbackController::class, 'paging']); // id = room_type_id or service_id
     Route::get('/feedbacks/room', [FeedbackController::class, 'getAllFeedbackRooms']);
