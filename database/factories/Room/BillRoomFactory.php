@@ -17,6 +17,7 @@ class BillRoomFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
     public function definition(): array
     {
         $customer_model = new Customer();
@@ -29,6 +30,10 @@ class BillRoomFactory extends Factory
 
         $has_been_check = fake()->boolean(70);
 
+        $startDate = \Carbon\Carbon::now()->subMonth();
+        $endDate = \Carbon\Carbon::now();
+        $billCode = fake()->dateTimeBetween($startDate, $endDate)->format('YmdHis');
+
         return [
             'total_amount' => fake()->numberBetween(440000, 1160000),
             'total_room' => fake()->numberBetween(2, 6),
@@ -38,8 +43,9 @@ class BillRoomFactory extends Factory
             'checkin_time' => $has_been_check ? $checkin_time : null,
             'checkout_time' => $has_been_check ? $checkout_time : null,
             'cancel_time' => null,
-            'tax' => 0,
+            'tax' => fake()->randomElement([0.1, 0.12, 0.15]),
             'discount' => 0,
+            'bill_code' => $billCode,
             'customer_id' => fake()->randomElement($customer_id_accounts),
             'employee_id' => $has_been_check ? fake()->randomElement($employee_id_accounts) : null,
         ];
