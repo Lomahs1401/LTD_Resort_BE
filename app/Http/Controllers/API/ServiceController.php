@@ -14,7 +14,7 @@ class ServiceController extends Controller
         $list_services = Service::all();
         $data = [];
                 foreach ($list_services as $item) {
-                    $number = DB::table('service_types')->where('id', '=', $item->service_type_id)->get();
+                    $number = ServiceType::find($item->service_type_id);
                     $data[] = [
                         'id' => $item->id,
                         'service_name' => $item->service_name,
@@ -30,14 +30,14 @@ class ServiceController extends Controller
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
-            'list_room_types' => $data,
+            'list_service_types' => $data,
         ], 200);
     }
 
     public function showService($id) {
         $item = Service::find($id);
         if ($item) {
-            $number = DB::table('service_types')->where('id', '=', $item->service_type_id)->get();
+            $number = ServiceType::find($item->service_type_id);
             $data[] = [
                 'id' => $item->id,
                 'service_name' => $item->service_name,
@@ -89,7 +89,7 @@ class ServiceController extends Controller
         ->where('status', '=', 'AVAILABLE')->get();
         $data = [];
                 foreach ($number as $item) {
-                    $number = DB::table('service_types')->where('id', '=', $item->service_type_id)->get();
+                    $number1 = ServiceType::find($item->service_type_id);
                     $data[] = [
                         'id' => $item->id,
                         'service_name' => $item->service_name,
@@ -98,7 +98,7 @@ class ServiceController extends Controller
                         'status' => $item->status,
                         'price' => $item->price,
                         'point_ranking' => $item->point_ranking,
-                        'service_type_name' => $number->service_type_name,
+                        'service_type_name' => $number1->service_type_name,
                          
                     ];
                 }

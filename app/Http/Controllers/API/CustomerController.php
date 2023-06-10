@@ -219,6 +219,7 @@ class CustomerController extends Controller
             foreach ($bill_room as $item) {
                 $time = DB::table('reservation_rooms')->where('bill_room_id', '=', $item->id)->first();
                 $data[] = [
+                    'id' => $item->id,
                     'total_amount' => $item->total_amount,
                     'total_people' => $item->total_people,
                     'payment_method' => $item->payment_method,
@@ -227,7 +228,7 @@ class CustomerController extends Controller
                     'discount' => $item->discount,
                     'time_start' => $time->time_start,
                     'time_end' => $time->time_end,
-                    'code' => $item->id,
+                   
                 ];
             }
             $data1 = [];
@@ -235,6 +236,7 @@ class CustomerController extends Controller
                 $service = DB::table('services')->where('id', '=', $item1->service_id)->first();
                 $service_type = DB::table('service_types')->where('id', '=', $service->service_type_id)->first();
                 $data1[] = [
+                    'id' => $item1->id,
                     'quantity' => $item1->quantity,
                     'total_amount' => $item1->total_amount,
                     'book_time' => $item1->book_time,
@@ -244,7 +246,7 @@ class CustomerController extends Controller
                     'discount' => $item1->discount,
                     'service' => $service->service_name,
                     'service_type' => $service_type->service_type_name,
-                    'code' => $item1->id,
+
                 ];
             }
             return response()->json([
@@ -282,6 +284,7 @@ class CustomerController extends Controller
                 foreach ($bill_room as $item) {
                     $time = DB::table('reservation_rooms')->where('bill_room_id', '=', $item->id)->first();
                     $data[] = [
+                        'id' => $item->id,
                         'total_amount' => $item->total_amount,
                         'total_people' => $item->total_people,
                         'payment_method' => $item->payment_method,
@@ -299,6 +302,7 @@ class CustomerController extends Controller
                     $service = DB::table('services')->where('id', '=', $item1->service_id)->first();
                     $service_type = DB::table('service_types')->where('id', '=', $service->service_type_id)->first();
                     $data1[] = [
+                        'id' => $item1->id,
                         'quantity' => $item1->quantity,
                         'total_amount' => $item1->total_amount,
                         'book_time' => $item1->book_time,
@@ -307,6 +311,7 @@ class CustomerController extends Controller
                         'tax' => $item1->tax,
                         'discount' => $item1->discount,
                         'bill_code' => $item1->bill_code,
+                        'service_id'=> $item1->service_id,
                         'service' => $service->service_name,
                         'service_type' => $service_type->service_type_name,
 
@@ -353,6 +358,7 @@ class CustomerController extends Controller
                 foreach ($bill_room as $item) {
                     $time = DB::table('reservation_rooms')->where('bill_room_id', '=', $item->id)->first();
                     $data[] = [
+                        'id' => $item->id,
                         'total_amount' => $item->total_amount,
                         'total_people' => $item->total_people,
                         'payment_method' => $item->payment_method,
@@ -370,6 +376,7 @@ class CustomerController extends Controller
                     $service = DB::table('services')->where('id', '=', $item1->service_id)->first();
                     $service_type = DB::table('service_types')->where('id', '=', $service->service_type_id)->first();
                     $data1[] = [
+                        'id' => $item1->id,
                         'quantity' => $item1->quantity,
                         'total_amount' => $item1->total_amount,
                         'book_time' => $item1->book_time,
