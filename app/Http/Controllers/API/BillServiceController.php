@@ -189,11 +189,16 @@ class BillServiceController extends Controller
             }
         }
     }
-    public function deleteBillService()
+    public function deleteBillServiceOverdue()
     {               
+        $currentYear = Carbon::now()->year;
+        $currentMonth = Carbon::now()->month;
+        $currentDay = Carbon::now()->day;
               // Lấy danh sách các bill_room cần xóa
               $billServices = BillService::whereNull('pay_time')
-              ->where('created_at', '<=', Carbon::now()->subMinutes(15))
+              ->whereYear('book_time', '<=', $currentYear)
+              ->whereMonth('book_time', '<=', $currentMonth)
+              ->whereDay('book_time', '<=', $currentDay)
               ->get();
           foreach ($billServices as $billService) {   
             // Xóa các dữ liệu liên quan (ReservationRooms, ...) trước khi xóa bill_room
@@ -216,4 +221,29 @@ class BillServiceController extends Controller
             ]);
         }
     }
+    public function deleteBillServiceNotPay($id)
+    {
+        $user = auth()->user();
+        // Kiểm tra token hợp lệ và người dùng đã đăng nhập
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        } else {
+            $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
+
+            if ($customer) {
+            // Xóa các dữ liệu liên quan (ReservationRooms, ...) trước khi xóa bill_room
+            $bill_service = DB::table('bill_services')
+            ->where('customer_id', '=', $customer->id)
+            ->whereNull('pay_time')
+            ->where('id', '=', '$id')
+            ->delete();
+            return response()->json([
+                'status' => 200,
+                'message' => 'successfully',
+                
+            ]);
+      
+        }
+    }
+}
 }
