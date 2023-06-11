@@ -184,12 +184,7 @@ class BillRoomController extends Controller
         } else {
             $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
         if ($customer) {
-            $bill_room = DB::table('bill_rooms')
-            ->where ('customer','=',$customer->id)
-            ->whereNotNull('pay_time')
-            ->whereNull('checkin_time')
-            ->where('id','=',$id)
-            ->first();
+            $bill_room = BillRoom::find($id);
             $bill_room->cancel_time = Carbon::now();
             $bill_room->update();
             
@@ -203,19 +198,80 @@ class BillRoomController extends Controller
             }
         }
         }
-    public function deleteBillRoom()
+        public function getGetCheckinRoom(Request $request,$id)
+        {
+            $validator = Validator::make($request->all(), [
+               
+                'bill_code' =>  'required'
+            ]);
+            if ($validator->fails()) {
+                $response = [
+                    'status_code' => 400,
+                    'message' => $validator->errors(),
+                ];
+                return response()->json($response, 400);
+            }
+            $bill_code = $request->bill_code;
+                $bill_room = BillRoom::find($id);
+                if($bill_room->bill_code ==  $bill_code){
+                $bill_room->checkin_time = Carbon::now();
+                $bill_room->update();
+                  return response()->json([
+                        'status' => 200,
+                        'message' => 'bill checkin Successfully',
+                        'bill-room' => $bill_room,
+                    ]);
+                }else{
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'bill code not found',
+                        'bill-room' => $bill_room,
+                    ]);
+                }
+            }
+            public function getGetCheckoutRoom(Request $request,$id)
+            {
+                $validator = Validator::make($request->all(), [
+                   
+                    'bill_code' =>  'required'
+                ]);
+                if ($validator->fails()) {
+                    $response = [
+                        'status_code' => 400,
+                        'message' => $validator->errors(),
+                    ];
+                    return response()->json($response, 400);
+                }
+               
+                    $bill_room = BillRoom::find($id);
+                    if($bill_room->checkin_time != null){
+                    $bill_room->checkout_time = Carbon::now();
+                    $bill_room->update();
+                      return response()->json([
+                            'status' => 200,
+                            'message' => 'bill checkout Successfully',
+                            'bill-room' => $bill_room,
+                        ]);
+                    }else{
+                        return response()->json([
+                            'status' => 404,
+                            'message' => 'bill not check out',
+                            'bill-room' => $bill_room,
+                        ]);
+                    }
+                }
+            
+    public function deleteBillRoom($id)
     {
         // Lấy danh sách các bill_room cần xóa
-        $billRooms = BillRoom::whereNull('pay_time')
-            ->where('created_at', '<=', Carbon::now()->subMinutes(15))
-            ->get();
-        foreach ($billRooms as $billRoom) {
+        $billRoom = BillRoom::find($id);
+        if($billRoom->cancel_time != null){
             // Xóa các dữ liệu liên quan (ReservationRooms, ...) trước khi xóa bill_room
-            $reservation_room = DB::table('reservation_rooms')->where('bill_room_id', '=', $billRoom->id)->delete();
+            $reservation_room = DB::table('reservation_rooms')->where('bill_room_id', '=', $id)->delete();
             // Xóa bill_room
             $billRoom->delete();
-        };
-        if ($billRooms->isEmpty()) {
+
+        if (!$billRoom) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Bill not found',
@@ -228,5 +284,12 @@ class BillRoomController extends Controller
 
             ]);
         }
+    }else{
+        return response()->json([
+            'status' => 404,
+            'message' => 'Bill not found',
+
+        ]);
+    }
     }
 }

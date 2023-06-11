@@ -263,14 +263,14 @@ class EmployeeController extends Controller
             if( $position->permission == 0){
                 return response()->json([
                     'status' => 200,
-                    'message' => 'False', 
+                    'message' => false, 
             ]);
             }
             if( $position->permission == 1){
                 if($account->enabled == 0){
                     return response()->json([
                         'status' => 200,
-                        'message' => 'False', 
+                        'message' => false, 
                 ]);
                 }
             }
@@ -279,7 +279,7 @@ class EmployeeController extends Controller
              
                     return response()->json([
                         'status' => 200,
-                        'message' => 'Truse', 
+                        'message' => true, 
                 ]);
             }
            }
@@ -363,14 +363,14 @@ class EmployeeController extends Controller
                 
         return response()->json([
             'status' => 200,
-            'message' => 'True',
+            'message' => true,
            
 
         ]);
          }else  {
             return response()->json([
                 'status' => 200,
-                'message' => 'False',
+                'message' => false,
                
             ]);
          }

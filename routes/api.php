@@ -196,6 +196,19 @@ Route::group([
     //Feedback
     Route::get('/list-feedbacks-employee', [FeedbackController::class, 'indexFeedbackEmployee']);
     Route::patch('/feedbacks-employee/{id}', [FeedbackController::class, 'getFeedbackByEmployee']);
+    //Checkin
+    Route::patch('/get-checkin-room/{id}', [BillRoomController::class, 'getGetCheckinRoom']);
+    Route::patch('/get-checkin-service/{id}', [BillServiceController::class, 'getGetCheckinService']);
+    //Checkout room
+    Route::patch('/get-checkout-room/{id}', [BillRoomController::class, 'getGetCheckoutRoom']);
+    //Xác nhận cancel của khách hàng 
+    Route::delete('/delete-bill-room/{id}', [BillRoomController::class, 'deleteBillRoom']);
+    Route::delete('/delete-bill-service/{id}', [BillServiceController::class, 'deleteBillService']);
+    // Quản lý extra service
+    Route::get('/show-list-extra-service', [BillExtraServiceController::class, 'index']);
+    Route::get('/show-extra-service/{id}', [BillExtraServiceController::class, 'show']);
+    Route::get('/store-extra-service', [BillExtraServiceController::class, 'store']);
+    Route::get('/update-extra-service/{id}', [BillExtraServiceController::class, 'update']);
 });
 
 // Admin API
@@ -218,9 +231,9 @@ Route::group([
   Route::get('/list-employee/{i}', [EmployeeController::class, 'index']);
   Route::get('/find-employee/{id}',[EmployeeController::class, 'employeeFindID']);// Dùng được trong Department
   Route::patch('/update-employee/{id}', [EmployeeController::class, 'updateEmployeeByAdmin']);
-  Route::patch('/update-account-employee/{id}/{position_name}', [EmployeeController::class, 'updateAccountEmployeeByAdmin']);
+  Route::get('/update-account-employee/{id}/{position_name}', [EmployeeController::class, 'updateAccountEmployeeByAdmin']);
   Route::post('/store-employee', [EmployeeController::class, 'store']);
-  Route::post('/store-account-employee/{i}', [EmployeeController::class, 'storeAccountbyEmployee']);
+  Route::get('/store-account-employee/{i}', [EmployeeController::class, 'storeAccountbyEmployee']);
   Route::patch('/quit-employee/{id}', [EmployeeController::class, 'quitEmployeeByID']);
   //Department
   Route::get('/list-department', [DepartmentController::class, 'index']);

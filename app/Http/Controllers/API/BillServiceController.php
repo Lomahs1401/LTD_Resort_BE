@@ -198,12 +198,7 @@ class BillServiceController extends Controller
         } else {
             $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
         if ($customer) {
-            $bill_service = DB::table('bill_services')
-            ->where ('customer','=',$customer->id)
-            ->whereNotNull('pay_time')
-            ->whereNull('checkin_time')
-            ->where('id','=',$id)
-            ->first();
+            $bill_service =BillService::find($id);
             $bill_service->cancel_time = Carbon::now();
             $bill_service->update();
             
@@ -217,6 +212,37 @@ class BillServiceController extends Controller
             }
         }
         }
+        public function getGetCheckinService(Request $request,$id)
+        {
+            $validator = Validator::make($request->all(), [
+               
+                'bill_code' =>  'required'
+            ]);
+            if ($validator->fails()) {
+                $response = [
+                    'status_code' => 400,
+                    'message' => $validator->errors(),
+                ];
+                return response()->json($response, 400);
+            }
+            $bill_code = $request->bill_code;
+                $bill_service = BillService::find($id);
+                if($bill_service->bill_code ==  $bill_code){
+                $bill_service->checkin_time = Carbon::now();
+                $bill_service->update();
+                  return response()->json([
+                        'status' => 200,
+                        'message' => 'bill checkin Successfully',
+                        'bill-service' => $bill_service,
+                    ]);
+                }else{
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'bill code not found',
+                        'bill-service' => $bill_service,
+                    ]);
+                }
+            }
     public function deleteBillServiceOverdue()
     {               
         $currentYear = Carbon::now()->year;
@@ -274,4 +300,33 @@ class BillServiceController extends Controller
         }
     }
 }
+public function deleteBillService($id)
+    {
+        // Lấy danh sách các bill_room cần xóa
+        $billService = BillService::find($id);
+        if($billService->cancel_time != null){
+           
+            $billService->delete();
+
+        if (!$billService) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Bill not found',
+
+            ]);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Delete bill service Successfully',
+
+            ]);
+        }
+    }else{
+        return response()->json([
+            'status' => 404,
+            'message' => 'Bill not found',
+
+        ]);
+    }
+    }
 }
