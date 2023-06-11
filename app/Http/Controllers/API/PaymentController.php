@@ -11,7 +11,7 @@ class PaymentController extends Controller
         $vnp_TmnCode = "II77BTN8"; //Website ID in VNPAY System
         $vnp_HashSecret = "DFCAJZUIPRNBVYZBXNGHRFAWYYILEJTL"; //Secret key
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = "http://localhost:3000/booking";
+        $vnp_Returnurl = "https://ltd-resorts.netlify.app/booking";
 
         $vnp_TxnRef = $request->order_id; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
         $vnp_OrderInfo = $request->order_desc;

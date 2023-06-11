@@ -156,11 +156,11 @@ Route::group([
     //Xoá bill chưa thanh toán 
     Route::delete('/delete-bill-service-not-pay', [BillServiceController::class, 'deleteBillServiceNotPay']);
     // Cập nhập lại điểm và hạng khách hàng khi thanh toán 
-    Route::get('/get-ranking-point/{id}', [CustomerController::class, 'getRankingPoint']);
+Route::get('/get-ranking-point/{id}', [CustomerController::class, 'getRankingPoint']);
     // Thanh toán thành công 
     Route::patch('/pay-bill/{time_start}/{time_end}', [CustomerController::class, 'getPayBillSuccess']);
     //Resevation_room
-    Route::post('/store-resevation_room', [ReservationRoomController::class, 'store']);
+    Route::post('/store-reservation_room', [ReservationRoomController::class, 'store']);
     Route::delete('/delete-resevation_room/{id}/{time_start}/{time_end}', [ReservationRoomController::class, 'delete']);
     Route::delete('/delete-resevation_room_30_minnutes', [ReservationRoomController::class, 'delete30minutes']);
     Route::get('/check-count/{time_start}/{time_end}', [ReservationRoomController::class, 'checkCount']);
