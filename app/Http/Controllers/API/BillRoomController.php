@@ -174,69 +174,35 @@ class BillRoomController extends Controller
             ]);
         }
     }
-//     public function storeBillRoom(Request $request, $time_start, $time_end)
-//     {
-//         $user = auth()->user();
-//         // Kiểm tra token hợp lệ và người dùng đã đăng nhập
-//         if (!$user) {
-//             return response()->json(['message' => 'Unauthorized'], 401);
-//         } else {
-//             $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
-
-
-//         if ($customer) {
-//             $total_amount = 0;
-//             $total_people = 0;
-//             $total_room = DB::table('reservation_rooms') 
-//             ->where('customer_id', '=', $customer->id)
-//             ->where('status', '=', '0')
-//             ->where('time_start', '=', $time_start)
-//             ->where('time_end', '=', $time_end)->count();
-//         $reservation_rooms = DB::table('reservation_rooms')
-//         ->where('customer_id', '=', $customer->id)
-//         ->where('status', '=', '0')
-//         ->where('time_start', '=', $time_start)
-//         ->where('time_end', '=', $time_end)->get();
-//         $price = 0;
-//             foreach ($reservation_rooms as $item1) {
-//                 $room = DB::table('rooms')->where('id', '=', $item1->room_id)->get();
-//                 foreach ($room as $item2) {
-//                     $room_type = RoomType::find($item2->room_type_id);
-//                     $total_people += $room_type->number_customers;
-//                     $price += $room_type->price;
-//                 }
-//             }
-//             $ranking = DB::table('rankings')->where('id', '=', $customer->ranking_id)->first();
-//             $startDate = Carbon::parse($time_start);
-//             $endDate = Carbon::parse($time_end);
-//             $numberOfDays = $startDate->diffInDays($endDate);
-//             $total_amount += $numberOfDays * $price* (1 - $ranking->discount) * (1 + 0.05);
-          
-       
-//         if ($customer) {
-//             $bill_room = BillRoom::create([
-//                 'total_amount' => $total_amount,
-//                 'total_room' =>  $total_room,
-//                 'total_people' => $total_people,
-//                 'payment_method' =>  'online',
-//                 'pay_time'=> Carbon::now(),
-//                 'tax' => '0.05',
-//                 'discount' => $ranking->discount,
-//                 'customer_id' => $customer->id,
-
-
-//             ]);
+    
+    public function getCancelBillRoomByCustomer($id)
+    {
+        $user = auth()->user();
+        // Kiểm tra token hợp lệ và người dùng đã đăng nhập
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        } else {
+            $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
+        if ($customer) {
+            $bill_room = DB::table('bill_rooms')
+            ->where ('customer','=',$customer->id)
+            ->whereNotNull('pay_time')
+            ->whereNull('checkin_time')
+            ->where('id','=',$id)
+            ->first();
+            $bill_room->cancel_time = Carbon::now();
+            $bill_room->update();
+            
 
            
-//                 return response()->json([
-//                     'status' => 200,
-//                     'message' => 'bill Added Successfully',
-//                     'reservation_room' => $reservation_rooms,
-//                     'bill-room' => $bill_room,
-//                 ]);
-//             }
-
-   
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'bill confirm cancel by customer',
+                    'bill-room' => $bill_room,
+                ]);
+            }
+        }
+        }
     public function deleteBillRoom()
     {
         // Lấy danh sách các bill_room cần xóa

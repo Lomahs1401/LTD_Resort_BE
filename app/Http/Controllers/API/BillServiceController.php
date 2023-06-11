@@ -189,6 +189,34 @@ class BillServiceController extends Controller
             }
         }
     }
+    public function getCancelBillServiceByCustomer($id)
+    {
+        $user = auth()->user();
+        // Kiểm tra token hợp lệ và người dùng đã đăng nhập
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        } else {
+            $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
+        if ($customer) {
+            $bill_service = DB::table('bill_services')
+            ->where ('customer','=',$customer->id)
+            ->whereNotNull('pay_time')
+            ->whereNull('checkin_time')
+            ->where('id','=',$id)
+            ->first();
+            $bill_service->cancel_time = Carbon::now();
+            $bill_service->update();
+            
+
+           
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'bill confirm cancel by customer',
+                    'bill-service' => $bill_service,
+                ]);
+            }
+        }
+        }
     public function deleteBillServiceOverdue()
     {               
         $currentYear = Carbon::now()->year;
