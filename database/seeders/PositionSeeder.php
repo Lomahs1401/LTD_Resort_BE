@@ -41,7 +41,7 @@ class PositionSeeder extends Seeder
         $chef_positions = [
             'Nhân viên phục vụ', 'Nhân viên tiệc', 'Nhân viên pha chế rượu',
             'Nhân viên pha chế cafe', 'Nhân viên chạy món', 'Lễ tân nhà hàng', 'Giám sát bộ phận tạp vụ',
-            'Bếp trưởng bộ phận', 'Bếp phó', 'Bếp trưởng điều hành', 'Giám sát tổ phục vụ/ tiệc/ pha chế',
+            'Bếp trưởng bộ phận', 'Bếp phó', 'Bếp trưởng điều hành', 'Giám sát tổ phục vụ tiệc và pha chế',
         
         ];  
         $chef_positions_admin = [
@@ -51,7 +51,7 @@ class PositionSeeder extends Seeder
         // Bộ phận kinh doanh - tiếp thị
         $sales_marketing_positions = [
             'Nhân viên Marketing', 'Nhân viên sales khách công ty', 'Nhân viên sales khách tour',
-            'Nhân viên sales trên Internet', 'Nhân viên sales nhà hàng/ tiệc', 'Nhân viên thiết kế đồ hoạ',
+            'Nhân viên sales trên Internet', 'Nhân viên sales nhà hàng và tiệc', 'Nhân viên thiết kế đồ hoạ',
           
         ];
         $sales_marketing_positions_admin = [
@@ -76,7 +76,7 @@ class PositionSeeder extends Seeder
             'Nhân viên lương/ bảo hiểm', 'Nhân viên pháp lý',
         ];
         $personnel_positions_admin = [
-            'Giám đốc bộ phận hành chính - nhân sự'
+            'Giám đốc bộ phận hành chính và nhân sự'
             
         ];
 

@@ -195,8 +195,6 @@ class EmployeeController extends Controller
 
     public function updateEmployeeByAdmin(Request $request, string $id)
     {
-      
-
         $employee = Employee::find($id);
         if( $employee){
             $position= DB::table('positions')->where('position_name', '=', $request->position_name)->first();
@@ -238,18 +236,15 @@ class EmployeeController extends Controller
                     'enabled' => $request->enabled | '1',
                     'role_id' => $request->role_id | '2'
                 ];
-
                 $account =Account::create($accountData);
                 $token = Auth::guard('api')->login($account);
                 $employee->account_id = $account->id;
                 $employee->update();
-
             }
            }
             return response()->json([
                 'message' => 'Update successfully!',
-                'status' => 200,
-               
+                'status' => 200,        
                 'customer' => $employee,
             ], 200);
         }else{
@@ -258,6 +253,37 @@ class EmployeeController extends Controller
                 'status' => 401,
             ], 401);
         }
+    }
+    public function updateAccountEmployeeByAdmin($id,$position_name)
+    {
+        $employee = Employee::find($id);
+        $position= DB::table('positions')->where('position_name', '=', $position_name)->first();
+        if($employee->account_id == null){
+            $account = Account::find($employee->account_id);
+            if( $position->permission == 0){
+                return response()->json([
+                    'status' => 200,
+                    'message' => false, 
+            ]);
+            }
+            if( $position->permission == 1){
+                if($account->enabled == 0){
+                    return response()->json([
+                        'status' => 200,
+                        'message' => false, 
+                ]);
+                }
+            }
+           }else{
+            if( $position->permission == 1){
+             
+                    return response()->json([
+                        'status' => 200,
+                        'message' => true, 
+                ]);
+            }
+           }
+       
     }
     public function store(Request $request)
     {
@@ -273,7 +299,6 @@ class EmployeeController extends Controller
             'department_name' => 'required',
             'position_name' =>  'required'
         ]);
-
         if ($validator->fails()) {
             $response = [
                 'status_code' => 400,
@@ -281,11 +306,11 @@ class EmployeeController extends Controller
             ];
             return response()->json($response, 400);
         }
-
         $position= DB::table('positions')->where('position_name', '=', $request->position_name)->first();
-      
+
         // $employee = Employee::create([
-        $employee=Employee::create([
+        $data=[
+       
             'full_name' => $request->full_name,
             'gender' => $request->gender,
             'birthday' => $request->birthday,
@@ -297,65 +322,60 @@ class EmployeeController extends Controller
             'day_start' => Carbon::now($request->day_start),
             'status' => $request->status | 1,
             'position_id' => $position->id,
-        ]);
-        if($employee){
-        return response()->json([
-            'status' => 200,
-            'message' => 'Employee created Successfully',
-            'employee' => $employee,
-          
-
-        ]);
-        }
-    }
-    public function storeAccountbyEmployee(Request $request,$id)
-    {
-        // $validator = Validator::make($request->all(), [
-        //     'full_name' => 'required',
-        //     'gender' => 'required',
-        //     'birthday' => 'required',
-        //     'CMND' => 'required',
-        //     'address' => 'required',
-        //     'phone' => 'required',
-        //     'account_bank' => 'required',
-        //     'name_bank' => 'required',
-        //     'department_name' => 'required',
-        //     'position_name' =>  'required'
-        // ]);
-
-        // if ($validator->fails()) {
-        //     $response = [
-        //         'status_code' => 400,
-        //         'message' => $validator->errors(),
-        //     ];
-        //     return response()->json($response, 400);
-        // }
-        $employee = Employee::find($id);
-        
-        $position= DB::table('positions')->where('id', '=', $employee->position_id)->first();
-      
+        ];
+       
+       
             if ($position->permission == '1') {
-                $accountData =Account::create([
+                $accountData =[
                     'username' => $request->username,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),                 
                     'enabled' => $request->enabled | '1',
                     'role_id' => $request->role_id | '2'
-                ]);
-                $token = Auth::guard('api')->login($accountData);
-                $employee->account_id = $accountData->id;
-                $employee->update();
-            }
-         
+                ];
 
+                $account =Account::create($accountData);
+                $token = Auth::guard('api')->login($account);
+                $data['account_id'] = $account->id;
+            }else{
+                $data['account_id'] = null;
+            
+            }
+            $employee = Employee::create($data);
         return response()->json([
             'status' => 200,
             'message' => 'Employee created Successfully',
             'account' => $position,
             'employee' => $employee,
-          
+
 
         ]);
+    }
+    public function storeAccountbyEmployee($i)
+    {
+       
+       
+        
+        $position= DB::table('positions')->where('position_name', '=', $i)->first();
+      
+            if ($position->permission == '1') {
+               
+                
+        return response()->json([
+            'status' => 200,
+            'message' => true,
+           
+
+        ]);
+         }else  {
+            return response()->json([
+                'status' => 200,
+                'message' => false,
+               
+            ]);
+         }
+         
+
     }
     public function quitEmployeeByID(Request $request, string $id)
     {
