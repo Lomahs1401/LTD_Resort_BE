@@ -42,7 +42,7 @@ class BillServiceController extends Controller
                     'discount' => $item1->discount,
                     'service' => $service->service_name,
                     'service_type' => $service_type->service_type_name,
-                    'code' => $item1->id,
+                    'id' => $item1->id,
                 ];
             }
 
@@ -83,7 +83,7 @@ class BillServiceController extends Controller
                     'discount' => $item1->discount,
                     'service' => $service->service_name,
                     'service_type' => $service_type->service_type_name,
-                    'code' => $item1->id,
+                    'id' => $item1->id,
                 ];
             }
 
@@ -124,7 +124,7 @@ class BillServiceController extends Controller
                     'discount' => $item1->discount,
                     'service' => $service->service_name,
                     'service_type' => $service_type->service_type_name,
-                    'code' => $item1->id,
+                    'id' => $item1->id,
                 ];
             }
 
@@ -147,7 +147,6 @@ class BillServiceController extends Controller
             'quantity' => 'required',
             'book_time' => 'required',
             'service_id' => 'required',
-
         ]);
 
         if ($validator->fails()) {
@@ -190,11 +189,70 @@ class BillServiceController extends Controller
             }
         }
     }
-    public function deleteBillService()
+    public function getCancelBillServiceByCustomer($id)
+    {
+        $user = auth()->user();
+        // Kiểm tra token hợp lệ và người dùng đã đăng nhập
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        } else {
+            $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
+        if ($customer) {
+            $bill_service =BillService::find($id);
+            $bill_service->cancel_time = Carbon::now();
+            $bill_service->update();
+            
+
+           
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'bill confirm cancel by customer',
+                    'bill-service' => $bill_service,
+                ]);
+            }
+        }
+        }
+        public function getGetCheckinService(Request $request,$id)
+        {
+            $validator = Validator::make($request->all(), [
+               
+                'bill_code' =>  'required'
+            ]);
+            if ($validator->fails()) {
+                $response = [
+                    'status_code' => 400,
+                    'message' => $validator->errors(),
+                ];
+                return response()->json($response, 400);
+            }
+            $bill_code = $request->bill_code;
+                $bill_service = BillService::find($id);
+                if($bill_service->bill_code ==  $bill_code){
+                $bill_service->checkin_time = Carbon::now();
+                $bill_service->update();
+                  return response()->json([
+                        'status' => 200,
+                        'message' => 'bill checkin Successfully',
+                        'bill-service' => $bill_service,
+                    ]);
+                }else{
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'bill code not found',
+                        'bill-service' => $bill_service,
+                    ]);
+                }
+            }
+    public function deleteBillServiceOverdue()
     {               
+        $currentYear = Carbon::now()->year;
+        $currentMonth = Carbon::now()->month;
+        $currentDay = Carbon::now()->day;
               // Lấy danh sách các bill_room cần xóa
               $billServices = BillService::whereNull('pay_time')
-              ->where('created_at', '<=', Carbon::now()->subMinutes(15))
+              ->whereYear('book_time', '<=', $currentYear)
+              ->whereMonth('book_time', '<=', $currentMonth)
+              ->whereDay('book_time', '<=', $currentDay)
               ->get();
           foreach ($billServices as $billService) {   
             // Xóa các dữ liệu liên quan (ReservationRooms, ...) trước khi xóa bill_room
@@ -216,5 +274,59 @@ class BillServiceController extends Controller
         
             ]);
         }
+    }
+    public function deleteBillServiceNotPay($id)
+    {
+        $user = auth()->user();
+        // Kiểm tra token hợp lệ và người dùng đã đăng nhập
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        } else {
+            $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
+
+            if ($customer) {
+            // Xóa các dữ liệu liên quan (ReservationRooms, ...) trước khi xóa bill_room
+            $bill_service = DB::table('bill_services')
+            ->where('customer_id', '=', $customer->id)
+            ->whereNull('pay_time')
+            ->where('id', '=', $id)
+            ->delete();
+            return response()->json([
+                'status' => 200,
+                'message' => 'successfully',
+                
+            ]);
+      
+        }
+    }
+}
+public function deleteBillService($id)
+    {
+        // Lấy danh sách các bill_room cần xóa
+        $billService = BillService::find($id);
+        if($billService->cancel_time != null){
+           
+            $billService->delete();
+
+        if (!$billService) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Bill not found',
+
+            ]);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Delete bill service Successfully',
+
+            ]);
+        }
+    }else{
+        return response()->json([
+            'status' => 404,
+            'message' => 'Bill not found',
+
+        ]);
+    }
     }
 }

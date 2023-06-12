@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('extra_services', function (Blueprint $table) {
+        Schema::create('bill_service_details', function (Blueprint $table) {
             $table->id();
-            $table->string('extra_service_name');
-            $table->string('description');
-            $table->string('image')->nullable();
-            $table->float('price');
-            $table->integer('quantity')->nullable();
+            $table->float('amount');
+            $table->date('book_time');
+            $table->foreignId('service_id')->constrained('services');
+            $table->foreignId('bill_service_id')->constrained('bill_services');
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('extra_services');
+        Schema::dropIfExists('bill_service_details');
     }
 };
