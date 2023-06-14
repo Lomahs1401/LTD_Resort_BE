@@ -4,25 +4,25 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use Database\Seeders\room\AreaSeeder;
-use Database\Seeders\room\BillExtraServiceSeeder;
-use Database\Seeders\room\BillRoomSeeder;
-use Database\Seeders\room\BillServiceSeeder;
-use Database\Seeders\room\EquipmentRoomTypeSeeder;
-use Database\Seeders\room\EquipmentSeeder;
-use Database\Seeders\room\ExtraServiceDetailSeeder;
-use Database\Seeders\room\ExtraServiceSeeder;
-use Database\Seeders\room\FloorSeeder;
-use Database\Seeders\room\ReservationRoomSeeder;
-use Database\Seeders\room\RoomSeeder;
-use Database\Seeders\room\RoomTypeSeeder;
-use Database\Seeders\service\ServiceSeeder;
-use Database\Seeders\service\ServiceTypeSeeder;
-use Database\Seeders\user\AccountSeeder;
-use Database\Seeders\user\AdminSeeder;
-use Database\Seeders\user\EmployeeSeeder;
-use Database\Seeders\user\CustomerSeeder;
-use Database\Seeders\user\RoleSeeder;
+use Database\Seeders\AreaSeeder;
+use Database\Seeders\BillExtraServiceSeeder;
+use Database\Seeders\BillRoomSeeder;
+use Database\Seeders\BillServiceSeeder;
+use Database\Seeders\EquipmentRoomTypeSeeder;
+use Database\Seeders\EquipmentSeeder;
+use Database\Seeders\ExtraServiceDetailSeeder;
+use Database\Seeders\ExtraServiceSeeder;
+use Database\Seeders\FloorSeeder;
+use Database\Seeders\ReservationRoomSeeder;
+use Database\Seeders\RoomSeeder;
+use Database\Seeders\RoomTypeSeeder;
+use Database\Seeders\ServiceSeeder;
+use Database\Seeders\ServiceTypeSeeder;
+use Database\Seeders\AccountSeeder;
+use Database\Seeders\AdminSeeder;
+use Database\Seeders\EmployeeSeeder;
+use Database\Seeders\CustomerSeeder;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
