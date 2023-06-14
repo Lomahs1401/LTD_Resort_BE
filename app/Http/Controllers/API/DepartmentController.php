@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 
-
 class DepartmentController extends Controller
 {
     public function index()
@@ -33,7 +32,7 @@ class DepartmentController extends Controller
             $total_employee = 0;
             foreach ($employee as $item2) {
                 $number_employee = DB::table('employees')->where('position_id', '=', $item2->id)
-                ->where('status', '=', '1')->count();
+                    ->where('status', '=', '1')->count();
                 $total_employee += $number_employee;
             }
             $data[] = [
@@ -62,9 +61,8 @@ class DepartmentController extends Controller
 
                 $admin = DB::table('admins')->where('position_id', '=', $item->id)->get();
                 if ($admin != null) {
-                    $data =$data->concat($admin);
+                    $data = $data->concat($admin);
                 }
-              
             }
         }
         if ($role == 1) {
@@ -72,14 +70,13 @@ class DepartmentController extends Controller
                 ->where('permission', '!=', '2')->get();
             foreach ($position as $item) {
                 $employee = DB::table('employees')->where('position_id', '=', $item->id)
-                ->where('status', '=', '1')->get();
+                    ->where('status', '=', '1')->get();
                 if ($employee != null) {
-                    $data=$data->concat($employee);
+                    $data = $data->concat($employee);
                 }
-              
             }
         }
-       
+
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
@@ -89,8 +86,8 @@ class DepartmentController extends Controller
     public function storeDepartment(Request $request)
     {
         $validator = Validator::make($request->all(), [
-        'department_name',
-        
+            'department_name',
+
         ]);
 
         if ($validator->fails()) {
@@ -99,27 +96,23 @@ class DepartmentController extends Controller
                 'message' => $validator->errors(),
             ];
             return response()->json($response, 400);
-        }   
-        // $employee = Employee::create([
-        $department= Department::create([
-            'department_name' => $request->department_name,       
+        }
 
+        $department = Department::create([
+            'department_name' => $request->department_name,
         ]);
-        // ]);
-            // $position = Position::find($data['position_id']);
-            if (!$department) {
-                return response()->json([
-                    'message' => 'Data not found!',
-                    'status' => 400,
-                ], 400);
-            }else {
-          return response()->json([
-            'status' => 200,
-            'message' => 'Department created Successfully',
-            'employee' =>  $department,
-          
-
-        ]);
-    }
+        
+        if (!$department) {
+            return response()->json([
+                'message' => 'Data not found!',
+                'status' => 400,
+            ], 400);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Department created Successfully',
+                'employee' =>  $department,
+            ]);
+        }
     }
 }

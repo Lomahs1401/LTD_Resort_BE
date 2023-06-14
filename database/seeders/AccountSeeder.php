@@ -2,9 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\user\Account;
-use App\Models\user\Role;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Account;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 

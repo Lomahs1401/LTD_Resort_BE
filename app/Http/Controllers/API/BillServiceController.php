@@ -4,11 +4,12 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
-use App\Models\service\BillService;
-use App\Models\service\Service;
+use App\Models\BillService;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+
 class BillServiceController extends Controller
 {
     public function findBillService()
@@ -176,14 +177,14 @@ class BillServiceController extends Controller
                 $service = Service::find($bill_service->service_id);
                 $quantity = $bill_service->quantity;
                 $discount = $bill_service->discount;
-                $tax =$bill_service->tax;
-                $total_amount = $service->price * $quantity * (1 -$discount) * (1 + $tax);
+                $tax = $bill_service->tax;
+                $total_amount = $service->price * $quantity * (1 - $discount) * (1 + $tax);
                 $bill_service->total_amount = $total_amount;
                 $bill_service->save();
                 return response()->json([
                     'status' => 200,
                     'message' => 'bill Added Successfully',
-                    'customer'=> $customer,
+                    'customer' => $customer,
                     'bill-service' => $bill_service,
                 ]);
             }
@@ -197,13 +198,13 @@ class BillServiceController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         } else {
             $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
-        if ($customer) {
-            $bill_service =BillService::find($id);
-            $bill_service->cancel_time = Carbon::now();
-            $bill_service->update();
-            
+            if ($customer) {
+                $bill_service = BillService::find($id);
+                $bill_service->cancel_time = Carbon::now();
+                $bill_service->update();
 
-           
+
+
                 return response()->json([
                     'status' => 200,
                     'message' => 'bill confirm cancel by customer',
@@ -211,67 +212,66 @@ class BillServiceController extends Controller
                 ]);
             }
         }
+    }
+    public function getGetCheckinService(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+
+            'bill_code' =>  'required'
+        ]);
+        if ($validator->fails()) {
+            $response = [
+                'status_code' => 400,
+                'message' => $validator->errors(),
+            ];
+            return response()->json($response, 400);
         }
-        public function getGetCheckinService(Request $request,$id)
-        {
-            $validator = Validator::make($request->all(), [
-               
-                'bill_code' =>  'required'
+        $bill_code = $request->bill_code;
+        $bill_service = BillService::find($id);
+        if ($bill_service->bill_code ==  $bill_code) {
+            $bill_service->checkin_time = Carbon::now();
+            $bill_service->update();
+            return response()->json([
+                'status' => 200,
+                'message' => 'bill checkin Successfully',
+                'bill-service' => $bill_service,
             ]);
-            if ($validator->fails()) {
-                $response = [
-                    'status_code' => 400,
-                    'message' => $validator->errors(),
-                ];
-                return response()->json($response, 400);
-            }
-            $bill_code = $request->bill_code;
-                $bill_service = BillService::find($id);
-                if($bill_service->bill_code ==  $bill_code){
-                $bill_service->checkin_time = Carbon::now();
-                $bill_service->update();
-                  return response()->json([
-                        'status' => 200,
-                        'message' => 'bill checkin Successfully',
-                        'bill-service' => $bill_service,
-                    ]);
-                }else{
-                    return response()->json([
-                        'status' => 404,
-                        'message' => 'bill code not found',
-                        'bill-service' => $bill_service,
-                    ]);
-                }
-            }
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => 'bill code not found',
+                'bill-service' => $bill_service,
+            ]);
+        }
+    }
     public function deleteBillServiceOverdue()
-    {               
+    {
         $currentYear = Carbon::now()->year;
         $currentMonth = Carbon::now()->month;
         $currentDay = Carbon::now()->day;
-              // Lấy danh sách các bill_room cần xóa
-              $billServices = BillService::whereNull('pay_time')
-              ->whereYear('book_time', '<=', $currentYear)
-              ->whereMonth('book_time', '<=', $currentMonth)
-              ->whereDay('book_time', '<=', $currentDay)
-              ->get();
-          foreach ($billServices as $billService) {   
+        // Lấy danh sách các bill_room cần xóa
+        $billServices = BillService::whereNull('pay_time')
+            ->whereYear('book_time', '<=', $currentYear)
+            ->whereMonth('book_time', '<=', $currentMonth)
+            ->whereDay('book_time', '<=', $currentDay)
+            ->get();
+        foreach ($billServices as $billService) {
             // Xóa các dữ liệu liên quan (ReservationRooms, ...) trước khi xóa bill_room
-          
+
             // Xóa bill_room
             $billService->delete();
         };
-        if ($billServices->isEmpty() ) {
+        if ($billServices->isEmpty()) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Bill not found',
-        
+
             ]);
-           
         } else {
             return response()->json([
                 'status' => 200,
                 'message' => 'Delete bill service Successfully',
-        
+
             ]);
         }
     }
@@ -285,48 +285,47 @@ class BillServiceController extends Controller
             $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
 
             if ($customer) {
-            // Xóa các dữ liệu liên quan (ReservationRooms, ...) trước khi xóa bill_room
-            $bill_service = DB::table('bill_services')
-            ->where('customer_id', '=', $customer->id)
-            ->whereNull('pay_time')
-            ->where('id', '=', $id)
-            ->delete();
-            return response()->json([
-                'status' => 200,
-                'message' => 'successfully',
-                
-            ]);
-      
+                // Xóa các dữ liệu liên quan (ReservationRooms, ...) trước khi xóa bill_room
+                $bill_service = DB::table('bill_services')
+                    ->where('customer_id', '=', $customer->id)
+                    ->whereNull('pay_time')
+                    ->where('id', '=', $id)
+                    ->delete();
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'successfully',
+
+                ]);
+            }
         }
     }
-}
-public function deleteBillService($id)
+    public function deleteBillService($id)
     {
         // Lấy danh sách các bill_room cần xóa
         $billService = BillService::find($id);
-        if($billService->cancel_time != null){
-           
+        if ($billService->cancel_time != null) {
+
             $billService->delete();
 
-        if (!$billService) {
+            if (!$billService) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Bill not found',
+
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Delete bill service Successfully',
+
+                ]);
+            }
+        } else {
             return response()->json([
                 'status' => 404,
                 'message' => 'Bill not found',
 
             ]);
-        } else {
-            return response()->json([
-                'status' => 200,
-                'message' => 'Delete bill service Successfully',
-
-            ]);
         }
-    }else{
-        return response()->json([
-            'status' => 404,
-            'message' => 'Bill not found',
-
-        ]);
-    }
     }
 }

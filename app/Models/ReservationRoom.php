@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Models\room;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ExtraServiceDetail extends Model
+class ReservationRoom extends Model
 {
     use HasFactory;
 
-    /**
+    /**s
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'extra_service_details';
+    protected $table = 'reservation_rooms';
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +22,11 @@ class ExtraServiceDetail extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'room_type_id',
-        'extra_service_id',
+        'time_start',
+        'time_end',
+        'status',
+        'room_id',
+        'customer_id',
+        'bill_room_id',
     ];
 }

@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\room\ReservationRoom;
-use App\Models\room\Room;
+use App\Models\ReservationRoom;
+use App\Models\Room;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class RoomController extends Controller

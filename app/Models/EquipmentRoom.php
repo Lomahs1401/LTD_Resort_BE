@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models\room;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ExtraService extends Model
+class EquipmentRoom extends Model
 {
     use HasFactory;
 
@@ -14,7 +14,7 @@ class ExtraService extends Model
      *
      * @var string
      */
-    protected $table = 'extra_services';
+    protected $table = 'equipment_rooms';
 
     /**
      * The attributes that are mass assignable.
@@ -22,10 +22,8 @@ class ExtraService extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'extra_service_name',
-        'image',
-        'description',
-        'price',
-        'quantity',
+        'equipment_type_id',
+        'room_id',
+        'status',
     ];
 }

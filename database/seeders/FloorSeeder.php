@@ -2,8 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\room\Floor;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Floor;
 use Illuminate\Database\Seeder;
 
 class FloorSeeder extends Seeder

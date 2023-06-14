@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\room\ExtraService;
-use App\Models\room\ExtraServiceDetail;
-use App\Models\room\RoomType;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\ExtraService;
+use App\Models\ExtraServiceDetail;
+use App\Models\RoomType;
 use Illuminate\Database\Seeder;
 
 class ExtraServiceDetailSeeder extends Seeder

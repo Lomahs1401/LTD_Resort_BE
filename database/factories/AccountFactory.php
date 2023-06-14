@@ -3,10 +3,9 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\user\Account>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Account>
  */
 class AccountFactory extends Factory
 {

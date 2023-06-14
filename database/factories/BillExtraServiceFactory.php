@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\user\Customer;
-use App\Models\user\Employee;
+use App\Models\Customer;
+use App\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\room\BillExtraService>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BillExtraService>
  */
 class BillExtraServiceFactory extends Factory
 {

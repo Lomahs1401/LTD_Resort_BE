@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\API;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\room\Floor;
+use App\Models\Floor;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 class FloorController extends Controller
 {
     public function index()
@@ -38,7 +40,8 @@ class FloorController extends Controller
         }
     }
 
-    public function getTotalFloors() {
+    public function getTotalFloors()
+    {
         $total_floors = DB::table('floors')->count();
 
         return response()->json([
@@ -47,11 +50,11 @@ class FloorController extends Controller
             'total_floors' => $total_floors,
         ], 200);
     }
+    
     public function storeFloor(Request $request)
     {
         $validator = Validator::make($request->all(), [
-        'floor_name',
-        
+            'floor_name',
         ]);
 
         if ($validator->fails()) {
@@ -60,27 +63,23 @@ class FloorController extends Controller
                 'message' => $validator->errors(),
             ];
             return response()->json($response, 400);
-        }   
-        // $employee = Employee::create([
-        $floor= Floor::create([
-            'floor_name' => $request->floor_name,       
+        }
 
+        $floor = Floor::create([
+            'floor_name' => $request->floor_name,
         ]);
-        // ]);
-            // $position = Position::find($data['position_id']);
-            if (!$floor) {
-                return response()->json([
-                    'message' => 'Data not found!',
-                    'status' => 400,
-                ], 400);
-            }else {
-          return response()->json([
-            'status' => 200,
-            'message' => 'Floor created Successfully',
-            'employee' =>  $floor,
-          
 
-        ]);
-    }
+        if (!$floor) {
+            return response()->json([
+                'message' => 'Data not found!',
+                'status' => 400,
+            ], 400);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Floor created Successfully',
+                'employee' =>  $floor,
+            ]);
+        }
     }
 }

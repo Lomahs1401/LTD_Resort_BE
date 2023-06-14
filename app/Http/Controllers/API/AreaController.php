@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\room\Area;
+use App\Models\Area;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 class AreaController extends Controller
 {
     public function index()
@@ -39,7 +40,8 @@ class AreaController extends Controller
         }
     }
 
-    public function getTotalAreas() {
+    public function getTotalAreas()
+    {
         $total_areas = DB::table('areas')->count();
 
         return response()->json([
@@ -49,11 +51,11 @@ class AreaController extends Controller
         ], 200);
     }
 
-     public function storeArea(Request $request)
+    public function storeArea(Request $request)
     {
         $validator = Validator::make($request->all(), [
-        'area_name',
-        
+            'area_name',
+
         ]);
 
         if ($validator->fails()) {
@@ -62,27 +64,22 @@ class AreaController extends Controller
                 'message' => $validator->errors(),
             ];
             return response()->json($response, 400);
-        }   
-        // $employee = Employee::create([
-        $area= Area::create([
-            'area_name' => $request->area_name,       
+        }
+        $area = Area::create([
+            'area_name' => $request->area_name,
 
         ]);
-        // ]);
-            // $position = Position::find($data['position_id']);
-            if (!$area) {
-                return response()->json([
-                    'message' => 'Data not found!',
-                    'status' => 400,
-                ], 400);
-            }else {
-          return response()->json([
-            'status' => 200,
-            'message' => 'Area created Successfully',
-            'employee' =>  $area,
-          
-
-        ]);
-    }
+        if (!$area) {
+            return response()->json([
+                'message' => 'Data not found!',
+                'status' => 400,
+            ], 400);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Area created Successfully',
+                'employee' =>  $area,
+            ]);
+        }
     }
 }

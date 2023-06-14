@@ -6,18 +6,14 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use App\Mail\ResetCodeEmail;
 use Illuminate\Http\Request;
-use App\Models\user\Account;
+use App\Models\Account;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AccountController extends Controller
 {
-  
-
     public function changePassword(Request $request)
     {
         $user = auth()->user();
@@ -139,7 +135,7 @@ class AccountController extends Controller
             $attemptsLeft = 5 - $user->reset_code_attempts;
             return response()->json([
                 'message' => 'Invalid Reset Code',
-                'Your remaining password attempts are' => $attemptsLeft  
+                'Your remaining password attempts are' => $attemptsLeft
             ], 400);
         } else {
             return response()->json([
@@ -149,7 +145,7 @@ class AccountController extends Controller
             ], 200);
         }
     }
-    
+
     public function resetPassword(Request $request, $email, $code)
     {
         $validator = Validator::make($request->all(), [
@@ -170,7 +166,7 @@ class AccountController extends Controller
         $user = Account::where('email', $email)
             ->where('reset_code', $code)
             ->first();
-    
+
 
         if (!$user) {
             return response()->json(['message' => 'Invalid or expired reset code'], 400);

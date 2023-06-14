@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\room\Room;
-use App\Models\Feedback;
-use App\Models\room\Area;
-use App\Models\room\Floor;
-use App\Models\room\RoomType;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Room;
+use App\Models\Area;
+use App\Models\Floor;
+use App\Models\RoomType;
 use Illuminate\Database\Seeder;
 
 class RoomSeeder extends Seeder{

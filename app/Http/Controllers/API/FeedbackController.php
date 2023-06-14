@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\Feedback;
 use App\Models\Position;
-use App\Models\room\RoomType;
-use App\Models\service\Service;
-use App\Models\user\Customer;
-use App\Models\user\Employee;
+use App\Models\RoomType;
+use App\Models\Service;
+use App\Models\Customer;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -44,7 +44,7 @@ class FeedbackController extends Controller
         foreach ($list_feedback_service as $item1) {
             $customer = Customer::find($item1->customer_id);
             $service = Service::find($item1->service_id);
-            $data1 [] = [
+            $data1[] = [
                 'id' => $item1->id,
                 'customer_name' => $customer->full_name,
                 'service_name' => $service->service_name,
@@ -82,11 +82,11 @@ class FeedbackController extends Controller
             $data  = [
                 'id' => $feedback->id,
                 'customer_name' => $customer->full_name,
-                'service_name' => $service ? $service->service_name : null,//hiển thị trong feedback service //1
-                'room_type_name' => $room_type ? $room_type->room_type_name : null,//hiển thị feedback trong room  //1
-                'employee_name' => $employee ? $employee->full_name : null,//hiển thị trong Admin //3
-                'position' => $position ? $position->position_name : null,//hiển thị trong Admin //3
-                'department' => $department ? $department->department_name : null,//hiển thị trong Admin  //3                
+                'service_name' => $service ? $service->service_name : null, //hiển thị trong feedback service //1
+                'room_type_name' => $room_type ? $room_type->room_type_name : null, //hiển thị feedback trong room  //1
+                'employee_name' => $employee ? $employee->full_name : null, //hiển thị trong Admin //3
+                'position' => $position ? $position->position_name : null, //hiển thị trong Admin //3
+                'department' => $department ? $department->department_name : null, //hiển thị trong Admin  //3                
                 'rating' => $feedback->rating,
                 'title' => $feedback->title,
                 'comment' => $feedback->comment,
@@ -97,7 +97,7 @@ class FeedbackController extends Controller
             return response()->json([
                 'message' => 'Query successfully!',
                 'status' => 200,
-                'feedback' =>$data,
+                'feedback' => $data,
             ], 200);
         } else {
             return response()->json([
@@ -141,7 +141,7 @@ class FeedbackController extends Controller
             $service = Service::find($item1->service_id);
             $employee = Employee::find($item1->employee_id);
             $position =  Position::find($employee->position_id);
-            $data1 [] = [
+            $data1[] = [
                 'id' => $item1->id,
                 'customer_name' => $customer->full_name,
                 'service_name' => $service->service_name,
@@ -200,7 +200,7 @@ class FeedbackController extends Controller
                 foreach ($list_feedback_service as $item1) {
                     $customer = Customer::find($item1->customer_id);
                     $service = Service::find($item1->service_id);
-                    $data1 [] = [
+                    $data1[] = [
                         'id' => $item1->id,
                         'customer_name' => $customer->full_name,
                         'service_name' => $service->service_name,

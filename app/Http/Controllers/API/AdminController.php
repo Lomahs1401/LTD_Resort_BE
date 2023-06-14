@@ -6,23 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\Position;
 use Illuminate\Http\Request;
-use App\Models\user\Admin;
-use App\Models\user\Account;
+use App\Models\Admin;
+use App\Models\Account;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
-    // public function index()
-    // {
-    //     $listAdmin = Admin::all();
-    //     return response()->json([
-    //         'message' => 'Query successfully!',
-    //         'status' => 200,
-    //         'list_accounts' => $listAdmin
-    //     ]);
-    // }
-    
     public function searchByParams($search)
     {
         if ($search) {
@@ -42,24 +31,24 @@ class AdminController extends Controller
         }
     }
     public function getAdminByAccountId()
-    { 
+    {
         $user = auth()->user();
         // Kiểm tra token hợp lệ và người dùng đã đăng nhập
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
         } else {
             $admin = DB::table('admins')->where('account_id', '=', $user->id)->first();
-           
+
             if ($admin) {
                 $position = Position::find($admin->position_id);
                 if ($position) {
                     $department = Department::find($position->department_id);
-    
+
                     $data = [
-                        "avatar"=>$user->avatar,
+                        "avatar" => $user->avatar,
                         "username" => $user->username,
-                        "email"=> $user->email,
-                        "image"=> $admin->image,
+                        "email" => $user->email,
+                        "image" => $admin->image,
                         "name" => $admin->full_name,
                         "gender" => $admin->gender,
                         "birthday" => $admin->birthday,
@@ -69,12 +58,12 @@ class AdminController extends Controller
                         "position_name" => $position->position_name,
                         "department_name" => $department->department_name
                     ];
-    
-                return response()->json([
-                    'message' => 'Query successfully!',
-                    'status' => 200,
-                    'customer' => $data,
-                ], 200);
+
+                    return response()->json([
+                        'message' => 'Query successfully!',
+                        'status' => 200,
+                        'customer' => $data,
+                    ], 200);
                 } else {
                     return response()->json([
                         'message' => 'Data not found!',
@@ -94,7 +83,7 @@ class AdminController extends Controller
         $data = Account::find($user->id);
         $admin = DB::table('admins')->where('account_id', '=', $user->id)->first();
         $adminModel = Admin::find($admin->id);
-        if($data && $adminModel){
+        if ($data && $adminModel) {
             if ($request->avatar) {
                 $data->avatar = $request->avatar;
                 $data->update();
@@ -127,13 +116,12 @@ class AdminController extends Controller
                 'data' => $data,
                 'customer' => $adminModel,
             ], 200);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'Data not found!',
                 'status' => 404,
             ], 404);
         }
-
     }
     public function adminFindID($id)
     {
@@ -145,7 +133,7 @@ class AdminController extends Controller
 
                 $data = [
                     "id" => $admin->id,
-                    "image"=> $admin->image,
+                    "image" => $admin->image,
                     "name" => $admin->full_name,
                     "gender" => $admin->gender,
                     "birthday" => $admin->birthday,
@@ -169,14 +157,4 @@ class AdminController extends Controller
             ]);
         }
     }
-
-    /**
-     * Display the specified resource.
-     */
-   
-
-    /**
-     * Update the specified resource in storage.
-     */
- 
 }

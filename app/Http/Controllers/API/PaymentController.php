@@ -40,7 +40,6 @@ class PaymentController extends Controller
             $inputData['vnp_BankCode'] = $vnp_BankCode;
         }
 
-        //var_dump($inputData);
         ksort($inputData);
         $query = "";
         $i = 0;

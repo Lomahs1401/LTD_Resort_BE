@@ -3,9 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Position;
-use App\Models\user\Account;
-use App\Models\user\Admin;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Account;
+use App\Models\Admin;
 use Illuminate\Database\Seeder;
 
 class AdminSeeder extends Seeder
