@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Department;
 use App\Models\Position;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 class PositionController extends Controller
 {
     public function index($id, $role)
@@ -30,7 +30,7 @@ class PositionController extends Controller
                 ->where('permission', '!=', '2')->get();
             foreach ($list_position as $item) {
                 $number_employee = DB::table('employees')->where('position_id', '=', $item->id)
-                ->where('status', '=', '1')->count();
+                    ->where('status', '=', '1')->count();
                 $data[] = [
                     'id' => $item->id,
                     'position_name' => $item->position_name,
@@ -45,15 +45,14 @@ class PositionController extends Controller
             'list_position' => $data,
         ], 200);
     }
-       public function showAdminByPosition($id)
+    public function showAdminByPosition($id)
     {
-        $listAdmin =DB::table('admins')->where('position_id', '=', $id)->get();
-        if($listAdmin->isEmpty()){
+        $listAdmin = DB::table('admins')->where('position_id', '=', $id)->get();
+        if ($listAdmin->isEmpty()) {
             return response()->json([
                 'message' => 'Data not found!',
                 'status' => 404,
             ], 404);
-       
         } else {
             return response()->json([
                 'message' => 'Query successfully!',
@@ -64,14 +63,13 @@ class PositionController extends Controller
     }
     public function showEmployeeByPosition($id)
     {
-        $listEmployee =DB::table('employees')->where('position_id', '=', $id)
-        ->where('status', '=', '1')->get();
-        if($listEmployee->isEmpty()){
+        $listEmployee = DB::table('employees')->where('position_id', '=', $id)
+            ->where('status', '=', '1')->get();
+        if ($listEmployee->isEmpty()) {
             return response()->json([
                 'message' => 'Data not found!',
                 'status' => 404,
             ], 404);
-       
         } else {
             return response()->json([
                 'message' => 'Query successfully!',
@@ -83,9 +81,9 @@ class PositionController extends Controller
     public function storePosition(Request $request)
     {
         $validator = Validator::make($request->all(), [
-        'position_name',
-        'permission',
-        'department_id'
+            'position_name',
+            'permission',
+            'department_id'
         ]);
 
         if ($validator->fails()) {
@@ -94,28 +92,25 @@ class PositionController extends Controller
                 'message' => $validator->errors(),
             ];
             return response()->json($response, 400);
-        }   
-        // $employee = Employee::create([
-        $position= Position::create([
-            'position_name' => $request->position_name,       
-            'permission'=> $request->permission, 
-            'department_id'=> $request->department_id, 
-        ]);
-        // ]);
-            // $position = Position::find($data['position_id']);
-            if (!$position) {
-                return response()->json([
-                    'message' => 'Data not found!',
-                    'status' => 400,
-                ], 400);
-            }else {
-          return response()->json([
-            'status' => 200,
-            'message' => 'Position created Successfully',
-            'employee' =>  $position,
-          
+        }
 
+        $position = Position::create([
+            'position_name' => $request->position_name,
+            'permission' => $request->permission,
+            'department_id' => $request->department_id,
         ]);
-    }
+
+        if (!$position) {
+            return response()->json([
+                'message' => 'Data not found!',
+                'status' => 400,
+            ], 400);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Position created Successfully',
+                'employee' =>  $position,
+            ]);
+        }
     }
 }

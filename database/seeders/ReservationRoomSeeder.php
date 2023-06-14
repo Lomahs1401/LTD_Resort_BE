@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\room\BillRoom;
-use App\Models\room\ReservationRoom;
-use App\Models\room\Room;
+use App\Models\BillRoom;
+use App\Models\ReservationRoom;
+use App\Models\Room;
 use DateInterval;
 use Illuminate\Database\Seeder;
 

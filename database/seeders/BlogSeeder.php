@@ -3,8 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Blog;
-use App\Models\user\Employee;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Employee;
 use Illuminate\Database\Seeder;
 
 class BlogSeeder extends Seeder

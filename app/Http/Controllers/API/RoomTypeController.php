@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\room\Area;
-use App\Models\room\Floor;
-use App\Models\room\RoomType;
+use App\Models\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -16,20 +14,20 @@ class RoomTypeController extends Controller
     {
         $list_room_types = RoomType::all();
         $data = [];
-                foreach ($list_room_types as $item) {
-                    $number = DB::table('rooms')->where('room_type_id', '=', $item->id)->count();
-                    $data[] = [
-                        'id' => $item->id,
-                        'room_type_name' => $item->room_type_name,
-                        'room_size' => $item->room_size,
-                        'number_customers' => $item->number_customers,
-                        'number_rooms' => $number,
-                        'description' => $item->description,
-                        'image' => $item->image,
-                        'price' => $item->price,
-                        'point_ranking' => $item->point_ranking,       
-                    ];
-                }
+        foreach ($list_room_types as $item) {
+            $number = DB::table('rooms')->where('room_type_id', '=', $item->id)->count();
+            $data[] = [
+                'id' => $item->id,
+                'room_type_name' => $item->room_type_name,
+                'room_size' => $item->room_size,
+                'number_customers' => $item->number_customers,
+                'number_rooms' => $number,
+                'description' => $item->description,
+                'image' => $item->image,
+                'price' => $item->price,
+                'point_ranking' => $item->point_ranking,
+            ];
+        }
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
@@ -48,10 +46,10 @@ class RoomTypeController extends Controller
                 'room_size' => $room_type->room_size,
                 'number_customers' => $room_type->number_customers,
                 'number_rooms' => $number,
-                'description' =>$room_type->description,
+                'description' => $room_type->description,
                 'image' => $room_type->image,
                 'price' => $room_type->price,
-                'point_ranking' => $room_type->point_ranking,       
+                'point_ranking' => $room_type->point_ranking,
             ];
             return response()->json([
                 'message' => 'Query successfully!',
@@ -67,21 +65,20 @@ class RoomTypeController extends Controller
         }
     }
 
-    public function getListRoomsByRoomTypeId($id) {
+    public function getListRoomsByRoomTypeId($id)
+    {
         $data = [];
         $areas = DB::table('areas')->get();
-        foreach ($areas as $area)
-        {
-            $data1=[];
-            $floors =DB::table('floors')->get();
-            foreach ($floors as $floor)
-            {
+        foreach ($areas as $area) {
+            $data1 = [];
+            $floors = DB::table('floors')->get();
+            foreach ($floors as $floor) {
                 $list_rooms = DB::table('rooms')
-                ->where('room_type_id', '=', $id)
-                ->where('area_id', '=', $area->id)
-                ->where('floor_id', '=', $floor->id)
-                ->get();
-                $data1[]=[
+                    ->where('room_type_id', '=', $id)
+                    ->where('area_id', '=', $area->id)
+                    ->where('floor_id', '=', $floor->id)
+                    ->get();
+                $data1[] = [
                     "floor_name" => $floor->floor_name,
                     "list_rooms" => $list_rooms,
                 ];
@@ -94,43 +91,13 @@ class RoomTypeController extends Controller
         return response()->json([
             'data' => $data
         ]);
-        // $list_rooms = DB::table('rooms')->where('room_type_id', '=', $id)->get();
-        
-        // foreach ($list_rooms as $item) {
-        //       $area = $item->area_id;
-        //        $floor = $item->floor_id;
-        //         $area_id =DB::table('areas')->where('id', '=', $item->area_id)->get('area_name');
-        //         $floor_id =DB::table('floors')->where('id', '=', $item->floor_id)->get('floor_name');
-                
-        
-        //         // Kiểm tra xem đã có khu vực trong mảng $data chưa
-        //         if (!isset($data[$area])) {
-        //             $data[$area] = $area_id;
-        //         }
-        
-        //         // Kiểm tra xem đã có tầng trong mảng $data[$area] chưa
-        //         if (!isset($data[$area][$floor])) {
-        //             $data[$area][$floor] = $floor_id;
-        //         }
-    
-        //         $data[$area][$floor][] = [
-        //             'id_room' => $item->id,
-        //             'room_name' => $item->room_name,
-        //             'area_id' => $item->area_id,
-        //             'floor_id' =>  $item->floor_id,
-        //         ];
-            // }
-            // $data = array_values($data);
-            // return response()->json([
-            //     'data' => $data
-            // ]);
-        }
-  
+    }
+
     public function updateRoomType(Request $request, $id)
     {
         $room_type = RoomType::find($id);
         if ($room_type) {
-        
+
             if ($request->room_type_name) {
                 $room_type->room_type_name = $request->room_type_name;
             }
@@ -168,13 +135,13 @@ class RoomTypeController extends Controller
     public function storeRoomType(Request $request)
     {
         $validator = Validator::make($request->all(), [
-        'room_type_name',
-        'room_size',
-        'number_customers',
-        'description',
-        'image',
-        'price',
-        'point_ranking',
+            'room_type_name',
+            'room_size',
+            'number_customers',
+            'description',
+            'image',
+            'price',
+            'point_ranking',
         ]);
 
         if ($validator->fails()) {
@@ -183,35 +150,35 @@ class RoomTypeController extends Controller
                 'message' => $validator->errors(),
             ];
             return response()->json($response, 400);
-        }   
+        }
         // $employee = Employee::create([
-        $room_type= RoomType::create([
+        $room_type = RoomType::create([
             'room_type_name' => $request->room_type_name,
             'room_size' => $request->room_size,
             'number_customers' => $request->number_customers,
             'description' => $request->description,
             'image' =>  $request->image,
             'price' => $request->price,
-            'point_ranking' =>$request->point_ranking,
-           
+            'point_ranking' => $request->point_ranking,
+
 
         ]);
         // ]);
-            // $position = Position::find($data['position_id']);
-            if (!$room_type) {
-                return response()->json([
-                    'message' => 'Data not found!',
-                    'status' => 400,
-                ], 400);
-            }else {
-          return response()->json([
-            'status' => 200,
-            'message' => 'Room Type created Successfully',
-            'employee' => $room_type,
-          
+        // $position = Position::find($data['position_id']);
+        if (!$room_type) {
+            return response()->json([
+                'message' => 'Data not found!',
+                'status' => 400,
+            ], 400);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Room Type created Successfully',
+                'employee' => $room_type,
 
-        ]);
-    }
+
+            ]);
+        }
     }
     public function filterRoomType(Request $request)
     {
@@ -402,7 +369,8 @@ class RoomTypeController extends Controller
         ], 200);
     }
 
-    public function getTotalRoomTypes() {
+    public function getTotalRoomTypes()
+    {
         $total_room_types = DB::table('room_types')->count();
 
         return response()->json([
@@ -412,7 +380,8 @@ class RoomTypeController extends Controller
         ], 200);
     }
 
-    public function getTotalNumerOfRoomByRoomTypeId($id) {
+    public function getTotalNumerOfRoomByRoomTypeId($id)
+    {
         $number_of_rooms = DB::table('rooms')->where('room_type_id', '=', $id)->count();
 
         return response()->json([
@@ -422,7 +391,7 @@ class RoomTypeController extends Controller
         ], 200);
     }
 
-   
+
     public function getLowestPrice()
     {
         $lowest_price = DB::table('room_types')->min('price');
@@ -544,7 +513,7 @@ class RoomTypeController extends Controller
         ]);
     }
 
-    public function getRandomRoomTypes($id) 
+    public function getRandomRoomTypes($id)
     {
         $list_random_room_types = DB::table('room_types')
             ->join('feedback', 'room_types.id', '=', 'feedback.room_type_id')
@@ -630,9 +599,9 @@ class RoomTypeController extends Controller
                 } else {
                     $page = (int)(count($list_room_types) / $num_of_page) + 1;
                 }
-    
+
                 $start = ($page_number - 1) * $num_of_page;
-    
+
                 if ($page_number == $page) {
                     for ($i = $start; $i < count($list_room_types); $i++) {
                         $data[] = [

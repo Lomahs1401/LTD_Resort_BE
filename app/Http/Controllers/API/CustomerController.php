@@ -4,15 +4,14 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ranking;
-use App\Models\user\Account;
-use App\Models\user\Customer;
-use App\Models\room\RoomType;
+use App\Models\Account;
+use App\Models\Customer;
+use App\Models\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use App\Models\room\BillRoom;
-use App\Models\service\BillService;
-use App\Models\room\ReservationRoom;
+use App\Models\BillRoom;
+use App\Models\BillService;
+use App\Models\ReservationRoom;
 use Carbon\Carbon;
 
 class CustomerController extends Controller
@@ -228,7 +227,7 @@ class CustomerController extends Controller
                     'discount' => $item->discount,
                     'time_start' => $time->time_start,
                     'time_end' => $time->time_end,
-                   
+
                 ];
             }
             $data1 = [];
@@ -311,7 +310,7 @@ class CustomerController extends Controller
                         'tax' => $item1->tax,
                         'discount' => $item1->discount,
                         'bill_code' => $item1->bill_code,
-                        'service_id'=> $item1->service_id,
+                        'service_id' => $item1->service_id,
                         'service' => $service->service_name,
                         'service_type' => $service_type->service_type_name,
 
@@ -483,84 +482,81 @@ class CustomerController extends Controller
         } else {
             $customer = DB::table('customers')->where('account_id', '=', $user->id)->first();
 
-        if ($customer) {
-            $total_amount = 0;
-            $total_people = 0;
-            $total_room = DB::table('reservation_rooms') 
-            ->where('customer_id', '=', $customer->id)
-            ->where('status', '=', '0')
-            ->where('time_start', '=', $time_start)
-            ->where('time_end', '=', $time_end)->count();
-        $reservation_rooms = DB::table('reservation_rooms')
-        ->where('customer_id', '=', $customer->id)
-        ->where('status', '=', '0')
-        ->where('time_start', '=', $time_start)
-        ->where('time_end', '=', $time_end)->get();
-        $price = 0;
-            foreach ($reservation_rooms as $item1) {
-               
-                $room = DB::table('rooms')->where('id', '=', $item1->room_id)->get();
-                foreach ($room as $item2) {
-                    $room_type = RoomType::find($item2->room_type_id);
-                    $total_people += $room_type->number_customers;
-                    $price += $room_type->price;
+            if ($customer) {
+                $total_amount = 0;
+                $total_people = 0;
+                $total_room = DB::table('reservation_rooms')
+                    ->where('customer_id', '=', $customer->id)
+                    ->where('status', '=', '0')
+                    ->where('time_start', '=', $time_start)
+                    ->where('time_end', '=', $time_end)->count();
+                $reservation_rooms = DB::table('reservation_rooms')
+                    ->where('customer_id', '=', $customer->id)
+                    ->where('status', '=', '0')
+                    ->where('time_start', '=', $time_start)
+                    ->where('time_end', '=', $time_end)->get();
+                $price = 0;
+                foreach ($reservation_rooms as $item1) {
+
+                    $room = DB::table('rooms')->where('id', '=', $item1->room_id)->get();
+                    foreach ($room as $item2) {
+                        $room_type = RoomType::find($item2->room_type_id);
+                        $total_people += $room_type->number_customers;
+                        $price += $room_type->price;
+                    }
+                }
+                $ranking = DB::table('rankings')->where('id', '=', $customer->ranking_id)->first();
+                $startDate = Carbon::parse($time_start);
+                $endDate = Carbon::parse($time_end);
+                $numberOfDays = $startDate->diffInDays($endDate);
+                $total_amount += $numberOfDays * $price * (1 - $ranking->discount) * (1 + 0.05);
+
+                $bill_room = BillRoom::create([
+                    'total_amount' => $total_amount,
+                    'total_room' =>  $total_room,
+                    'total_people' => $total_people,
+                    'payment_method' =>  'online',
+                    'pay_time' => Carbon::now(),
+                    'tax' => '0.05',
+                    'bill_code' => $request->bill_code,
+                    'discount' => $ranking->discount,
+                    'customer_id' => $customer->id,
+                ]);
+
+
+                $bill_service = DB::table('bill_services')->where('customer_id', '=', $customer->id)
+                    ->whereNull('pay_time')
+                    ->get();
+
+                foreach ($bill_service as $item2) {
+                    $pay = BillService::find($item2->id);
+                    $pay->pay_time = Carbon::now();
+                    $pay->bill_code = $request->bill_code;
+                    $pay->update();
+                }
+                if (!$bill_room && $bill_service->isEmpty()) {
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'Bill not found',
+
+                    ]);
+                } else {
+                    foreach ($reservation_rooms as $item2) {
+                        $reservation_room = ReservationRoom::find($item2->id);
+                        $reservation_room->status = '1';
+                        $reservation_room->bill_room_id = $bill_room->id;
+                        $reservation_room->update();
+                    }
+                    return response()->json([
+                        'status' => 200,
+                        'message' => 'Pay bill Successfully',
+                        'reservation_room' => $reservation_room,
+                        'bill-room' => $bill_room,
+                        'bill-service' => $bill_service,
+                    ]);
                 }
             }
-            $ranking = DB::table('rankings')->where('id', '=', $customer->ranking_id)->first();
-            $startDate = Carbon::parse($time_start);
-            $endDate = Carbon::parse($time_end);
-            $numberOfDays = $startDate->diffInDays($endDate);
-            $total_amount += $numberOfDays * $price* (1 - $ranking->discount) * (1 + 0.05);
-          
-            $bill_room = BillRoom::create([
-                'total_amount' => $total_amount,
-                'total_room' =>  $total_room,
-                'total_people' => $total_people,
-                'payment_method' =>  'online',
-                'pay_time'=> Carbon::now(),
-                'tax' => '0.05',
-                'bill_code' => $request->bill_code,
-                'discount' => $ranking->discount,
-                'customer_id' => $customer->id,
-
-
-            ]);
-        
-           
-            $bill_service = DB::table('bill_services')->where('customer_id', '=', $customer->id)
-            ->whereNull('pay_time')
-            ->get();
-
-        foreach ($bill_service as $item2) {
-            $pay = BillService::find($item2->id);
-            $pay->pay_time = Carbon::now();
-            $pay->bill_code = $request->bill_code;
-            $pay->update();
-        }  if (!$bill_room && $bill_service->isEmpty()) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Bill not found',
-
-            ]);
-        } else {
-            foreach ($reservation_rooms as $item2) {
-                $reservation_room = ReservationRoom::find($item2->id);
-                $reservation_room->status = '1';
-                $reservation_room->bill_room_id = $bill_room->id;
-                $reservation_room->update();
-            }
-            return response()->json([
-                'status' => 200,
-                'message' => 'Pay bill Successfully',
-                'reservation_room' => $reservation_room,
-                'bill-room' => $bill_room,
-                'bill-service'=> $bill_service,
-            ]);
         }
-
-            
-        }
-    }
     }
     // public function getPayBillSuccess(Request $request)
     // {

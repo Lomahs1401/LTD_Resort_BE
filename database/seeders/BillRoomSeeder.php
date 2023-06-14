@@ -2,8 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\room\BillRoom;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\BillRoom;
 use Illuminate\Database\Seeder;
 
 class BillRoomSeeder extends Seeder

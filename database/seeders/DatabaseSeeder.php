@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
 use Database\Seeders\AreaSeeder;
 use Database\Seeders\BillExtraServiceSeeder;
 use Database\Seeders\BillRoomSeeder;
@@ -22,7 +20,6 @@ use Database\Seeders\AccountSeeder;
 use Database\Seeders\AdminSeeder;
 use Database\Seeders\EmployeeSeeder;
 use Database\Seeders\CustomerSeeder;
-use Database\Seeders\RoleSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

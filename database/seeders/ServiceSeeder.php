@@ -2,11 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Feedback;
-use App\Models\service\Service;
-use App\Models\service\ServiceType;
-use App\Models\user\Account;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Service;
+use App\Models\ServiceType;
 use Illuminate\Database\Seeder;
 
 class ServiceSeeder extends Seeder

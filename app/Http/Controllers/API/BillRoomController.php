@@ -4,9 +4,7 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\room\BillRoom;
-use App\Models\room\ReservationRoom;
-use App\Models\room\RoomType;
+use App\Models\BillRoom;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;

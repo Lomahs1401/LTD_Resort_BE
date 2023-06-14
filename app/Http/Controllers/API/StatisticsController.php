@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class StatisticsController extends Controller
@@ -41,7 +40,6 @@ class StatisticsController extends Controller
     }
     function totalBill($currentYear)
     {
-        // $currentYear = date('Y','=',$i); 
         $months = range(1, 12);
         $monthNames = array_map(function ($month) {
             return date('F', mktime(0, 0, 0, $month, 1));
@@ -89,7 +87,6 @@ class StatisticsController extends Controller
             'total_money_bill_room' => $data,
             'total_money_bill_service' => $data1,
             'total_money_bill_extra_service' => $data2,
-
         ]);
     }
 
@@ -140,13 +137,10 @@ class StatisticsController extends Controller
             'status' => 200,
             'message' => 'Successfully',
             'data' =>  $data,
-
-
         ]);
     }
     function totalFeedback($currentYear)
     {
-        // $currentYear = date('Y','=',$i); 
         $months = range(1, 12);
         $monthNames = array_map(function ($month) {
             return date('F', mktime(0, 0, 0, $month, 1));
@@ -237,7 +231,6 @@ class StatisticsController extends Controller
             'status' => 200,
             'message' => 'Successfully',
             'data' =>   $data
-
         ]);
     }
 }

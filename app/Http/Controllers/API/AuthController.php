@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\user\Account;
-use App\Models\user\Customer;
+use App\Models\Account;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -23,18 +23,19 @@ class AuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
-    public function register(Request $request){
+    public function register(Request $request)
+    {
         // validate form
-        $validator = Validator::make($request->all(),[ 
-            'username'=> 'required',
-            'email'=>'required|email|unique:accounts',
-            'password'=>'required|min:6',
-            'confirm_password'=> 'required|same:password',
+        $validator = Validator::make($request->all(), [
+            'username' => 'required',
+            'email' => 'required|email|unique:accounts',
+            'password' => 'required|min:6',
+            'confirm_password' => 'required|same:password',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             $errors = $validator->errors();
-            
+
             $response = [
                 'status_code' => 400,
                 'message' => [
@@ -45,7 +46,7 @@ class AuthController extends Controller
                 ],
             ];
 
-            return response()->json($response,400);
+            return response()->json($response, 400);
         }
 
         // Create new account
@@ -54,10 +55,10 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'avatar' => $request->avatar,
-            'enabled' => $request->enabled|'1',
-            'role_id' => $request->role_id|'3'
+            'enabled' => $request->enabled | '1',
+            'role_id' => $request->role_id | '3'
         ]);
- 
+
         Customer::create([
             'ranking_point' => 0,
             'account_id' => $account->id,
@@ -78,7 +79,8 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string',
@@ -88,7 +90,7 @@ class AuthController extends Controller
             return response()->json([
                 'status_code' => 400,
                 'message' => 'Invalid form data',
-                'error' => $validator->errors(), 
+                'error' => $validator->errors(),
             ], 400);
         }
 
@@ -116,7 +118,7 @@ class AuthController extends Controller
             return response()->json([
                 'status_code' => 401,
                 'message' => 'Login failed!',
-                'error' => 'Unauthorized', 
+                'error' => 'Unauthorized',
             ], 401);
         }
 

@@ -3,30 +3,31 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\service\Service;
-use App\Models\service\ServiceType;
+use App\Models\Service;
+use App\Models\ServiceType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 class ServiceController extends Controller
 {
-    public function indexService() {
+    public function indexService()
+    {
         $list_services = Service::all();
         $data = [];
-                foreach ($list_services as $item) {
-                    $number = ServiceType::find($item->service_type_id);
-                    $data[] = [
-                        'id' => $item->id,
-                        'service_name' => $item->service_name,
-                        'description' => $item->description,
-                        'image' => $item->image,
-                        'status' => $item->status,
-                        'price' => $item->price,
-                        'point_ranking' => $item->point_ranking,
-                        'service_type_name' => $number->service_type_name,
-                         
-                    ];
-                }
+        foreach ($list_services as $item) {
+            $number = ServiceType::find($item->service_type_id);
+            $data[] = [
+                'id' => $item->id,
+                'service_name' => $item->service_name,
+                'description' => $item->description,
+                'image' => $item->image,
+                'status' => $item->status,
+                'price' => $item->price,
+                'point_ranking' => $item->point_ranking,
+                'service_type_name' => $number->service_type_name,
+            ];
+        }
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
@@ -34,7 +35,8 @@ class ServiceController extends Controller
         ], 200);
     }
 
-    public function showService($id) {
+    public function showService($id)
+    {
         $item = Service::find($id);
         if ($item) {
             $number = ServiceType::find($item->service_type_id);
@@ -47,9 +49,8 @@ class ServiceController extends Controller
                 'price' => $item->price,
                 'point_ranking' => $item->point_ranking,
                 'service_type_name' => $number->service_type_name,
-                 
             ];
-          
+
             return response()->json([
                 'message' => 'Query successfully!',
                 'status' => 200,
@@ -63,45 +64,47 @@ class ServiceController extends Controller
             ], 404);
         }
     }
+    
     public function indexServiceType()
     {
         $list_room_types = ServiceType::all();
 
         $data = [];
-                foreach ($list_room_types as $item) {
-                    $number = DB::table('services')->where('service_type_id', '=', $item->id)
-                    ->where('status', '=', 'AVAILABLE')->count();
-                    $data[] = [
-                        'id' => $item->id,
-                        'service_type_name' => $item->service_type_name,
-                        'number_services' => $number,
-                             
-                    ];
-                }
+        foreach ($list_room_types as $item) {
+            $number = DB::table('services')->where('service_type_id', '=', $item->id)
+                ->where('status', '=', 'AVAILABLE')->count();
+            $data[] = [
+                'id' => $item->id,
+                'service_type_name' => $item->service_type_name,
+                'number_services' => $number,
+
+            ];
+        }
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
             'list_room_types' => $data,
         ], 200);
     }
-    public function showServiceByServiceType($id) {
+    public function showServiceByServiceType($id)
+    {
         $number = DB::table('services')->where('service_type_id', '=', $id)
-        ->where('status', '=', 'AVAILABLE')->get();
+            ->where('status', '=', 'AVAILABLE')->get();
         $data = [];
-                foreach ($number as $item) {
-                    $number1 = ServiceType::find($item->service_type_id);
-                    $data[] = [
-                        'id' => $item->id,
-                        'service_name' => $item->service_name,
-                        'description' => $item->description,
-                        'image' => $item->image,
-                        'status' => $item->status,
-                        'price' => $item->price,
-                        'point_ranking' => $item->point_ranking,
-                        'service_type_name' => $number1->service_type_name,
-                         
-                    ];
-                }
+        foreach ($number as $item) {
+            $number1 = ServiceType::find($item->service_type_id);
+            $data[] = [
+                'id' => $item->id,
+                'service_name' => $item->service_name,
+                'description' => $item->description,
+                'image' => $item->image,
+                'status' => $item->status,
+                'price' => $item->price,
+                'point_ranking' => $item->point_ranking,
+                'service_type_name' => $number1->service_type_name,
+
+            ];
+        }
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
@@ -110,9 +113,9 @@ class ServiceController extends Controller
     }
     public function updateService(Request $request, $id)
     {
-        $service= Service::find($id);
+        $service = Service::find($id);
         if ($service) {
-        
+
             if ($request->service_name) {
                 $service->service_name = $request->service_name;
             }
@@ -144,11 +147,11 @@ class ServiceController extends Controller
     public function storeService(Request $request)
     {
         $validator = Validator::make($request->all(), [
-        'service_name',
-        'description',
-        'image',
-        'price',
-        'point_ranking',
+            'service_name',
+            'description',
+            'image',
+            'price',
+            'point_ranking',
         ]);
 
         if ($validator->fails()) {
@@ -157,40 +160,40 @@ class ServiceController extends Controller
                 'message' => $validator->errors(),
             ];
             return response()->json($response, 400);
-        }   
+        }
         // $employee = Employee::create([
-        $service= Service::create([
+        $service = Service::create([
             'service_name' => $request->service_name,
             'description' => $request->description,
-            'status' => 'AVAILABLE',           
+            'status' => 'AVAILABLE',
             'image' =>  $request->image,
             'price' => $request->price,
-            'point_ranking' =>$request->point_ranking,
+            'point_ranking' => $request->point_ranking,
             'service_type_id' => $request->service_type_id,
 
         ]);
         // ]);
-            // $position = Position::find($data['position_id']);
-            if (!$service) {
-                return response()->json([
-                    'message' => 'Data not found!',
-                    'status' => 400,
-                ], 400);
-            }else {
-          return response()->json([
-            'status' => 200,
-            'message' => 'Room Type created Successfully',
-            'employee' => $service,
-          
+        // $position = Position::find($data['position_id']);
+        if (!$service) {
+            return response()->json([
+                'message' => 'Data not found!',
+                'status' => 400,
+            ], 400);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Room Type created Successfully',
+                'employee' => $service,
 
-        ]);
-    }
+
+            ]);
+        }
     }
     public function storeServiceType(Request $request)
     {
         $validator = Validator::make($request->all(), [
-        'service_type_name',
-      
+            'service_type_name',
+
         ]);
 
         if ($validator->fails()) {
@@ -199,33 +202,33 @@ class ServiceController extends Controller
                 'message' => $validator->errors(),
             ];
             return response()->json($response, 400);
-        }   
+        }
         // $employee = Employee::create([
-        $service= ServiceType::create([
+        $service = ServiceType::create([
             'service_type_name' => $request->service_name,
 
         ]);
         // ]);
-            // $position = Position::find($data['position_id']);
-            if (!$service) {
-                return response()->json([
-                    'message' => 'Data not found!',
-                    'status' => 400,
-                ], 400);
-            }else {
-          return response()->json([
-            'status' => 200,
-            'message' => 'Room Type created Successfully',
-            'employee' => $service,
-        ]);
+        // $position = Position::find($data['position_id']);
+        if (!$service) {
+            return response()->json([
+                'message' => 'Data not found!',
+                'status' => 400,
+            ], 400);
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Room Type created Successfully',
+                'employee' => $service,
+            ]);
+        }
     }
-    }
-    public function cancelService( $id)
+    public function cancelService($id)
     {
-        $service= Service::find($id);
-        if ($service) { 
-                $service->status = 'UNAVAILABLE';
-                $service->update();
+        $service = Service::find($id);
+        if ($service) {
+            $service->status = 'UNAVAILABLE';
+            $service->update();
             return response()->json([
                 'message' => 'Cancel successfully!',
                 'status' => 200,
@@ -237,8 +240,9 @@ class ServiceController extends Controller
                 'status' => 404,
             ], 404);
         }
-    } 
-    public function show($id) {
+    }
+    public function show($id)
+    {
         $service = Service::find($id);
         if ($service) {
             return response()->json([
@@ -254,7 +258,8 @@ class ServiceController extends Controller
             ], 404);
         }
     }
-    public function filterService(Request $request) {
+    public function filterService(Request $request)
+    {
         $price = $request->price;
         $services = $request->input('services');
 
@@ -296,7 +301,8 @@ class ServiceController extends Controller
         ], 200);
     }
 
-    public function getTotalServices() {
+    public function getTotalServices()
+    {
         $total_services = DB::table('services')->count();
 
         return response()->json([
@@ -328,7 +334,8 @@ class ServiceController extends Controller
         ], 200);
     }
 
-    public function getListServiceNames() {
+    public function getListServiceNames()
+    {
         $list_service_names = DB::table('services')->get(['service_name']);
 
         return response()->json([
@@ -350,7 +357,7 @@ class ServiceController extends Controller
             ->take(5)
             ->get();
 
-        
+
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
@@ -358,7 +365,7 @@ class ServiceController extends Controller
         ]);
     }
 
-    public function getRandomServices($id) 
+    public function getRandomServices($id)
     {
         $list_random_services = DB::table('services')
             ->join('feedback', 'services.id', '=', 'feedback.service_id')
@@ -444,10 +451,10 @@ class ServiceController extends Controller
                 } else {
                     $page = (int)(count($list_services) / $num_of_page) + 1;
                 }
-    
+
                 $start = ($page_number - 1) * $num_of_page;
                 $data = [];
-    
+
                 if ($page_number == $page) {
                     for ($i = $start; $i < count($list_services); $i++) {
                         $data[] = [
@@ -503,4 +510,3 @@ class ServiceController extends Controller
         return null;
     }
 }
-

@@ -6,26 +6,24 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\Position;
 use Illuminate\Http\Request;
-use App\Models\user\Employee;
-use App\Models\user\Account;
-use App\Models\user\Customer;
+use App\Models\Employee;
+use App\Models\Account;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Database\Seeders\user\AccountSeeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class EmployeeController extends Controller
 {
     public function index($i)
     {
-        if($i==0){
-        $listEmployee =DB::table('employees')->whereNull('day_quit')->get();}
-        if($i==1){
-            $listEmployee =DB::table('employees')->whereNotNull('day_quit')->get();}
+        if ($i == 0) {
+            $listEmployee = DB::table('employees')->whereNull('day_quit')->get();
+        }
+        if ($i == 1) {
+            $listEmployee = DB::table('employees')->whereNotNull('day_quit')->get();
+        }
         return response()->json([
             'message' => 'Query successfully!',
             'status' => 200,
@@ -33,29 +31,29 @@ class EmployeeController extends Controller
         ]);
     }
 
-        /**
+    /**
      * Display the specified resource.
      */
 
     public function getEmployeeByAccountId()
-    { 
+    {
         $user = auth()->user();
         // Kiểm tra token hợp lệ và người dùng đã đăng nhập
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
         } else {
             $employee = DB::table('employees')->where('account_id', '=', $user->id)->first();
-           
+
             if ($employee) {
                 $position = Position::find($employee->position_id);
                 if ($position) {
                     $department = Department::find($position->department_id);
-    
+
                     $data = [
-                        "avatar"=>$user->avatar,
+                        "avatar" => $user->avatar,
                         "username" => $user->username,
-                        "email"=> $user->email,
-                        "image"=> $employee->image,
+                        "email" => $user->email,
+                        "image" => $employee->image,
                         "name" => $employee->full_name,
                         "gender" => $employee->gender,
                         "birthday" => $employee->birthday,
@@ -68,12 +66,12 @@ class EmployeeController extends Controller
                         "position_name" => $position->position_name,
                         "department_name" => $department->department_name
                     ];
-    
-                return response()->json([
-                    'message' => 'Query successfully!',
-                    'status' => 200,
-                    'customer' => $data,
-                ], 200);
+
+                    return response()->json([
+                        'message' => 'Query successfully!',
+                        'status' => 200,
+                        'customer' => $data,
+                    ], 200);
                 } else {
                     return response()->json([
                         'message' => 'Data not found!',
@@ -93,7 +91,7 @@ class EmployeeController extends Controller
         $data = Account::find($user->id);
         $employee = DB::table('employees')->where('account_id', '=', $user->id)->first();
         $employeeModel = Employee::find($employee->id);
-        if($data && $employeeModel){
+        if ($data && $employeeModel) {
             if ($request->avatar) {
                 $data->avatar = $request->avatar;
                 $data->update();
@@ -118,13 +116,12 @@ class EmployeeController extends Controller
                 'data' => $data,
                 'customer' => $employeeModel,
             ], 200);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'Data not found!',
                 'status' => 401,
             ], 401);
         }
-
     }
     public function searchByParams($search)
     {
@@ -133,7 +130,7 @@ class EmployeeController extends Controller
 
             if (count($result) > 0) {
                 return response()->json([
-                    
+
                     'status' => 200,
                     'data' => $result,
                 ]);
@@ -159,7 +156,7 @@ class EmployeeController extends Controller
                     "name" => $employee->full_name,
                     "gender" => $employee->gender,
                     "birthday" => $employee->birthday,
-                    "image"=> $employee->image,
+                    "image" => $employee->image,
                     "CMND" => $employee->CMND,
                     "address" => $employee->address,
                     "phone" => $employee->phone,
@@ -185,19 +182,11 @@ class EmployeeController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    
-    /**
-     * Update the specified resource in storage.
-     */
-
     public function updateEmployeeByAdmin(Request $request, string $id)
     {
         $employee = Employee::find($id);
-        if( $employee){
-            $position= DB::table('positions')->where('position_name', '=', $request->position_name)->first();
+        if ($employee) {
+            $position = DB::table('positions')->where('position_name', '=', $request->position_name)->first();
             if ($request->full_name) {
                 $employee->full_name = $request->full_name;
             }
@@ -215,75 +204,74 @@ class EmployeeController extends Controller
             }
             $employee->update();
 
-           if($employee->account_id){
-            $account = Account::find($employee->account_id);
-            if( $position->permission == 0){
-                $account->enabled = '0';
-                $account->update();
-            }
-            if( $position->permission == 1){
-                if($account->enabled == 0){
-                    $account->enabled = '1';
+            if ($employee->account_id) {
+                $account = Account::find($employee->account_id);
+                if ($position->permission == 0) {
+                    $account->enabled = '0';
                     $account->update();
                 }
+                if ($position->permission == 1) {
+                    if ($account->enabled == 0) {
+                        $account->enabled = '1';
+                        $account->update();
+                    }
+                }
+            } else {
+                if ($position->permission == 1) {
+                    $accountData = [
+                        'username' => $request->username,
+                        'email' => $request->email,
+                        'password' => Hash::make($request->password),
+                        'enabled' => $request->enabled | '1',
+                        'role_id' => $request->role_id | '2'
+                    ];
+                    $account = Account::create($accountData);
+                    $token = Auth::guard('api')->login($account);
+                    $employee->account_id = $account->id;
+                    $employee->update();
+                }
             }
-           }else{
-            if( $position->permission == 1){
-                $accountData =[
-                    'username' => $request->username,
-                    'email' => $request->email,
-                    'password' => Hash::make($request->password),                 
-                    'enabled' => $request->enabled | '1',
-                    'role_id' => $request->role_id | '2'
-                ];
-                $account =Account::create($accountData);
-                $token = Auth::guard('api')->login($account);
-                $employee->account_id = $account->id;
-                $employee->update();
-            }
-           }
             return response()->json([
                 'message' => 'Update successfully!',
-                'status' => 200,        
+                'status' => 200,
                 'customer' => $employee,
             ], 200);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'Data not found!',
                 'status' => 401,
             ], 401);
         }
     }
-    public function updateAccountEmployeeByAdmin($id,$position_name)
+    public function updateAccountEmployeeByAdmin($id, $position_name)
     {
         $employee = Employee::find($id);
-        $position= DB::table('positions')->where('position_name', '=', $position_name)->first();
-        if($employee->account_id == null){
+        $position = DB::table('positions')->where('position_name', '=', $position_name)->first();
+        if ($employee->account_id == null) {
             $account = Account::find($employee->account_id);
-            if( $position->permission == 0){
+            if ($position->permission == 0) {
                 return response()->json([
                     'status' => 200,
-                    'message' => false, 
-            ]);
+                    'message' => false,
+                ]);
             }
-            if( $position->permission == 1){
-                if($account->enabled == 0){
+            if ($position->permission == 1) {
+                if ($account->enabled == 0) {
                     return response()->json([
                         'status' => 200,
-                        'message' => false, 
-                ]);
+                        'message' => false,
+                    ]);
                 }
             }
-           }else{
-            if( $position->permission == 1){
-             
-                    return response()->json([
-                        'status' => 200,
-                        'message' => true, 
+        } else {
+            if ($position->permission == 1) {
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => true,
                 ]);
             }
-           }
-       
+        }
     }
     public function store(Request $request)
     {
@@ -306,11 +294,9 @@ class EmployeeController extends Controller
             ];
             return response()->json($response, 400);
         }
-        $position= DB::table('positions')->where('position_name', '=', $request->position_name)->first();
+        $position = DB::table('positions')->where('position_name', '=', $request->position_name)->first();
 
-        // $employee = Employee::create([
-        $data=[
-       
+        $data = [
             'full_name' => $request->full_name,
             'gender' => $request->gender,
             'birthday' => $request->birthday,
@@ -323,64 +309,49 @@ class EmployeeController extends Controller
             'status' => $request->status | 1,
             'position_id' => $position->id,
         ];
-       
-       
-            if ($position->permission == '1') {
-                $accountData =[
-                    'username' => $request->username,
-                    'email' => $request->email,
-                    'password' => Hash::make($request->password),                 
-                    'enabled' => $request->enabled | '1',
-                    'role_id' => $request->role_id | '2'
-                ];
 
-                $account =Account::create($accountData);
-                $token = Auth::guard('api')->login($account);
-                $data['account_id'] = $account->id;
-            }else{
-                $data['account_id'] = null;
-            
-            }
-            $employee = Employee::create($data);
+
+        if ($position->permission == '1') {
+            $accountData = [
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'enabled' => $request->enabled | '1',
+                'role_id' => $request->role_id | '2'
+            ];
+
+            $account = Account::create($accountData);
+            $token = Auth::guard('api')->login($account);
+            $data['account_id'] = $account->id;
+        } else {
+            $data['account_id'] = null;
+        }
+        $employee = Employee::create($data);
         return response()->json([
             'status' => 200,
             'message' => 'Employee created Successfully',
             'account' => $position,
             'employee' => $employee,
-
-
         ]);
     }
     public function storeAccountbyEmployee($i)
     {
-       
-       
-        
-        $position= DB::table('positions')->where('position_name', '=', $i)->first();
-      
-            if ($position->permission == '1') {
-               
-                
-        return response()->json([
-            'status' => 200,
-            'message' => true,
-           
+        $position = DB::table('positions')->where('position_name', '=', $i)->first();
 
-        ]);
-         }else  {
+        if ($position->permission == '1') {
+            return response()->json([
+                'status' => 200,
+                'message' => true,
+            ]);
+        } else {
             return response()->json([
                 'status' => 200,
                 'message' => false,
-               
             ]);
-         }
-         
-
+        }
     }
     public function quitEmployeeByID(Request $request, string $id)
     {
-       
-
         $account_id = DB::table('employees')->where('id', '=', $id)->value('account_id');
 
         if ($account_id) {
@@ -399,7 +370,7 @@ class EmployeeController extends Controller
                     'message' => 'Employee Updated Successfully',
                     'status' => 200,
                     'employee' => $id,
-                    'account'=>$account_id,
+                    'account' => $account_id,
                 ]);
             } else {
                 return response()->json([
@@ -417,14 +388,13 @@ class EmployeeController extends Controller
                     'message' => 'Employee Updated Successfully',
                     'status' => 200,
                     'employee' => $id,
-                   
+
                 ]);
             } else {
                 return response()->json([
                     'message' => 'Updated Failed!',
                     'status' => 400,
                     'employee' => $id,
-                   
                 ]);
             }
         }

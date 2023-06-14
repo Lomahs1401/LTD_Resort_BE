@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models\service;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ServiceType extends Model
+class Role extends Model
 {
     use HasFactory;
 
@@ -14,14 +14,14 @@ class ServiceType extends Model
      *
      * @var string
      */
-    protected $table = 'service_types';
-
+    protected $table = 'roles';
+    
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'service_type_name',
+        'role_name',
     ];
 }

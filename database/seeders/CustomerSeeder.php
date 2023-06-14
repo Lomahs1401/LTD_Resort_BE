@@ -3,9 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Ranking;
-use App\Models\user\Account;
-use App\Models\user\Customer;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Account;
+use App\Models\Customer;
 use Illuminate\Database\Seeder;
 
 class CustomerSeeder extends Seeder

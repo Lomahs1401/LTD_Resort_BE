@@ -2,8 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\room\Equipment;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Equipment;
 use Illuminate\Database\Seeder;
 
 class EquipmentSeeder extends Seeder

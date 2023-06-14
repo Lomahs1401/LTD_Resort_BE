@@ -2,8 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\service\BillService;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\BillService;
 use Illuminate\Database\Seeder;
 
 class BillServiceSeeder extends Seeder

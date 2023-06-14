@@ -2,11 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\room\RoomType;
-use App\Models\service\Service;
-use App\Models\user\Account;
-use App\Models\user\Customer;
-use App\Models\user\Employee;
+use App\Models\RoomType;
+use App\Models\Service;
+use App\Models\Customer;
+use App\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

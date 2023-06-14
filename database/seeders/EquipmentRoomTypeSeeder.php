@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\room\Equipment;
-use App\Models\room\EquipmentRoomType;
-use App\Models\room\RoomType;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Equipment;
+use App\Models\EquipmentRoomType;
+use App\Models\RoomType;
 use Illuminate\Database\Seeder;
 
 class EquipmentRoomTypeSeeder extends Seeder

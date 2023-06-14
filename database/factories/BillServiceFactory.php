@@ -2,14 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\service\Service;
-use App\Models\user\Customer;
-use App\Models\user\Employee;
-use DateInterval;
+use App\Models\Service;
+use App\Models\Customer;
+use App\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\service\BillService>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BillService>
  */
 class BillServiceFactory extends Factory
 {
